@@ -1,0 +1,527 @@
+{
+  "hero": "https://drive.google.com/file/d/1Bo3zkF0rw6yA0_JVjju4xv1zwebZ4UIS/view",
+  "family": "https://drive.google.com/file/d/1u9rxaKyGr8h6dRBe02jeATpD2HHF7Y44/view",
+  "story": "https://drive.google.com/file/d/13PTzNnX06kO_-o7-Oku7RAc4r8ogY9SB/view",
+  "dog-life": "https://drive.google.com/file/d/1Par18HaqNeUW-Rb2EdBVNh0jOVo6Pfd8/view",
+  "city": "https://drive.google.com/file/d/1C9onlbSnM9SFDnHUvpQigXtFTZKFa5-n/view",
+  "flex": "https://drive.google.com/file/d/14llIA9Pl0RCrWS_c9dbiHXoQkVUnqtul/view",
+  "delight": "https://drive.google.com/file/d/1Lxwpf_ulJwV9iFPc_yau8ROIdUxabq8T/view",
+  "flex-dog": "https://drive.google.com/file/d/1HUCdDuWyF_Yb8aDKq7YtBg7DfoTv1AzB/view",
+  "longtail": "https://drive.google.com/file/d/1UsdxZLmTujaq0VTZNmr4oWlTHrXCT3u9/view",
+  "delight-box": {
+    "url": "https://drive.google.com/file/d/15cT98QeUs9ZeIQdgWfvGRLQkk693F8-0/view",
+    "filename": "art_1161_Cargobike Delight Box 1 2025 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "delight-dog": {
+    "url": "https://drive.google.com/file/d/1Zo9FrJQsXXkHf2tSUGprcx5dCx97nWY9/view",
+    "filename": "art_1162_Cargobike Delight - Flex Dog 1 2025.jpg Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "delight-kindergarten": {
+    "url": "https://drive.google.com/file/d/19PWb8M9i5KIRE6-Fg3LMCNS-JvKHz8Qp/view",
+    "filename": "art_1163_Cargobike Delight Kindergarten 1 2025 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "flex-box": {
+    "url": "https://drive.google.com/file/d/1u-z_LyEXvk9R68KEUiQvEgFzNI5P0Bqr/view",
+    "filename": "art_1171_Cargobike Flex Box 1 2025 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "flex-kindergarten": {
+    "url": "https://drive.google.com/file/d/1KYreeT1Ic-U7VvQ_MYVxVUFD4wt_ZqfW/view",
+    "filename": "art_1173_Cargobike Flex Kindergarten 1 2025 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "longlite": {
+    "url": "https://drive.google.com/file/d/1xWSE_3lao5LY5COho7r4XHI8sr0O1Zek/view",
+    "filename": "art_1240_Cargobike Longlite 1 2025 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "classic": {
+    "url": "https://drive.google.com/file/d/1GXYe23o2MGTKtzK1FKuU_JlptklERyTz/view",
+    "filename": "Classic - 1260 01 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "classic-box": {
+    "url": "https://drive.google.com/file/d/1MZmEJ57PJxDIK7J_7evsegiehMrZiU-7/view",
+    "filename": "Classic Box - 1261 01 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "classic-dog": {
+    "url": "https://drive.google.com/file/d/1pOdd7nz_uUhZ1kDljQDhabhXtUBe2f9K/view",
+    "filename": "Classic Dog - 1262 01 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "classic-kindergarten": {
+    "url": "https://drive.google.com/file/d/1iAclsADQb7qPkSNVlBNjR9tUnahY_bFy/view",
+    "filename": "Classic Kindergarten - 1263 01 F.png Image",
+    "dimensions": [
+      1800,
+      1800
+    ]
+  },
+  "delight-box-detail": {
+    "url": "https://drive.google.com/file/d/1oceQuTJLp8Kxus6nqr97G_5vzvfkF95J/view",
+    "filename": "art_1161_Cargobike Delight Box 2 2025 F.png Image"
+  },
+  "delight-dog-detail": {
+    "url": "https://drive.google.com/file/d/1NYUFYy3wDAaPE_tAIxuJm8Z12TGJ_kA7/view",
+    "filename": "art_1162_Cargobike Delight Dog 2 2025 F.png Image"
+  },
+  "delight-kindergarten-detail": {
+    "url": "https://drive.google.com/file/d/11gUvVw1fOKdUZ9pfPkUhePbefPMPEU71/view",
+    "filename": "art_1163_Cargobike Delight Kindergarten 2 2025 F.png Image"
+  },
+  "flex-box-detail": {
+    "url": "https://drive.google.com/file/d/1crSL7vuMD1Cx1T1X1W_zNhD5VtTpZWmS/view",
+    "filename": "art_1171_Cargobike Flex Box 2 2025 F.png Image"
+  },
+  "flex-kindergarten-detail": {
+    "url": "https://drive.google.com/file/d/104gN-Y9otRgHMTSBXriOaD3i5f983ndR/view",
+    "filename": "art_1173_Cargobike Flex Kindergarten 2 2025 F.png Image"
+  },
+  "longlite-detail": {
+    "url": "https://drive.google.com/file/d/1uAKlyg9eK1WaDFvWsncTimLGEw3L3DjH/view",
+    "filename": "art_1240_Cargobike Longlite 2 2025 F.png Image"
+  },
+  "classic-detail": {
+    "url": "https://drive.google.com/file/d/1gxMkoGveKkfYtJBXhh4ZKBNEhPi2oBg2/view",
+    "filename": "Classic - 1260 02 F.png Image"
+  },
+  "classic-box-detail": {
+    "url": "https://drive.google.com/file/d/1dYaW_xTVchC5tEaRHwB55pvadLXjS_X_/view",
+    "filename": "Classic Box - 1261 02 F.png Image"
+  },
+  "classic-dog-detail": {
+    "url": "https://drive.google.com/file/d/1jhKI4qw3B8UCDop90qtSOGGOv4v2UaGE/view",
+    "filename": "Classic Dog - 1262 02 F.png Image"
+  },
+  "classic-kindergarten-detail": {
+    "url": "https://drive.google.com/file/d/1l5lCPchfHNmgAPNeCB0NjR24oceMVmAv/view",
+    "filename": "Classic Kindergarten - 1263 02 F.png Image"
+  },
+  "flex-detail": {
+    "url": "https://drive.google.com/file/d/1HC0KPiGSIbKCsNQc1OWCwuwrHJdso6-Z/view",
+    "filename": "art_1170_Cargobike Flex 2 2025 F.png Image"
+  },
+  "delight-detail": {
+    "url": "https://drive.google.com/file/d/13EhuPou0nygG3QchByV1BKiMkdEpYY0I/view",
+    "filename": "art_1160_Cargobike Delight 2 2025 F.png Image"
+  },
+  "flex-dog-detail": {
+    "url": "https://drive.google.com/file/d/1_2GH8eXbp8OzGE7pPv5kjyZWl9oO42kR/view",
+    "filename": "art_1172_Cargobike Flex Dog 2 2025 F.png Image"
+  },
+  "longtail-detail": {
+    "url": "https://drive.google.com/file/d/1ZWCoKERkvuHRvtrXXc1c8VJn9-YBntdD/view",
+    "filename": "art_1280_Cargobike Longtail 2 2025 F.png Image"
+  },
+  "flex-gallery-05": {
+    "url": "https://drive.google.com/file/d/14llIA9Pl0RCrWS_c9dbiHXoQkVUnqtul/view",
+    "filename": "art_1170_Cargobike Flex 1 2025 F.png Image"
+  },
+  "flex-gallery-07": {
+    "url": "https://drive.google.com/file/d/1weaaMy9_hk4mJdIZQI4ffvSvbwmo8Kcr/view",
+    "filename": "art_1170_Cargobike Flex 3 2025 F.png Image"
+  },
+  "flex-gallery-06": {
+    "url": "https://drive.google.com/file/d/1HC0KPiGSIbKCsNQc1OWCwuwrHJdso6-Z/view",
+    "filename": "art_1170_Cargobike Flex 2 2025 F.png Image"
+  },
+  "flex-gallery-01": {
+    "url": "https://drive.google.com/file/d/1S6siMeEJej79qA8ZDyTgXGS6mDyQsOVR/view",
+    "filename": "art_1170_Cargobike Flex  5 2025 F.png Image"
+  },
+  "flex-gallery-00": {
+    "url": "https://drive.google.com/file/d/1Z3HV0KcHGSed2h6BSzI2CGVQOvOw307a/view",
+    "filename": "art_1170_Cargobike Flex  4 2025 F.png Image"
+  },
+  "flex-gallery-02": {
+    "url": "https://drive.google.com/file/d/1PjmFRvBF6MdkDAd84akOlEu6jn6QoZne/view",
+    "filename": "art_1170_Cargobike Flex  6 2025 F.png Image"
+  },
+  "flex-gallery-03": {
+    "url": "https://drive.google.com/file/d/1yxNLCRPTR7CkO17yvi9GYwBYzOKoCzc9/view",
+    "filename": "art_1170_Cargobike Flex  7 2025 F.png Image"
+  },
+  "flex-gallery-04": {
+    "url": "https://drive.google.com/file/d/1bKwk6LAdQt-AGk1E1pcsUdA0IrKJtzG-/view",
+    "filename": "art_1170_Cargobike Flex  8 2025 F.png Image"
+  },
+  "delight-gallery-00": {
+    "url": "https://drive.google.com/file/d/1Lxwpf_ulJwV9iFPc_yau8ROIdUxabq8T/view",
+    "filename": "art_1160_Cargobike Delight 1 2025 F.png Image"
+  },
+  "delight-gallery-02": {
+    "url": "https://drive.google.com/file/d/1BqEYLWijAwUmB7ayFlF5UCelP9Hu663-/view",
+    "filename": "art_1160_Cargobike Delight 3 2025 F.png Image"
+  },
+  "delight-gallery-08": {
+    "url": "https://drive.google.com/file/d/1u-M5wrAlSEwgqNx7bMiYl-At8yC_mZRD/view",
+    "filename": "art_1160_Cargobike Delight 4 2025.jpg Image"
+  },
+  "delight-gallery-01": {
+    "url": "https://drive.google.com/file/d/13EhuPou0nygG3QchByV1BKiMkdEpYY0I/view",
+    "filename": "art_1160_Cargobike Delight 2 2025 F.png Image"
+  },
+  "delight-gallery-09": {
+    "url": "https://drive.google.com/file/d/1QJrBdCgkpzW-gQTvD7R_aaE6Odhp50X0/view",
+    "filename": "art_1160_Cargobike motor 1 2025.jpg Image"
+  },
+  "delight-gallery-03": {
+    "url": "https://drive.google.com/file/d/1FyL666lSN5Wxo83fYnADoVeUXSj36ckg/view",
+    "filename": "art_1160_Cargobike Delight 5 2025 F.png Image"
+  },
+  "delight-gallery-05": {
+    "url": "https://drive.google.com/file/d/1n6GxUv_i5IeQpW-QBO2mAUIHG6xOxm81/view",
+    "filename": "art_1160_Cargobike Delight 7 2025 F.png Image"
+  },
+  "delight-gallery-07": {
+    "url": "https://drive.google.com/file/d/164s7Xg2anPmldKypoBywjFdrEBb26Js-/view",
+    "filename": "art_1160_Cargobike Delight 9 2025 F.png Image"
+  },
+  "flex-dog-gallery-00": {
+    "url": "https://drive.google.com/file/d/1HUCdDuWyF_Yb8aDKq7YtBg7DfoTv1AzB/view",
+    "filename": "art_1172_Cargobike Flex Dog 1 2025 F.png Image"
+  },
+  "flex-dog-gallery-07": {
+    "url": "https://drive.google.com/file/d/1bv7wRLoUcEFHySmNpppn1Th-cfbXaWYX/view",
+    "filename": "art_1172_Cargobike Delight - Flex Dog 1 2025.jpg Image"
+  },
+  "flex-dog-gallery-01": {
+    "url": "https://drive.google.com/file/d/1_2GH8eXbp8OzGE7pPv5kjyZWl9oO42kR/view",
+    "filename": "art_1172_Cargobike Flex Dog 2 2025 F.png Image"
+  },
+  "flex-dog-gallery-02": {
+    "url": "https://drive.google.com/file/d/1LJrL3MsyaA0_LkhO_IL5a7MDhGBP2P8v/view",
+    "filename": "art_1172_Cargobike Flex Dog 3 2025 F.png Image"
+  },
+  "flex-dog-gallery-03": {
+    "url": "https://drive.google.com/file/d/1WDzxDZA4DrWrPxqlLIPo8UNTD0f66Tje/view",
+    "filename": "art_1172_Cargobike Flex Dog 4 2025 F.png Image"
+  },
+  "flex-dog-gallery-04": {
+    "url": "https://drive.google.com/file/d/1qMsGHf5b12FPejmFgGRP9i36IMgOGAvC/view",
+    "filename": "art_1172_Cargobike Flex Dog 5 2025 F.png Image"
+  },
+  "flex-dog-gallery-05": {
+    "url": "https://drive.google.com/file/d/1Up9Px0D8fHOAk92g4-ZQ7mhA2ycIAMyX/view",
+    "filename": "art_1172_Cargobike Flex Dog 6 2025 F.png Image"
+  },
+  "flex-dog-gallery-06": {
+    "url": "https://drive.google.com/file/d/1wT0b88H6sQKGDPVXWcxS5MIGiyQ0Vcjj/view",
+    "filename": "art_1172_Cargobike Flex Dog 7 2025 F.png Image"
+  },
+  "delight-dog-gallery-00": {
+    "url": "https://drive.google.com/file/d/19OOGZZkm-nfvSaw11a8fdLMHokYeuAIj/view",
+    "filename": "art_1162_Cargobike Delight 1 Dog 2025 F.png Image"
+  },
+  "delight-dog-gallery-02": {
+    "url": "https://drive.google.com/file/d/1EU2mkghAtDryERevjhzbNm-x55NR-Fok/view",
+    "filename": "art_1162_Cargobike Delight Dog 3 2025 F.png Image"
+  },
+  "delight-dog-gallery-07": {
+    "url": "https://drive.google.com/file/d/1Zo9FrJQsXXkHf2tSUGprcx5dCx97nWY9/view",
+    "filename": "art_1162_Cargobike Delight - Flex Dog 1 2025.jpg Image"
+  },
+  "delight-dog-gallery-01": {
+    "url": "https://drive.google.com/file/d/1NYUFYy3wDAaPE_tAIxuJm8Z12TGJ_kA7/view",
+    "filename": "art_1162_Cargobike Delight Dog 2 2025 F.png Image"
+  },
+  "delight-dog-gallery-03": {
+    "url": "https://drive.google.com/file/d/1qgbwK_fTf8w-yxIbVPl5Z0qE5mj2I3o8/view",
+    "filename": "art_1162_Cargobike Delight Dog 4 2025 F.png Image"
+  },
+  "delight-dog-gallery-06": {
+    "url": "https://drive.google.com/file/d/1cTbvm1EUl3DzLD6uANYFePcmVg8Zfb5e/view",
+    "filename": "art_1162_Cargobike Delight Dog 7 2025 F.png Image"
+  },
+  "delight-dog-gallery-08": {
+    "url": "https://drive.google.com/file/d/1IL2oO4JoxQS4yQkK7MPnR3gdVE9h2wzk/view",
+    "filename": "art_1162_Cargobike motor 1 2025.jpg Image"
+  },
+  "flex-kindergarten-gallery-00": {
+    "url": "https://drive.google.com/file/d/1KYreeT1Ic-U7VvQ_MYVxVUFD4wt_ZqfW/view",
+    "filename": "art_1173_Cargobike Flex Kindergarten 1 2025 F.png Image"
+  },
+  "flex-kindergarten-gallery-02": {
+    "url": "https://drive.google.com/file/d/1CskTAi3l9yATc4dg92HMg77o2w1EP8Aa/view",
+    "filename": "art_1173_Cargobike Flex Kindergarten 3 2025 F.png Image"
+  },
+  "flex-kindergarten-gallery-01": {
+    "url": "https://drive.google.com/file/d/104gN-Y9otRgHMTSBXriOaD3i5f983ndR/view",
+    "filename": "art_1173_Cargobike Flex Kindergarten 2 2025 F.png Image"
+  },
+  "flex-kindergarten-gallery-03": {
+    "url": "https://drive.google.com/file/d/1cnktbu190SjTrgf00FGZ3jkc_YnsV5Qu/view",
+    "filename": "art_1173_Cargobike Flex Kindergarten 4 2025.jpg Image"
+  },
+  "flex-kindergarten-gallery-04": {
+    "url": "https://drive.google.com/file/d/19KWavjwQ7qy99HHw6F1eEqroUF9EssuJ/view",
+    "filename": "art_1173_Cargobike Flex Kindergarten 5 2025.jpg Image"
+  },
+  "delight-kindergarten-gallery-00": {
+    "url": "https://drive.google.com/file/d/19PWb8M9i5KIRE6-Fg3LMCNS-JvKHz8Qp/view",
+    "filename": "art_1163_Cargobike Delight Kindergarten 1 2025 F.png Image"
+  },
+  "delight-kindergarten-gallery-01": {
+    "url": "https://drive.google.com/file/d/11gUvVw1fOKdUZ9pfPkUhePbefPMPEU71/view",
+    "filename": "art_1163_Cargobike Delight Kindergarten 2 2025 F.png Image"
+  },
+  "delight-kindergarten-gallery-02": {
+    "url": "https://drive.google.com/file/d/14XSHa96CFYba9Tqzyrvs9mmeMrSosUL8/view",
+    "filename": "art_1163_Cargobike Delight Kindergarten 3 2025.jpg Image"
+  },
+  "delight-kindergarten-gallery-03": {
+    "url": "https://drive.google.com/file/d/1Wpkg0V7ESdCsFmQHafwlpaw5sf9vk6bj/view",
+    "filename": "art_1163_Cargobike motor 1 2025.jpg Image"
+  },
+  "classic-kindergarten-gallery-00": {
+    "url": "https://drive.google.com/file/d/1iAclsADQb7qPkSNVlBNjR9tUnahY_bFy/view",
+    "filename": "Classic Kindergarten - 1263 01 F.png Image"
+  },
+  "classic-kindergarten-gallery-10": {
+    "url": "https://drive.google.com/file/d/1787RF0DyzjI8rPaUqlb0n2UW9VQ6g6-5/view",
+    "filename": "Classic Kindergarten - 1263 11 F.png Image"
+  },
+  "classic-kindergarten-gallery-11": {
+    "url": "https://drive.google.com/file/d/1oaJfBLgBHhfHBd_-lKTeUk1wt6pJ37hL/view",
+    "filename": "Classic Kindergarten - 1263 12.jpg Image"
+  },
+  "classic-kindergarten-gallery-02": {
+    "url": "https://drive.google.com/file/d/1uHBJE5Qp9TNJSMwBCUmf2XN2YlLuYiIP/view",
+    "filename": "Classic Kindergarten - 1263 03 F.png Image"
+  },
+  "classic-kindergarten-gallery-05": {
+    "url": "https://drive.google.com/file/d/1YNznjHhSJZi08S-4B_8gfFydLsZJkmzg/view",
+    "filename": "Classic Kindergarten - 1263 06 F.png Image"
+  },
+  "classic-kindergarten-gallery-07": {
+    "url": "https://drive.google.com/file/d/1lZWyuaUfySiAIenoAjRj76MtKeBG5laG/view",
+    "filename": "Classic Kindergarten - 1263 08 F.png Image"
+  },
+  "classic-kindergarten-gallery-03": {
+    "url": "https://drive.google.com/file/d/1PjcLisTXAh_3cOEQ7GLqiuGb1VeB6Vkg/view",
+    "filename": "Classic Kindergarten - 1263 04 F.png Image"
+  },
+  "classic-kindergarten-gallery-08": {
+    "url": "https://drive.google.com/file/d/1AHlaETzjQC0CaB1H8AMNdt56G_vlqptH/view",
+    "filename": "Classic Kindergarten - 1263 09 F.png Image"
+  },
+  "flex-box-gallery-00": {
+    "url": "https://drive.google.com/file/d/1u-z_LyEXvk9R68KEUiQvEgFzNI5P0Bqr/view",
+    "filename": "art_1171_Cargobike Flex Box 1 2025 F.png Image"
+  },
+  "flex-box-gallery-03": {
+    "url": "https://drive.google.com/file/d/1f_QJerHdwcQ6mtvxGLe5TRxlxhryTiWD/view",
+    "filename": "art_1171_Cargobike Flex Box 4 2025 F.png Image"
+  },
+  "flex-box-gallery-02": {
+    "url": "https://drive.google.com/file/d/1Wlnfbuen98mLdFnv606MK-nXQG8SOpKr/view",
+    "filename": "art_1171_Cargobike Flex Box 3 2025 F.png Image"
+  },
+  "flex-box-gallery-11": {
+    "url": "https://drive.google.com/file/d/1RL1h0RsguMF74tinpe_d05Js4n4P53Qk/view",
+    "filename": "art_1171_Cargobike Delight - Flex Box 1 2025.jpg Image"
+  },
+  "flex-box-gallery-07": {
+    "url": "https://drive.google.com/file/d/1ZcZJy-v77Nl53QGjlC-10SSKRXWF8swU/view",
+    "filename": "art_1171_Cargobike Flex Box 8 2025 F.png Image"
+  },
+  "flex-box-gallery-01": {
+    "url": "https://drive.google.com/file/d/1crSL7vuMD1Cx1T1X1W_zNhD5VtTpZWmS/view",
+    "filename": "art_1171_Cargobike Flex Box 2 2025 F.png Image"
+  },
+  "flex-box-gallery-04": {
+    "url": "https://drive.google.com/file/d/109PQigSac_osbHuZ6Uobm687LVysAgAn/view",
+    "filename": "art_1171_Cargobike Flex Box 5 2025 F.png Image"
+  },
+  "flex-box-gallery-06": {
+    "url": "https://drive.google.com/file/d/1JEZTbFhFtuMi8ezDXIvJGVJQX2qsL6ye/view",
+    "filename": "art_1171_Cargobike Flex Box 7 2025 F.png Image"
+  },
+  "flex-box-gallery-09": {
+    "url": "https://drive.google.com/file/d/1o0juiFnvYsCUGSnx8pSCxcxC2RsfFPCN/view",
+    "filename": "art_1171_Cargobike Flex Box 10 2025 F.png Image"
+  },
+  "delight-box-gallery-00": {
+    "url": "https://drive.google.com/file/d/15cT98QeUs9ZeIQdgWfvGRLQkk693F8-0/view",
+    "filename": "art_1161_Cargobike Delight Box 1 2025 F.png Image"
+  },
+  "delight-box-gallery-03": {
+    "url": "https://drive.google.com/file/d/1C9rfzKxLr3UcUwUBmTyUStwrqjL4PMV0/view",
+    "filename": "art_1161_Cargobike Delight Box 4 2025 F.png Image"
+  },
+  "delight-box-gallery-02": {
+    "url": "https://drive.google.com/file/d/1YP1ltsaup50D0TQEwXdYcxwMJncC92Zl/view",
+    "filename": "art_1161_Cargobike Delight Box 3 2025 F.png Image"
+  },
+  "delight-box-gallery-04": {
+    "url": "https://drive.google.com/file/d/1tpF1iY6aecH8xsx7XCpn0Xe_wN0y1EAE/view",
+    "filename": "art_1161_Cargobike Delight - Flex Box 1 2025.jpg Image"
+  },
+  "delight-box-gallery-05": {
+    "url": "https://drive.google.com/file/d/10Hr4MHBqSxWer4j6TA3jkzkWvzlmgleG/view",
+    "filename": "art_1161_Cargobike motor 1 2025.jpg Image"
+  },
+  "delight-box-gallery-01": {
+    "url": "https://drive.google.com/file/d/1oceQuTJLp8Kxus6nqr97G_5vzvfkF95J/view",
+    "filename": "art_1161_Cargobike Delight Box 2 2025 F.png Image"
+  },
+  "classic-gallery-00": {
+    "url": "https://drive.google.com/file/d/1GXYe23o2MGTKtzK1FKuU_JlptklERyTz/view",
+    "filename": "Classic - 1260 01 F.png Image"
+  },
+  "classic-gallery-09": {
+    "url": "https://drive.google.com/file/d/1IIpv-ngfiAl6yM7pWorFTvHXEHx3DsM9/view",
+    "filename": "Classic - 1260 10 F.png Image"
+  },
+  "classic-gallery-14": {
+    "url": "https://drive.google.com/file/d/1y6arJ8AvbWVPVqXhH0w29M_ZXaf7Dhgt/view",
+    "filename": "Classic - 1260 15.jpg Image"
+  },
+  "classic-gallery-11": {
+    "url": "https://drive.google.com/file/d/1l5xFQpmm0XPhjM8QU0LwcDO2tV_6hDzC/view",
+    "filename": "Classic - 1260 12.jpg Image"
+  },
+  "classic-gallery-12": {
+    "url": "https://drive.google.com/file/d/1NN97bzV90sXICS7hLa8pYwkwHuaOyTK0/view",
+    "filename": "Classic - 1260 13.jpg Image"
+  },
+  "classic-gallery-13": {
+    "url": "https://drive.google.com/file/d/1O3gvC1H6N3Vt8ZUTITZSNFp3qZIehh4l/view",
+    "filename": "Classic - 1260 14.jpg Image"
+  },
+  "classic-gallery-10": {
+    "url": "https://drive.google.com/file/d/146qMAleCrfrmGAstVaMh7UpFzBP7f8Bx/view",
+    "filename": "Classic - 1260 11.jpg Image"
+  },
+  "classic-gallery-02": {
+    "url": "https://drive.google.com/file/d/1OXLNr9E4vbUC-O3vYAlhGAV3jG9qI__C/view",
+    "filename": "Classic - 1260 03 F.png Image"
+  },
+  "classic-gallery-06": {
+    "url": "https://drive.google.com/file/d/1qJc9L2fm-QkA2KkTWTdw_m_GA1v3JykL/view",
+    "filename": "Classic - 1260 07 F.png Image"
+  },
+  "classic-dog-gallery-00": {
+    "url": "https://drive.google.com/file/d/1pOdd7nz_uUhZ1kDljQDhabhXtUBe2f9K/view",
+    "filename": "Classic Dog - 1262 01 F.png Image"
+  },
+  "classic-dog-gallery-04": {
+    "url": "https://drive.google.com/file/d/1uuQ5FjsDBBV0ToB4rrvyai5bUusDtuIk/view",
+    "filename": "Classic Dog - 1262 05 F.png Image"
+  },
+  "classic-dog-gallery-06": {
+    "url": "https://drive.google.com/file/d/104eWTVjFK9zYNRIDjaiI8E-WFgpmradq/view",
+    "filename": "Classic Dog - 1262 07.jpg Image"
+  },
+  "classic-dog-gallery-05": {
+    "url": "https://drive.google.com/file/d/1Cog2bjUe9QDzqQFOfu-bGOPrI7LWAhHH/view",
+    "filename": "Classic Dog - 1262 06.jpg Image"
+  },
+  "classic-dog-gallery-07": {
+    "url": "https://drive.google.com/file/d/145uDyBu6m4HcArm_baQclXy8yhfvXBYt/view",
+    "filename": "Classic Dog - 1262 08.jpg Image"
+  },
+  "classic-dog-gallery-01": {
+    "url": "https://drive.google.com/file/d/1jhKI4qw3B8UCDop90qtSOGGOv4v2UaGE/view",
+    "filename": "Classic Dog - 1262 02 F.png Image"
+  },
+  "classic-dog-gallery-03": {
+    "url": "https://drive.google.com/file/d/1l_wsTO0ZUtk-1s76Igqs41hxPVFT3qpT/view",
+    "filename": "Classic Dog - 1262 04 F.png Image"
+  },
+  "classic-box-gallery-00": {
+    "url": "https://drive.google.com/file/d/1MZmEJ57PJxDIK7J_7evsegiehMrZiU-7/view",
+    "filename": "Classic Box - 1261 01 F.png Image"
+  },
+  "classic-box-gallery-10": {
+    "url": "https://drive.google.com/file/d/1MEfLeBGRvqz1A46g18N6oijHorQphikj/view",
+    "filename": "Classic Box - 1261 11.jpg Image"
+  },
+  "classic-box-gallery-11": {
+    "url": "https://drive.google.com/file/d/1K18-k3Yuq0fA0IA7cTJzm-LVQYnueR2g/view",
+    "filename": "Classic Box - 1261 12.jpg Image"
+  },
+  "classic-box-gallery-12": {
+    "url": "https://drive.google.com/file/d/1sM2U9byQaFfQLGdeUkv4Y9Arz3ruHT7C/view",
+    "filename": "Classic Box - 1261 13.jpg Image"
+  },
+  "classic-box-gallery-02": {
+    "url": "https://drive.google.com/file/d/1adZl6AhRi363W9-tVCd-_Q-if_HzQDBE/view",
+    "filename": "Classic Box - 1261 03 F.png Image"
+  },
+  "classic-box-gallery-09": {
+    "url": "https://drive.google.com/file/d/1E3JVEOGs7nyQD8yyxwemY8CnXOXa16b7/view",
+    "filename": "Classic Box - 1261 10 F.png Image"
+  },
+  "classic-box-gallery-04": {
+    "url": "https://drive.google.com/file/d/10mY4qq6F2uiI4FLQG2eT0P23sI2rR5yJ/view",
+    "filename": "Classic Box - 1261 05 F.png Image"
+  },
+  "longlite-gallery-00": {
+    "url": "https://drive.google.com/file/d/1xWSE_3lao5LY5COho7r4XHI8sr0O1Zek/view",
+    "filename": "art_1240_Cargobike Longlite 1 2025 F.png Image"
+  },
+  "longlite-gallery-03": {
+    "url": "https://drive.google.com/file/d/17VlYZ2c3-w4xUeweZa1gXpGeddpHyXhS/view",
+    "filename": "art_1240_Cargobike Longlite 4 2025 F.png Image"
+  },
+  "longlite-gallery-02": {
+    "url": "https://drive.google.com/file/d/10Wp40UwpVZUSThzp9I6F8XM0upd2dxNE/view",
+    "filename": "art_1240_Cargobike Longlite 3 2025 F.png Image"
+  },
+  "longlite-gallery-04": {
+    "url": "https://drive.google.com/file/d/1ug-0xSrcdrlPHtqQfsDL__QVWbW-DLks/view",
+    "filename": "art_1240_Cargobike Longlite 5 2025.jpg Image"
+  },
+  "longlite-gallery-01": {
+    "url": "https://drive.google.com/file/d/1uAKlyg9eK1WaDFvWsncTimLGEw3L3DjH/view",
+    "filename": "art_1240_Cargobike Longlite 2 2025 F.png Image"
+  },
+  "longtail-gallery-00": {
+    "url": "https://drive.google.com/file/d/1UsdxZLmTujaq0VTZNmr4oWlTHrXCT3u9/view",
+    "filename": "art_1280_Cargobike Longtail 1 2025 F.png Image"
+  },
+  "longtail-gallery-02": {
+    "url": "https://drive.google.com/file/d/1lyXmLVHyl1rge-yZneWof9c1PBG-0SaY/view",
+    "filename": "art_1280_Cargobike Longtail 3 2025.jpg Image"
+  },
+  "longtail-gallery-01": {
+    "url": "https://drive.google.com/file/d/1ZWCoKERkvuHRvtrXXc1c8VJn9-YBntdD/view",
+    "filename": "art_1280_Cargobike Longtail 2 2025 F.png Image"
+  },
+  "longtail-gallery-03": {
+    "url": "https://drive.google.com/file/d/1fec3q-PV9B6oFK-a5I5iBRkfFm1UaD6P/view",
+    "filename": "art_1280_Cargobike Longtail 4 2025.jpg Image"
+  }
+}

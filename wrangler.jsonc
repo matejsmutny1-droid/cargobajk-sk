@@ -1,0 +1,17 @@
+{
+  "name": "cargobajk-sk",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "dist/client"
+  },
+  "vars": {
+    "INQUIRY_FROM": "Cargobike Slovensko <hello@vividproduction.sk>",
+    "INQUIRY_ALLOWED_ORIGINS": "https://cargobajk.sk,https://www.cargobajk.sk"
+  },
+  "workers_dev": true
+}
