@@ -13,5 +13,12 @@
     "INQUIRY_FROM": "Cargobike Slovensko <hello@vividproduction.sk>",
     "INQUIRY_ALLOWED_ORIGINS": "https://cargobajk.sk,https://www.cargobajk.sk"
   },
-  "workers_dev": true
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "cargobajk.sk",
+      "custom_domain": true
+    }
+  ],
+  "preview_urls": false
 }
