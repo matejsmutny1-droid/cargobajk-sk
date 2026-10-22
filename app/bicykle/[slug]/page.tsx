@@ -19,7 +19,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   return <main id="main">
     <div className="section" style={{ paddingBottom: 0, paddingTop: 30 }}><div className="breadcrumbs"><Link href="/">Domov</Link><span>/</span><Link href="/bicykle">Bicykle</Link><span>/</span><span>{b.name}</span></div></div>
     <section className="product section">
-      <div><ProductGallery name={b.name} image={b.image} /><p className="gallery-caption">Oficiálne fotografie výrobcu. Zobrazené príslušenstvo nemusí byť súčasťou základnej konfigurácie.</p></div>
+      <div><ProductGallery name={b.name} image={b.slug} /><p className="gallery-caption">Oficiálne fotografie výrobcu. Zobrazené príslušenstvo nemusí byť súčasťou základnej konfigurácie.</p></div>
       <div className="product-info"><span className="eyebrow">CARGOBIKE OF SWEDEN · {b.use.toUpperCase()} · {b.sku}</span><h1>{b.name}</h1>
         {b.children && <span className="capacity-tag">{b.children === 2 ? 'Priestor až pre 2 deti' : `Priestor až pre ${b.children} detí`}</span>}
         <p>{b.description}</p><span className="price">Cena na vyžiadanie</span>
