@@ -22,7 +22,7 @@ function InquiryForm({ topic }: { topic: string }) {
     return () => controller.abort();
   }, []);
   const unavailable = state === 'unavailable';
-  return <form className="inquiry" aria-busy={state === 'sending'} onSubmit={async event => {
+  return <form id="dopyt" className="inquiry" aria-busy={state === 'sending'} onSubmit={async event => {
     event.preventDefault();
     if (inFlight.current || state === 'loading' || unavailable || state === 'sent') return;
     const form = event.currentTarget;
@@ -33,7 +33,7 @@ function InquiryForm({ topic }: { topic: string }) {
     inFlight.current = true;
     setState('sending'); setMessage('');
     try {
-      const response = await fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, requestId: submission.current.id }), signal: AbortSignal.timeout(20_000) });
+      const response = await fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, requestId: submission.current.id }), signal: AbortSignal.timeout(30_000) });
       const result = await response.json() as { ok?: boolean; error?: string };
       if (!response.ok || result.ok !== true) { setState(response.status === 503 ? 'unavailable' : 'error'); setMessage(typeof result.error === 'string' ? result.error : 'Odoslanie sa nepodarilo. Skúste to znova.'); return; }
       setState('sent'); setMessage('Ďakujeme. Váš dopyt bol odovzdaný na odoslanie. Ozveme sa vám e-mailom.');
