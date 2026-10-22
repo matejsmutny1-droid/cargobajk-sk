@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/PageLink';
 import { notFound } from 'next/navigation';
 import { bikes } from '@/lib/catalog';
 import { Arrow } from '@/components/Site';

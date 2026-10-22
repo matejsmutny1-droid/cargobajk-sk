@@ -1,5 +1,5 @@
 'use client';
-import Link from 'next/link';
+import Link from '@/components/PageLink';
 import {useState} from 'react';
 export function Arrow(){return <span aria-hidden="true">↗</span>}
 export function Header(){const[open,setOpen]=useState(false);return <><a className="skip" href="#main">Preskočiť na obsah</a><div className="announcement">ZO ŠVÉDSKA. PRE VÁŠ KAŽDODENNÝ ŽIVOT. <span>SLOVENSKO</span></div><header className="header"><Link className="brand" href="/" aria-label="Cargobike of Sweden — domov"><span className="brand-word">cargobike<span className="brand-dot">®</span></span><span className="brand-sub">OF SWEDEN</span></Link><nav aria-label="Hlavná navigácia" className={open?'navigation open':'navigation'} onClick={()=>setOpen(false)}><Link href="/bicykle">Naše bicykle</Link><Link href="/preco-cargobike">Život s cargobikom</Link><Link href="/o-nas">Náš príbeh</Link><Link href="/servis">Servis</Link></nav><div className="header-actions"><span className="language" title="Česká verzia sa pripravuje">SK</span><Link className="header-cta" href="/testovacie-jazdy">Vyskúšať naživo <Arrow/></Link><button className="menu" aria-label={open?"Zavrieť navigáciu":"Otvoriť navigáciu"} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?'Zavrieť':'Menu'} ☰</button></div></header></>}

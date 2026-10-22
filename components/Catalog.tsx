@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/PageLink';
 import BrandImage from '@/components/BrandImage';
 import { bikes, featuredSlugs } from '@/lib/catalog';
 import { Arrow } from './Site';
