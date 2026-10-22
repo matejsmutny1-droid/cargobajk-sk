@@ -17,3 +17,6 @@
 
 .mobile-nav-extra{display:none}
 @media(max-width:760px){.navigation.open .mobile-nav-extra{display:block}}
+
+.language-switch{white-space:nowrap;text-decoration:none;color:inherit;font-size:12px;font-weight:600;letter-spacing:.04em;padding:9px 0;border-bottom:1px solid currentColor}.language-switch:focus-visible{outline:2px solid #253c32;outline-offset:5px}
+@media(max-width:760px){.header-actions .language-switch{display:inline-block!important;font-size:11px;padding:7px 0}.header-actions{gap:16px}}

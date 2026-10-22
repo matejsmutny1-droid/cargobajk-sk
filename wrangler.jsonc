@@ -18,6 +18,10 @@
     {
       "pattern": "cargobajk.sk",
       "custom_domain": true
+    },
+    {
+      "pattern": "www.cargobajk.sk/*",
+      "zone_name": "cargobajk.sk"
     }
   ],
   "preview_urls": false
