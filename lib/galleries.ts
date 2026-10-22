@@ -2,6 +2,12 @@ export type GalleryImage = { src: string; label: string; width: number; height: 
 export const galleries: Record<string, GalleryImage[]> = {
   "flex": [
     {
+      "src": "/media/flex-gallery-06.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 1739,
+      "height": 1401
+    },
+    {
       "src": "/media/flex-gallery-05.webp",
       "label": "Celkový pohľad",
       "width": 2141,
@@ -12,12 +18,6 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Interiér boxu a bezpečnostné pásy",
       "width": 2093,
       "height": 823
-    },
-    {
-      "src": "/media/flex-gallery-06.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 1739,
-      "height": 1401
     },
     {
       "src": "/media/flex-gallery-01.webp",
@@ -52,6 +52,12 @@ export const galleries: Record<string, GalleryImage[]> = {
   ],
   "delight": [
     {
+      "src": "/media/delight-gallery-01.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 1767,
+      "height": 1395
+    },
+    {
       "src": "/media/delight-gallery-00.webp",
       "label": "Celkový pohľad",
       "width": 2060,
@@ -68,12 +74,6 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Sedenie a úložný priestor",
       "width": 2200,
       "height": 2200
-    },
-    {
-      "src": "/media/delight-gallery-01.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 1767,
-      "height": 1395
     },
     {
       "src": "/media/delight-gallery-09.webp",
@@ -103,7 +103,7 @@ export const galleries: Record<string, GalleryImage[]> = {
   "flex-dog": [
     {
       "src": "/media/flex-dog-gallery-00.webp",
-      "label": "Predné dvierka a vstup pre psa",
+      "label": "Celkový pohľad zošikma",
       "width": 1673,
       "height": 1367
     },
@@ -152,16 +152,16 @@ export const galleries: Record<string, GalleryImage[]> = {
   ],
   "delight-dog": [
     {
+      "src": "/media/delight-dog-gallery-02.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 2014,
+      "height": 1362
+    },
+    {
       "src": "/media/delight-dog-gallery-00.webp",
       "label": "Celkový pohľad",
       "width": 2068,
       "height": 1237
-    },
-    {
-      "src": "/media/delight-dog-gallery-02.webp",
-      "label": "Otvorené dvierka a priestor pre psa",
-      "width": 2014,
-      "height": 1362
     },
     {
       "src": "/media/delight-dog-gallery-07.webp",
@@ -196,6 +196,12 @@ export const galleries: Record<string, GalleryImage[]> = {
   ],
   "flex-kindergarten": [
     {
+      "src": "/media/flex-kindergarten-gallery-01.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 1790,
+      "height": 1423
+    },
+    {
       "src": "/media/flex-kindergarten-gallery-00.webp",
       "label": "Celkový pohľad",
       "width": 2043,
@@ -206,12 +212,6 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Pohľad zhora: lavice a bezpečnostné pásy",
       "width": 2086,
       "height": 961
-    },
-    {
-      "src": "/media/flex-kindergarten-gallery-01.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 1790,
-      "height": 1423
     },
     {
       "src": "/media/flex-kindergarten-gallery-03.webp",
@@ -228,16 +228,16 @@ export const galleries: Record<string, GalleryImage[]> = {
   ],
   "delight-kindergarten": [
     {
+      "src": "/media/delight-kindergarten-gallery-01.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 1819,
+      "height": 1402
+    },
+    {
       "src": "/media/delight-kindergarten-gallery-00.webp",
       "label": "Celkový pohľad",
       "width": 2062,
       "height": 1300
-    },
-    {
-      "src": "/media/delight-kindergarten-gallery-01.webp",
-      "label": "Box, lavice a priestor pre deti",
-      "width": 1819,
-      "height": 1402
     },
     {
       "src": "/media/delight-kindergarten-gallery-02.webp",
@@ -253,6 +253,12 @@ export const galleries: Record<string, GalleryImage[]> = {
     }
   ],
   "classic-kindergarten": [
+    {
+      "src": "/media/classic-kindergarten-gallery-02.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 1977,
+      "height": 1447
+    },
     {
       "src": "/media/classic-kindergarten-gallery-00.webp",
       "label": "Celkový pohľad",
@@ -270,12 +276,6 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Interiér a otvorené predné dvierka",
       "width": 1467,
       "height": 2200
-    },
-    {
-      "src": "/media/classic-kindergarten-gallery-02.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 1977,
-      "height": 1447
     },
     {
       "src": "/media/classic-kindergarten-gallery-05.webp",
@@ -303,6 +303,12 @@ export const galleries: Record<string, GalleryImage[]> = {
     }
   ],
   "flex-box": [
+    {
+      "src": "/media/flex-box-gallery-01.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 1748,
+      "height": 1369
+    },
     {
       "src": "/media/flex-box-gallery-00.webp",
       "label": "Celkový pohľad",
@@ -334,12 +340,6 @@ export const galleries: Record<string, GalleryImage[]> = {
       "height": 1648
     },
     {
-      "src": "/media/flex-box-gallery-01.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 1748,
-      "height": 1369
-    },
-    {
       "src": "/media/flex-box-gallery-04.webp",
       "label": "Pohľad na box a vybavenie",
       "width": 918,
@@ -359,6 +359,12 @@ export const galleries: Record<string, GalleryImage[]> = {
     }
   ],
   "delight-box": [
+    {
+      "src": "/media/delight-box-gallery-01.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 1760,
+      "height": 1371
+    },
     {
       "src": "/media/delight-box-gallery-00.webp",
       "label": "Celkový pohľad",
@@ -388,15 +394,15 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Stredový motor Ananda",
       "width": 2200,
       "height": 2200
-    },
-    {
-      "src": "/media/delight-box-gallery-01.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 1760,
-      "height": 1371
     }
   ],
   "classic": [
+    {
+      "src": "/media/classic-gallery-06.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 2200,
+      "height": 1505
+    },
     {
       "src": "/media/classic-gallery-00.webp",
       "label": "Celkový pohľad",
@@ -444,18 +450,12 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Pohľad na box a vybavenie",
       "width": 1991,
       "height": 1385
-    },
-    {
-      "src": "/media/classic-gallery-06.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 2200,
-      "height": 1505
     }
   ],
   "classic-dog": [
     {
       "src": "/media/classic-dog-gallery-00.webp",
-      "label": "Celkový pohľad",
+      "label": "Celkový pohľad zošikma",
       "width": 1789,
       "height": 1407
     },
@@ -498,6 +498,12 @@ export const galleries: Record<string, GalleryImage[]> = {
   ],
   "classic-box": [
     {
+      "src": "/media/classic-box-gallery-04.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 2008,
+      "height": 1491
+    },
+    {
       "src": "/media/classic-box-gallery-00.webp",
       "label": "Celkový pohľad",
       "width": 2069,
@@ -532,15 +538,15 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Celkový pohľad zhora",
       "width": 2184,
       "height": 812
-    },
-    {
-      "src": "/media/classic-box-gallery-04.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 2008,
-      "height": 1491
     }
   ],
   "longlite": [
+    {
+      "src": "/media/longlite-gallery-01.webp",
+      "label": "Celkový pohľad zošikma",
+      "width": 2036,
+      "height": 1203
+    },
     {
       "src": "/media/longlite-gallery-00.webp",
       "label": "Celkový pohľad",
@@ -564,18 +570,12 @@ export const galleries: Record<string, GalleryImage[]> = {
       "label": "Detail úložného priestoru",
       "width": 2200,
       "height": 2200
-    },
-    {
-      "src": "/media/longlite-gallery-01.webp",
-      "label": "Pohľad na box a vybavenie",
-      "width": 2036,
-      "height": 1203
     }
   ],
   "longtail": [
     {
       "src": "/media/longtail-gallery-00.webp",
-      "label": "Celkový pohľad",
+      "label": "Celkový pohľad zošikma",
       "width": 1970,
       "height": 1651
     },
