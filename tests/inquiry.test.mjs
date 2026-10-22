@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createInquiryHandler, InquiryLimiter, sendViaResend, INQUIRY_RECIPIENT } from '../lib/inquiry-server.ts';
+import { createInquiryHandler, InquiryLimiter, sendViaResend, INQUIRY_RECIPIENT, inquiryEmail } from '../lib/inquiry-server.ts';
 const origin = 'https://cargobike.example';
 const settings = { apiKey: 're_test_not_a_real_key', from: 'Cargobike <hello@vividproduction.sk>', allowedOrigins: [origin], topics: ['Servis', 'Záujem o model Flex Kindergarten'] };
 const input = { name: 'Test Používateľ', email: 'customer@example.com', topic: 'Záujem o model Flex Kindergarten', message: 'Testovací dopyt na rodinný bicykel.', website: '', requestId: '7b18f332-685c-4814-812e-3a76a31fc5cf' };
@@ -28,8 +28,11 @@ test('success uses fixed recipient, validated Reply-To, plain text and stable re
   assert.equal(calls[0].mail.reply_to, input.email);
   assert.equal(calls[0].mail.from, settings.from);
   assert.ok(calls[0].mail.text.includes(input.topic));
-  assert.equal(calls[0].key, calls[1].key);
-  assert.ok(!('html' in calls[0].mail));
+  assert.equal(calls[0].key, calls[2].key);
+  assert.ok(calls[0].mail.html.includes('Nový dopyt'));
+  assert.deepEqual(calls[1].mail.to, [input.email]);
+  assert.equal(calls[1].mail.reply_to, INQUIRY_RECIPIENT);
+  assert.notEqual(calls[0].key, calls[1].key);
 });
 test('cross-origin and absent-origin requests never send', async () => {
   const handler = createInquiryHandler(() => settings, async () => { assert.fail('must not send'); });
@@ -91,4 +94,17 @@ test('Resend transport uses API endpoint, auth, Reply-To and provider acceptance
     globalThis.fetch = async () => Response.json({});
     assert.equal(await sendViaResend(mail, 'inquiry/mock', settings), false);
   } finally { globalThis.fetch = original; }
+});
+
+test('HTML escapes visitor content and receipt omits message', () => {
+ const malicious = {...input, name: '<img src=x>', message: '<script>alert(1)</script>'};
+ assert.ok(inquiryEmail(malicious).includes('&lt;script&gt;'));
+ assert.ok(!inquiryEmail(malicious).includes('<script>'));
+ assert.ok(!inquiryEmail(malicious, true).includes('alert(1)'));
+});
+test('receipt failure does not fail an accepted inquiry', async () => {
+ let calls = 0;
+ const response = await createInquiryHandler(() => settings, async () => { if (++calls === 2) throw Error('receipt failure'); return true; })(request());
+ assert.equal(response.status, 200);
+ assert.equal((await response.json()).confirmationSent, false);
 });
