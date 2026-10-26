@@ -7,6 +7,10 @@ export default {
       url.hostname = 'cargobajk.sk'; url.protocol = 'https:';
       return Response.redirect(url.toString(), 308);
     }
+    if (url.pathname === '/testovacie-jazdy' || url.pathname === '/en/testovacie-jazdy') {
+      url.pathname = url.pathname.replace('/testovacie-jazdy', '/vyber-bicykla');
+      return Response.redirect(url.toString(), 308);
+    }
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-site-language', /^\/en(?:\/|$)/.test(new URL(request.url).pathname) ? 'en' : 'sk');
     const response = await handler.fetch(new Request(request, {headers: requestHeaders}), env, ctx);

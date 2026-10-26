@@ -1,6 +1,6 @@
 'use client';
 import Link from '@/components/en/PageLink';
-const topicLabel = (t: string) => t.startsWith('Záujem o model ') ? 'Enquiry about ' + t.slice(15) : ({ 'Záujem o bicykel': 'Bike enquiry', 'Testovacia jazda': 'Test ride', 'Servis': 'Service', 'Firemná spolupráca': 'Business partnership' }[t] ?? t);
+const topicLabel = (t: string) => t.startsWith('Záujem o model ') ? 'Enquiry about ' + t.slice(15) : ({ 'Záujem o bicykel': 'Bike enquiry', 'Výber bicykla': 'Bike selection', 'Servis': 'Service', 'Firemná spolupráca': 'Business partnership' }[t] ?? t);
 import { useEffect, useRef, useState } from 'react';
 
 
@@ -45,7 +45,7 @@ function InquiryForm({ topic }: { topic: string }) {
     <p className="form-note">{unavailable ? 'The form is currently unavailable. Please contact us directly by email.' : 'A no-obligation enquiry. Tell us what you are interested in and we will reply by email.'} <a href="mailto:hello@vividproduction.sk">hello@vividproduction.sk</a></p>
     <fieldset disabled={state === 'sending' || state === 'sent'} className="inquiry-fields">
       <div className="form-row"><label>Your name<input required name="name" autoComplete="name" placeholder="Full name" minLength={2} maxLength={120} /></label><label>Email<input required type="email" name="email" autoComplete="email" placeholder="you@example.com" maxLength={254} /></label></div>
-      <label>What are you interested in?<select name="topic" value={selectedTopic} onChange={event => setSelectedTopic(event.target.value)}>{Array.from(new Set([topic, 'Záujem o bicykel', 'Testovacia jazda', 'Servis', 'Firemná spolupráca'])).map(t => <option key={t} value={t}>{topicLabel(t)}</option>)}</select></label>
+      <label>What are you interested in?<select name="topic" value={selectedTopic} onChange={event => setSelectedTopic(event.target.value)}>{Array.from(new Set([topic, 'Záujem o bicykel', 'Výber bicykla', 'Servis', 'Firemná spolupráca'])).map(t => <option key={t} value={t}>{topicLabel(t)}</option>)}</select></label>
       <label>Your message<textarea name="message" required rows={4} minLength={10} placeholder="Tell us how a cargo bike could fit into your life." maxLength={4000} /></label>
       <div className="form-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" maxLength={200} /></label></div>
       <p className="form-note">We will use your details to respond to your enquiry. <Link href="/sukromie">Privacy information</Link>.</p>
