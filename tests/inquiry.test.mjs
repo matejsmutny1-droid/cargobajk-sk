@@ -158,3 +158,22 @@ test('English quote receipt is localised and does not echo private notes',async(
  assert.ok(calls[1].text.includes('no payment is due'));
  assert.ok(!calls[1].html.includes('Private delivery'));
 });
+
+test('accessory subtotal uses MSRP and complete canopy frame bundle',async()=>{
+ const {parseQuote,quoteAccessoriesTotal,quoteSubtotal}=await import('../lib/quote.ts');
+ const q=parseQuote({...quote,priceEur:1,accessories:['canopy','lock']});
+ assert.ok(q);assert.equal(q.priceEur,3849);assert.equal(quoteAccessoriesTotal(q),237);assert.equal(quoteSubtotal(q),4086);
+ const k=parseQuote({...quote,modelSlug:'delight-kindergarten',accessories:['canopy-kindergarten']});assert.ok(k);assert.equal(quoteAccessoriesTotal(k),197.59);assert.equal(quoteSubtotal(k),5646.59);
+});
+test('incompatible accessories and competing canopy versions are rejected',async()=>{
+ const {parseQuote}=await import('../lib/quote.ts');
+ assert.equal(parseQuote({...quote,modelSlug:'classic',accessories:['canopy']}),null);
+ assert.equal(parseQuote({...quote,accessories:['canopy','canopy-high']}),null);
+ assert.equal(parseQuote({...quote,accessories:['canopy-kindergarten']}),null);
+});
+test('public accessory import covers all 30 source rows without wholesale fields',async()=>{
+ const {accessories}=await import('../lib/accessories.ts');const rows=accessories.flatMap(a=>a.sourceRows).sort((a,b)=>a-b);
+ assert.deepEqual(rows,Array.from({length:30},(_,i)=>i+10));
+ assert.equal(new Set(accessories.map(a=>a.id)).size,accessories.length);
+ assert.ok(accessories.every(a=>a.priceEur>0&&Number.isInteger(Math.round(a.priceEur*100))&&!('netPrice' in a)));
+});
