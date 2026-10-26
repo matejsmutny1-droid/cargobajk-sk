@@ -1,3 +1,4 @@
+import {openReviewToken} from '../lib/offer-review.ts';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInquiryHandler, InquiryLimiter, sendViaResend, INQUIRY_RECIPIENT, inquiryEmail } from '../lib/inquiry-server.ts';
@@ -211,4 +212,31 @@ test('different recipients cannot share final-offer idempotency solely through a
  const {createReviewToken}=await import('../lib/offer-review.ts');const {parseQuote}=await import('../lib/quote.ts');const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const calls=[];const h=createOfferReviewHandler(()=>settings,async(mail,key)=>{calls.push({mail,key});return true});const now=Date.now();
  for(const email of ['first@example.com','second@example.com']){const token=await createReviewToken({...quoteInput,email,quote:parseQuote(quote),submittedAt:now},settings.apiKey);assert.equal((await h(reviewRequest(token,'send'))).status,200)}
  assert.notEqual(calls[0].key,calls[2].key);assert.deepEqual(calls[0].mail.to,['first@example.com']);assert.deepEqual(calls[2].mail.to,['second@example.com']);
+});
+
+import {customerToken,openCustomerToken,parseCustomerDetails} from '../lib/customer-offer.ts';
+import {createCustomerOfferHandler} from '../lib/customer-offer-server.ts';
+const customerDraft={version:1,reference:'customer-flow-test',expiresAt:Date.now()+14*86400000,language:'sk',modelName:'Flex',customer:{name:'Test User',email:'buyer@example.com',phone:'',city:'Žilina',postalCode:'01001'},lines:[{name:'Flex',nameEn:'Flex',amount:3849}],pending:[],notes:''};
+const customerTerms={shipping:100,discount:0,additional:0,additionalDescription:'',deliveryDays:14,validityDays:7,taxNote:'Predávajúci nie je platiteľom DPH.',note:'',confirmed:true};
+const customerDetails={name:'Test User',street:'Testová 1',city:'Žilina',postalCode:'01001',phone:'+421900123456',company:'',companyId:'',billingAddress:'',confirmed:true};
+test('customer links are purpose separated, encrypted, expire and reject tampering',async()=>{
+ const token=await customerToken(customerDraft,customerTerms,settings.apiKey);
+ assert.equal((await openCustomerToken(token,settings.apiKey)).draft.customer.email,'buyer@example.com');
+ assert.equal(token.includes('buyer'),false);
+ await assert.rejects(()=>openCustomerToken(token,'different-key'));
+ await assert.rejects(()=>openCustomerToken(token,settings.apiKey,Date.now()+15*86400000));
+ await assert.rejects(()=>openCustomerToken(token.slice(0,30)+'A'+token.slice(31),settings.apiKey));
+ await assert.rejects(()=>openReviewToken(token,settings.apiKey));
+});
+test('customer submission validates address and confirmation and never trusts client price or email',async()=>{
+ const calls=[];const handler=createCustomerOfferHandler(()=>settings,async(m,k)=>{calls.push({m,k});return true});const token=await customerToken(customerDraft,customerTerms,settings.apiKey);
+ assert.equal((await handler(request({action:'submit',token,details:{...customerDetails,confirmed:false}}))).status,400);
+ assert.equal(calls.length,0);
+ const body={action:'submit',token,details:customerDetails,email:'attacker@example.com',total:1};
+ assert.equal((await handler(request(body))).status,200);
+ assert.equal(calls[0].m.to[0],INQUIRY_RECIPIENT);assert.equal(calls[1].m.to[0],'buyer@example.com');assert.match(calls[0].m.text,/3949/);
+ await handler(request(body));assert.equal(calls[0].k,calls[2].k);
+ assert.equal((await handler(request({action:'submit',token:'invalid',details:customerDetails}))).status,403);
+ assert.equal((await handler(request(body,{origin:'https://evil.example'}))).status,403);
+ assert.equal(parseCustomerDetails({...customerDetails,company:'Firma',companyId:''}),null);
 });
