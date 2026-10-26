@@ -1,3 +1,4 @@
+import BikePrice from '@/components/BikePrice';
 import Link from '@/components/en/PageLink';
 import { notFound } from 'next/navigation';
 import { bikes } from '@/lib/en/catalog';
@@ -22,7 +23,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div><ProductGallery name={b.name} image={b.slug} /><p className="gallery-caption">Official manufacturer photos. Accessories shown may not be included in the standard specification.</p></div>
       <div className="product-info"><span className="eyebrow">CARGOBIKE OF SWEDEN · {b.use.toUpperCase()} · {b.sku}</span><h1>{b.name}</h1>
         {b.children && <span className="capacity-tag">{b.children === 2 ? 'Room for up to 2 children' : `Room for up to ${b.children} children`}</span>}
-        <p>{b.description}</p><span className="price">Price on request</span>
+        <p>{b.description}</p><BikePrice price={b.priceEur} english/>
         <div><Link className="button dark" href={'/kontakt?model=' + encodeURIComponent(b.name) + '#dopyt'}>Enquire about this model <Arrow /></Link></div>
         <small>No-obligation enquiry. We will confirm the specification, price in EUR, availability and delivery terms individually.</small>
         {variants.length > 1 && <div className="details"><h2 className="variant-heading">Choose your version of the {b.family}</h2><div className="variant-links">{variants.map(v => <Link href={'/bicykle/' + v.slug} key={v.slug} aria-current={v.slug === b.slug ? 'page' : undefined}>{v.name}</Link>)}</div></div>}

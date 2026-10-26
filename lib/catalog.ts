@@ -10,12 +10,14 @@ export type Bike = {
   specs: string[][];
   source?: string | null;
   variants: string[];
+  priceEur?: number;
 };
 // Public product data only. Purchase prices and supplier terms are never imported.
 // Source: manufacturer product workbook 2026; Kindergarten capacity: linked official pages.
 export const bikes: Bike[] = [
   {
     "slug": "flex",
+    "priceEur": 3849,
     "name": "Flex",
     "family": "Flex",
     "use": "Rodina",
@@ -59,6 +61,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "delight",
+    "priceEur": 4649,
     "name": "Delight",
     "family": "Delight",
     "use": "Rodina",
@@ -102,6 +105,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "flex-dog",
+    "priceEur": 4049,
     "name": "Flex Dog",
     "family": "Flex",
     "use": "So psom",
@@ -199,6 +203,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "delight-kindergarten",
+    "priceEur": 5449,
     "name": "Delight Kindergarten",
     "family": "Delight",
     "use": "Pre škôlky",
@@ -285,6 +290,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "flex-box",
+    "priceEur": 4349,
     "name": "Flex Box",
     "family": "Flex",
     "use": "Náklad a podnikanie",
@@ -324,6 +330,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "delight-box",
+    "priceEur": 5149,
     "name": "Delight Box",
     "family": "Delight",
     "use": "Náklad a podnikanie",
@@ -363,6 +370,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "delight-dog",
+    "priceEur": 4849,
     "name": "Delight Dog",
     "family": "Delight",
     "use": "So psom",
@@ -519,6 +527,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "longlite",
+    "priceEur": 4649,
     "name": "Long Lite",
     "family": "Long Lite",
     "use": "Rodina",
