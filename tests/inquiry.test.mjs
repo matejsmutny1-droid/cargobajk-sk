@@ -177,3 +177,32 @@ test('public accessory import covers all 30 source rows without wholesale fields
  assert.equal(new Set(accessories.map(a=>a.id)).size,accessories.length);
  assert.ok(accessories.every(a=>a.priceEur>0&&Number.isInteger(Math.round(a.priceEur*100))&&!('netPrice' in a)));
 });
+
+test('review tokens are encrypted, stable for retries, authenticated and expire',async()=>{
+ const {createReviewToken,openReviewToken}=await import('../lib/offer-review.ts');const {parseQuote}=await import('../lib/quote.ts');const now=Date.now();const q={...quoteInput,quote:parseQuote(quote),submittedAt:now};
+ const token=await createReviewToken(q,settings.apiKey,now);assert.equal(token,await createReviewToken(q,settings.apiKey,now+1000));assert.ok(!token.includes(input.email));assert.ok(!token.includes('Žilina'));const d=await openReviewToken(token,settings.apiKey,now);assert.equal(d.customer.email,input.email);assert.equal(d.lines.reduce((s,l)=>s+l.amount,0),4086);
+ const altered=token.slice(0,25)+(token[25]==='A'?'B':'A')+token.slice(26);await assert.rejects(openReviewToken(altered,settings.apiKey,now));await assert.rejects(openReviewToken(token,'another_secret',now));await assert.rejects(openReviewToken(token,settings.apiKey,now+15*86400000));
+});
+test('private review link is only in owner notification',async()=>{
+ const calls=[];await createInquiryHandler(()=>quoteSettings,async mail=>{calls.push(mail);return true;})(request({...quoteInput,submittedAt:Date.now()}));assert.ok(calls[0].html.includes('Skontrolovať a odoslať ponuku'));assert.ok(calls[0].text.includes('/sprava-ponuky#'));assert.ok(!calls[1].html.includes('/sprava-ponuky'));assert.ok(!calls[1].text.includes('/sprava-ponuky'));
+});
+const finalTerms={shipping:100,discount:0,additional:0,additionalDescription:'',deliveryDays:14,validityDays:7,taxNote:'Testovací daňový režim pre náhľad.',note:'',confirmed:true};
+async function reviewFixture(){const {createReviewToken}=await import('../lib/offer-review.ts');const {parseQuote}=await import('../lib/quote.ts');return createReviewToken({...quoteInput,quote:parseQuote(quote),submittedAt:Date.now()},settings.apiKey)}
+const reviewRequest=(token,action='preview',terms=finalTerms,originHeader=origin)=>new Request(origin+'/api/offer-review',{method:'POST',headers:{origin:originHeader,'Content-Type':'application/json'},body:JSON.stringify({token,action,terms,to:'attacker@example.com',total:1})});
+test('review preview and email rendering never send',async()=>{
+ const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const h=createOfferReviewHandler(()=>settings,async()=>assert.fail('must not send'));const token=await reviewFixture();const r=await h(reviewRequest(token));assert.equal(r.status,200);assert.equal((await r.json()).subtotal,4086);const rendered=await h(reviewRequest(token,'render',{...finalTerms,confirmed:false}));assert.equal(rendered.status,200);const renderedData=await rendered.json();assert.equal(renderedData.total,4186);assert.ok(renderedData.html.includes('Vaša kompletná cenová ponuka'));
+});
+test('review endpoint blocks unauthorised requests and incomplete final terms',async()=>{
+ const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const h=createOfferReviewHandler(()=>settings,async()=>assert.fail('must not send'));const token=await reviewFixture();assert.equal((await h(reviewRequest('invalid'))).status,403);assert.equal((await h(reviewRequest(token,'send',finalTerms,'https://attacker.example'))).status,403);
+ for(const patch of [{confirmed:false},{taxNote:''},{shipping:''},{shipping:-1},{shipping:1.234},{discount:99999},{deliveryDays:0},{validityDays:999}])assert.equal((await h(reviewRequest(token,'send',{...finalTerms,...patch}))).status,400);
+ assert.equal((await h(new Request(origin+'/api/offer-review'))).status,405);
+});
+test('final offer uses authenticated recipient and server totals with stable retry keys',async()=>{
+ const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const calls=[];const h=createOfferReviewHandler(()=>settings,async(mail,key)=>{calls.push({mail,key});return true});const token=await reviewFixture();const r=await h(reviewRequest(token,'send'));assert.equal(r.status,200);assert.equal((await r.json()).total,4186);await h(reviewRequest(token,'send'));assert.deepEqual(calls[0].mail.to,[input.email]);assert.deepEqual(calls[1].mail.to,['hello@cargobajk.sk']);assert.equal(calls[0].key,calls[2].key);assert.ok(!calls[0].mail.html.includes('/sprava-ponuky'));assert.ok(calls[0].mail.text.includes('14 dní'));assert.ok(calls[0].mail.text.includes('dohodnutej platby'));
+});
+test('owner copy failure does not fail a sent final offer',async()=>{
+ const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');let calls=0;const h=createOfferReviewHandler(()=>settings,async()=>{if(++calls===2)throw Error('copy failed');return true});const r=await h(reviewRequest(await reviewFixture(),'send'));assert.equal(r.status,200);assert.equal((await r.json()).ownerCopy,false);
+});
+test('unpriced requests need an explicit resolution before a final offer',async()=>{
+ const {parseQuote}=await import('../lib/quote.ts');const {createReviewToken}=await import('../lib/offer-review.ts');const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const h=createOfferReviewHandler(()=>settings,async()=>assert.fail('must not send'));const token=await createReviewToken({...quoteInput,quote:parseQuote({...quote,accessories:['battery']}),submittedAt:Date.now()},settings.apiKey);assert.equal((await h(reviewRequest(token,'send'))).status,400);
+});
