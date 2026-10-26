@@ -1,6 +1,6 @@
 import { referralSources, referralLabel } from './referral.ts';
 /** Server-side form handling. Never import this module into a client component. */
-export const INQUIRY_RECIPIENT = 'hello@vividproduction.sk';
+export const INQUIRY_RECIPIENT = 'hello@cargobajk.sk';
 export type MailConfig = { apiKey?: string; from?: string; allowedOrigins: string[]; topics: string[] };
 export type Inquiry = { name: string; email: string; topic: string; message: string; website: string; requestId: string; referralSource?: string; referralDetail?: string };
 export type ProviderMail = { from: string; to: string[]; reply_to: string; subject: string; text: string; html?: string };
@@ -11,17 +11,17 @@ export function inquiryEmail(input: Inquiry, customer = false) {
   const description = customer ? 'Vašu správu sme prijali. Pozrieme sa na ňu a ozveme sa vám e-mailom. Toto je automatické potvrdenie prijatia dopytu.' : 'Niekto chce viac života a menej auta. Tu sú podrobnosti z kontaktného formulára.';
   // Customer receipts intentionally contain no visitor-supplied message or links.
   const detail = customer ? `<p style="line-height:1.7">Téma: ${escapeHtml(input.topic)}</p>` : `<p style="line-height:1.8"><strong>${escapeHtml(input.name)}</strong><br>${escapeHtml(input.email)}<br>${escapeHtml(input.topic)}</p><p style="line-height:1.8"><strong>Odkiaľ sa o nás dozvedeli:</strong> ${escapeHtml(referralLabel(input.referralSource))}${input.referralDetail ? `<br>${escapeHtml(input.referralDetail)}` : ''}</p><div style="padding:24px;background:#F6F2EC;line-height:1.8;white-space:pre-wrap">${escapeHtml(input.message)}</div>`;
-  return `<!doctype html><html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#F6F2EC;color:#6B0F1F;font-family:Arial,Helvetica,sans-serif"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#FFFBF6"><tr><td style="padding:28px 32px;background:#6B0F1F;color:#F6F2EC;font-size:23px;font-weight:bold">cargobajk.sk<span style="display:block;margin-top:9px;font-size:10px;letter-spacing:2px;font-weight:normal">CARGO BICYKLE · SLOVENSKO</span></td></tr><tr><td style="padding:36px 32px"><h1 style="margin:0 0 20px;font-size:34px;line-height:1.15;font-weight:500">${title}</h1><p style="line-height:1.7;color:#766A68">${description}</p>${detail}<p style="margin-top:28px;font-size:11px;color:#766A68">Číslo dopytu: ${escapeHtml(input.requestId)}</p><p style="line-height:1.7;font-size:13px">${customer ? 'Ak chcete niečo doplniť, odpovedzte na tento e-mail.' : 'Odpoveď na tento e-mail bude smerovať zákazníkovi.'}</p></td></tr><tr><td style="padding:24px 32px;border-top:1px solid #DED0C8;font-size:12px;line-height:1.7">Viac života. Menej auta.<br><a href="https://cargobajk.sk" style="color:#6B0F1F">cargobajk.sk</a> · Vivid Production s.r.o.</td></tr></table></td></tr></table></body></html>`;
+  return `<!doctype html><html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#F6F2EC;color:#6B0F1F;font-family:Arial,Helvetica,sans-serif"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#FFFBF6"><tr><td style="padding:28px 32px;background:#6B0F1F;color:#F6F2EC;font-size:23px;font-weight:bold"><a href="https://cargobajk.sk" style="text-decoration:none"><img src="https://cargobajk.sk/brand/email-logo.png" width="300" height="64" alt="cargobajk.sk" style="display:block;max-width:100%;height:auto;border:0;color:#F6F2EC"></a><span style="display:block;margin-top:9px;font-size:10px;letter-spacing:2px;font-weight:normal">CARGO BICYKLE · SLOVENSKO</span></td></tr><tr><td style="padding:36px 32px"><h1 style="margin:0 0 20px;font-size:34px;line-height:1.15;font-weight:500">${title}</h1><p style="line-height:1.7;color:#766A68">${description}</p>${detail}<p style="margin-top:28px;font-size:11px;color:#766A68">Číslo dopytu: ${escapeHtml(input.requestId)}</p><p style="line-height:1.7;font-size:13px">${customer ? 'Ak chcete niečo doplniť, odpovedzte na tento e-mail.' : 'Odpoveď na tento e-mail bude smerovať zákazníkovi.'}</p></td></tr><tr><td style="padding:24px 32px;border-top:1px solid #DED0C8;font-size:12px;line-height:1.7">Viac života. Menej auta.<br><a href="https://cargobajk.sk" style="color:#6B0F1F">cargobajk.sk</a> · Vivid Production s.r.o.</td></tr></table></td></tr></table></body></html>`;
 }
 const emailPattern = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
-const recipientDomain = /^(?:[^<>\r\n]+ <)?[^\s<>@]+@(?:[a-z0-9-]+\.)*vividproduction\.sk>?$/i;
+const senderDomain = /^(?:[^<>\r\n]+ <)?[^\s<>@]+@(?:[a-z0-9-]+\.)*vividproduction\.sk>?$/i;
 const requestIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const maxBodyBytes = 20_000;
 const headers = { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8' };
 const json = (body: object, status = 200, extra: Record<string, string> = {}) => new Response(JSON.stringify(body), { status, headers: { ...headers, ...extra } });
 const clean = (v: unknown) => typeof v === 'string' ? v.trim() : '';
 export function mailReady(config: MailConfig) {
-  return Boolean(config.apiKey?.startsWith('re_') && config.from && recipientDomain.test(config.from));
+  return Boolean(config.apiKey?.startsWith('re_') && config.from && senderDomain.test(config.from));
 }
 export function parseInquiry(value: unknown, topics: string[]): Inquiry | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
@@ -94,7 +94,7 @@ export function createInquiryHandler(config: () => MailConfig, sender: MailSende
       return json({ error: 'Odošlite formulár priamo z našej stránky.' }, 403);
     }
     if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return json({ error: 'Nepodporovaný formát požiadavky.' }, 415);
-    if (!mailReady(settings)) return json({ error: 'Odosielanie formulára ešte pripravujeme. Napíšte nám na hello@vividproduction.sk.' }, 503);
+    if (!mailReady(settings)) return json({ error: 'Odosielanie formulára ešte pripravujeme. Napíšte nám na hello@cargobajk.sk.' }, 503);
     let value: unknown;
     try { value = await readBody(request); } catch { return json({ error: 'Skontrolujte údaje a dĺžku správy.' }, 400); }
     const input = parseInquiry(value, settings.topics);
@@ -108,7 +108,7 @@ export function createInquiryHandler(config: () => MailConfig, sender: MailSende
     const key = 'inquiry/' + await digest(JSON.stringify(input));
     try {
       const accepted = await sender({ from: settings.from!, to: [INQUIRY_RECIPIENT], reply_to: input.email, subject: `Cargobajk — ${input.topic}`, text, html: inquiryEmail(input) }, key, settings);
-      if (!accepted) return json({ error: 'Správu sa nepodarilo odoslať. Skúste to znova alebo nám napíšte priamo na hello@vividproduction.sk.' }, 502);
+      if (!accepted) return json({ error: 'Správu sa nepodarilo odoslať. Skúste to znova alebo nám napíšte priamo na hello@cargobajk.sk.' }, 502);
       let confirmationSent = false;
       try {
         confirmationSent = await sender({ from: settings.from!, to: [input.email], reply_to: INQUIRY_RECIPIENT, subject: 'Ďakujeme za váš dopyt — Cargobajk.sk', text: `Ďakujeme za váš dopyt. Vašu správu sme prijali a ozveme sa vám e-mailom.\n\nTéma: ${input.topic}\nČíslo dopytu: ${input.requestId}\n\nCargobajk.sk · Viac života. Menej auta.`, html: inquiryEmail(input, true) }, key + '/receipt', settings);

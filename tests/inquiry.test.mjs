@@ -101,6 +101,8 @@ test('HTML escapes visitor content and receipt omits message', () => {
  assert.ok(inquiryEmail(malicious).includes('&lt;script&gt;'));
  assert.ok(!inquiryEmail(malicious).includes('<script>'));
  assert.ok(!inquiryEmail(malicious, true).includes('alert(1)'));
+ assert.ok(inquiryEmail(malicious, true).includes('https://cargobajk.sk/brand/email-logo.png'));
+ assert.equal(INQUIRY_RECIPIENT, 'hello@cargobajk.sk');
 });
 test('receipt failure does not fail an accepted inquiry', async () => {
  let calls = 0;

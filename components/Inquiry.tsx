@@ -42,7 +42,7 @@ function InquiryForm({ topic }: { topic: string }) {
     } catch { setState('error'); setMessage('Odoslanie sa nepodarilo potvrdiť. Skúste to znova alebo nám napíšte e-mail. Vaše údaje zostali vo formulári.'); }
     finally { inFlight.current = false; }
   }}>
-    <p className="form-note">{unavailable ? 'Odosielanie formulára ešte pripravujeme. Zatiaľ nás kontaktujte priamo e-mailom.' : 'Nezáväzný dopyt. Napíšte nám, čo vás zaujíma, a odpovieme vám e-mailom.'} <a href="mailto:hello@vividproduction.sk">hello@vividproduction.sk</a></p>
+    <p className="form-note">{unavailable ? 'Odosielanie formulára ešte pripravujeme. Zatiaľ nás kontaktujte priamo e-mailom.' : 'Nezáväzný dopyt. Napíšte nám, čo vás zaujíma, a odpovieme vám e-mailom.'} <a href="mailto:hello@cargobajk.sk">hello@cargobajk.sk</a></p>
     <fieldset disabled={state === 'sending' || state === 'sent'} className="inquiry-fields">
       <div className="form-row"><label>Vaše meno<input required name="name" autoComplete="name" placeholder="Meno a priezvisko" minLength={2} maxLength={120} /></label><label>E-mail<input required type="email" name="email" autoComplete="email" placeholder="vas@email.sk" maxLength={254} /></label></div>
       <label>Čo vás zaujíma?<select name="topic" value={selectedTopic} onChange={event => setSelectedTopic(event.target.value)}>{Array.from(new Set([topic, 'Záujem o bicykel', 'Výber bicykla', 'Servis', 'Firemná spolupráca'])).map(t => <option key={t}>{t}</option>)}</select></label>
@@ -52,9 +52,9 @@ function InquiryForm({ topic }: { topic: string }) {
       <label>Chcete nám to spresniť? (nepovinné)<input name="referralDetail" maxLength={200} placeholder="Napríklad názov profilu, príspevok alebo podujatie" /></label>
       <div className="form-honeypot" aria-hidden="true"><label>Webová stránka<input name="website" tabIndex={-1} autoComplete="off" maxLength={200} /></label></div>
       <p className="form-note">Údaje použijeme na vybavenie vášho dopytu. <Link href="/sukromie">Informácie o súkromí</Link>.</p>
-      <button className="button dark" disabled={state === 'loading' || unavailable} type="submit">{state === 'loading' ? 'Načítavam formulár…' : state === 'sending' ? 'Odosielam…' : state === 'sent' ? 'Dopyt odoslaný' : unavailable ? 'Odosielanie sa pripravuje' : 'Odoslať nezáväzný dopyt'} <span aria-hidden="true">↗</span></button>
+      <button className="button dark" disabled={state === 'loading' || unavailable} type="submit">{state === 'loading' ? 'Načítavam formulár…' : state === 'sending' ? 'Odosielam…' : state === 'sent' ? 'Dopyt odoslaný' : unavailable ? 'Odosielanie sa pripravuje' : 'Odoslať nezáväzný dopyt'} <span aria-hidden="true">↗︎</span></button>
     </fieldset>
     {message && <p role={state === 'sent' ? 'status' : 'alert'} className={state === 'sent' ? 'success' : 'form-error'}>{message}</p>}
-    {state === 'sent' && <button className="text-link another-inquiry" type="button" onClick={() => { setState('ready'); setMessage(''); }}>Napísať ďalší dopyt <span aria-hidden="true">↗</span></button>}
+    {state === 'sent' && <button className="text-link another-inquiry" type="button" onClick={() => { setState('ready'); setMessage(''); }}>Napísať ďalší dopyt <span aria-hidden="true">↗︎</span></button>}
   </form>;
 }

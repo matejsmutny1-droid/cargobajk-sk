@@ -26,8 +26,8 @@ export default function ProductGallery({ name, image }: { name: string; image: s
     touchX.current = null;
   }}>
     <div className="gallery-stage">
-      <button className="product-photo gallery-enlarge" type="button" aria-label={`Zväčšiť: ${name} — ${photo.label}`} onClick={() => { setZoomed(false); setExpanded(true); }}>{renderImage()}<span className="zoom-label">Zväčšiť ↗</span></button>
-      {photos.length > 1 && <><button className="gallery-prev" type="button" aria-label="Predchádzajúca fotografia" onClick={() => move(-1)}>←</button><button className="gallery-next" type="button" aria-label="Nasledujúca fotografia" onClick={() => move(1)}>→</button></>}
+      <button className="product-photo gallery-enlarge" type="button" aria-label={`Zväčšiť: ${name} — ${photo.label}`} onClick={() => { setZoomed(false); setExpanded(true); }}>{renderImage()}<span className="zoom-label">Zväčšiť ↗︎</span></button>
+      {photos.length > 1 && <><button className="gallery-prev" type="button" aria-label="Predchádzajúca fotografia" onClick={() => move(-1)}>←</button><button className="gallery-next" type="button" aria-label="Nasledujúca fotografia" onClick={() => move(1)}>→︎</button></>}
     </div>
     <div className="gallery-description" aria-live="polite"><span>{photo.label}</span><span>{selected + 1} / {photos.length}</span></div>
     <div className="gallery-thumbs" role="group" aria-label={`Fotografie modelu ${name}`}>
@@ -39,7 +39,7 @@ export default function ProductGallery({ name, image }: { name: string; image: s
     }}>
       <div className="gallery-dialog-inner"><button className="gallery-zoom-toggle" type="button" aria-pressed={zoomed} onClick={() => setZoomed(value => !value)}>{zoomed ? 'Prispôsobiť fotografiu' : 'Zväčšiť detail 2×'}</button><button className="gallery-close" type="button" aria-label="Zavrieť zväčšenú fotografiu" onClick={() => setExpanded(false)}>Zavrieť ×</button>
         <div className={zoomed ? "gallery-dialog-image zoomed" : "gallery-dialog-image"}>{renderImage(true)}</div>
-        <div className="gallery-dialog-bottom"><button type="button" aria-label="Predchádzajúca fotografia" onClick={() => move(-1)}>←</button><p aria-live="polite">{photo.label} <span>{selected + 1} / {photos.length}</span></p><button type="button" aria-label="Nasledujúca fotografia" onClick={() => move(1)}>→</button></div>
+        <div className="gallery-dialog-bottom"><button type="button" aria-label="Predchádzajúca fotografia" onClick={() => move(-1)}>←</button><p aria-live="polite">{photo.label} <span>{selected + 1} / {photos.length}</span></p><button type="button" aria-label="Nasledujúca fotografia" onClick={() => move(1)}>→︎</button></div>
       </div>
     </dialog>
   </div>;

@@ -551,4 +551,4 @@ export const bikes: Bike[] = [
   }
 ];
 export const featuredSlugs = ['flex', 'delight', 'flex-dog', 'longtail'];
-export const site = { operator: 'Vivid Production s.r.o.', contactEmail: 'hello@vividproduction.sk' };
+export const site = { operator: 'Vivid Production s.r.o.', contactEmail: 'hello@cargobajk.sk' };
