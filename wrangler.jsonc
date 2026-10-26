@@ -10,7 +10,7 @@
     "directory": "dist/client"
   },
   "vars": {
-    "INQUIRY_FROM": "Cargobike Slovensko <hello@vividproduction.sk>",
+    "INQUIRY_FROM": "cargobajk.sk <hello@vividproduction.sk>",
     "INQUIRY_ALLOWED_ORIGINS": "https://cargobajk.sk,https://www.cargobajk.sk"
   },
   "workers_dev": true,
