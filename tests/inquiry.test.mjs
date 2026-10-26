@@ -206,3 +206,9 @@ test('owner copy failure does not fail a sent final offer',async()=>{
 test('unpriced requests need an explicit resolution before a final offer',async()=>{
  const {parseQuote}=await import('../lib/quote.ts');const {createReviewToken}=await import('../lib/offer-review.ts');const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const h=createOfferReviewHandler(()=>settings,async()=>assert.fail('must not send'));const token=await createReviewToken({...quoteInput,quote:parseQuote({...quote,accessories:['battery']}),submittedAt:Date.now()},settings.apiKey);assert.equal((await h(reviewRequest(token,'send'))).status,400);
 });
+
+test('different recipients cannot share final-offer idempotency solely through a reused client reference',async()=>{
+ const {createReviewToken}=await import('../lib/offer-review.ts');const {parseQuote}=await import('../lib/quote.ts');const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const calls=[];const h=createOfferReviewHandler(()=>settings,async(mail,key)=>{calls.push({mail,key});return true});const now=Date.now();
+ for(const email of ['first@example.com','second@example.com']){const token=await createReviewToken({...quoteInput,email,quote:parseQuote(quote),submittedAt:now},settings.apiKey);assert.equal((await h(reviewRequest(token,'send'))).status,200)}
+ assert.notEqual(calls[0].key,calls[2].key);assert.deepEqual(calls[0].mail.to,['first@example.com']);assert.deepEqual(calls[2].mail.to,['second@example.com']);
+});
