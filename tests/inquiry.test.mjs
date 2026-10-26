@@ -108,3 +108,21 @@ test('receipt failure does not fail an accepted inquiry', async () => {
  assert.equal(response.status, 200);
  assert.equal((await response.json()).confirmationSent, false);
 });
+
+
+test('optional referral survives into internal email but not customer receipt', async () => {
+ const mails = [];
+ const handler = createInquiryHandler(() => settings, async mail => { mails.push(mail); return true; });
+ const response = await handler(request({...input, referralSource: 'instagram', referralDetail: 'Profil <cargobajk>'}));
+ assert.equal(response.status, 200);
+ assert.ok(mails[0].text.includes('Instagram — Profil <cargobajk>'));
+ assert.ok(mails[0].html.includes('Profil &lt;cargobajk&gt;'));
+ assert.ok(!mails[1].html.includes('Profil'));
+ assert.ok(!mails[1].text.includes('Instagram'));
+});
+test('invalid referral data is rejected before sending', async () => {
+ const handler = createInquiryHandler(() => settings, async () => assert.fail('must not send'));
+ for (const patch of [{referralSource:'unrecognised'}, {referralDetail:'x'.repeat(201)}, {referralDetail:'line\nbreak'}]) {
+  assert.equal((await handler(request({...input,...patch}))).status, 400);
+ }
+});

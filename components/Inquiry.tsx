@@ -1,4 +1,5 @@
 'use client';
+import { referralSources } from '@/lib/referral';
 import Link from '@/components/PageLink';
 import { useEffect, useRef, useState } from 'react';
 
@@ -27,7 +28,7 @@ function InquiryForm({ topic }: { topic: string }) {
     if (inFlight.current || state === 'loading' || unavailable || state === 'sent') return;
     const form = event.currentTarget;
     const values = new FormData(form);
-    const data = { name: values.get('name'), email: values.get('email'), topic: values.get('topic'), message: values.get('message'), website: values.get('website') };
+    const data = { name: values.get('name'), email: values.get('email'), topic: values.get('topic'), message: values.get('message'), referralSource: values.get('referralSource'), referralDetail: values.get('referralDetail'), website: values.get('website') };
     const fingerprint = JSON.stringify(data);
     if (submission.current.fingerprint !== fingerprint) submission.current = { fingerprint, id: crypto.randomUUID() };
     inFlight.current = true;
@@ -46,6 +47,9 @@ function InquiryForm({ topic }: { topic: string }) {
       <div className="form-row"><label>Vaše meno<input required name="name" autoComplete="name" placeholder="Meno a priezvisko" minLength={2} maxLength={120} /></label><label>E-mail<input required type="email" name="email" autoComplete="email" placeholder="vas@email.sk" maxLength={254} /></label></div>
       <label>Čo vás zaujíma?<select name="topic" value={selectedTopic} onChange={event => setSelectedTopic(event.target.value)}>{Array.from(new Set([topic, 'Záujem o bicykel', 'Výber bicykla', 'Servis', 'Firemná spolupráca'])).map(t => <option key={t}>{t}</option>)}</select></label>
       <label>Vaša správa<textarea name="message" required rows={4} minLength={10} placeholder="Povedzte nám, ako by mal cargobike zapadnúť do vášho života." maxLength={4000} /></label>
+      <label>Odkiaľ ste sa o nás dozvedeli?<select name="referralSource" defaultValue="" aria-describedby="referral-note"><option value="">Vyberte možnosť</option>{referralSources.map(source => <option key={source.value} value={source.value}>{source.sk}</option>)}</select></label>
+      <p id="referral-note" className="form-note">Nepovinné — pomôže nám to zistiť, ako ste nás našli.</p>
+      <label>Chcete nám to spresniť? (nepovinné)<input name="referralDetail" maxLength={200} placeholder="Napríklad názov profilu, príspevok alebo podujatie" /></label>
       <div className="form-honeypot" aria-hidden="true"><label>Webová stránka<input name="website" tabIndex={-1} autoComplete="off" maxLength={200} /></label></div>
       <p className="form-note">Údaje použijeme na vybavenie vášho dopytu. <Link href="/sukromie">Informácie o súkromí</Link>.</p>
       <button className="button dark" disabled={state === 'loading' || unavailable} type="submit">{state === 'loading' ? 'Načítavam formulár…' : state === 'sending' ? 'Odosielam…' : state === 'sent' ? 'Dopyt odoslaný' : unavailable ? 'Odosielanie sa pripravuje' : 'Odoslať nezáväzný dopyt'} <span aria-hidden="true">↗</span></button>

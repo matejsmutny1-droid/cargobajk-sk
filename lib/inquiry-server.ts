@@ -1,7 +1,8 @@
+import { referralSources, referralLabel } from './referral.ts';
 /** Server-side form handling. Never import this module into a client component. */
 export const INQUIRY_RECIPIENT = 'hello@vividproduction.sk';
 export type MailConfig = { apiKey?: string; from?: string; allowedOrigins: string[]; topics: string[] };
-export type Inquiry = { name: string; email: string; topic: string; message: string; website: string; requestId: string };
+export type Inquiry = { name: string; email: string; topic: string; message: string; website: string; requestId: string; referralSource?: string; referralDetail?: string };
 export type ProviderMail = { from: string; to: string[]; reply_to: string; subject: string; text: string; html?: string };
 export type MailSender = (mail: ProviderMail, key: string, config: MailConfig) => Promise<boolean>;
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
@@ -9,7 +10,7 @@ export function inquiryEmail(input: Inquiry, customer = false) {
   const title = customer ? 'Ďakujeme za váš dopyt.' : 'Nový dopyt. Nová cesta.';
   const description = customer ? 'Vašu správu sme prijali. Pozrieme sa na ňu a ozveme sa vám e-mailom. Toto je automatické potvrdenie prijatia dopytu.' : 'Niekto chce viac života a menej auta. Tu sú podrobnosti z kontaktného formulára.';
   // Customer receipts intentionally contain no visitor-supplied message or links.
-  const detail = customer ? `<p style="line-height:1.7">Téma: ${escapeHtml(input.topic)}</p>` : `<p style="line-height:1.8"><strong>${escapeHtml(input.name)}</strong><br>${escapeHtml(input.email)}<br>${escapeHtml(input.topic)}</p><div style="padding:24px;background:#F6F2EC;line-height:1.8;white-space:pre-wrap">${escapeHtml(input.message)}</div>`;
+  const detail = customer ? `<p style="line-height:1.7">Téma: ${escapeHtml(input.topic)}</p>` : `<p style="line-height:1.8"><strong>${escapeHtml(input.name)}</strong><br>${escapeHtml(input.email)}<br>${escapeHtml(input.topic)}</p><p style="line-height:1.8"><strong>Odkiaľ sa o nás dozvedeli:</strong> ${escapeHtml(referralLabel(input.referralSource))}${input.referralDetail ? `<br>${escapeHtml(input.referralDetail)}` : ''}</p><div style="padding:24px;background:#F6F2EC;line-height:1.8;white-space:pre-wrap">${escapeHtml(input.message)}</div>`;
   return `<!doctype html><html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#F6F2EC;color:#6B0F1F;font-family:Arial,Helvetica,sans-serif"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#FFFBF6"><tr><td style="padding:28px 32px;background:#6B0F1F;color:#F6F2EC;font-size:23px;font-weight:bold">cargobajk.sk<span style="display:block;margin-top:9px;font-size:10px;letter-spacing:2px;font-weight:normal">CARGO BICYKLE · SLOVENSKO</span></td></tr><tr><td style="padding:36px 32px"><h1 style="margin:0 0 20px;font-size:34px;line-height:1.15;font-weight:500">${title}</h1><p style="line-height:1.7;color:#766A68">${description}</p>${detail}<p style="margin-top:28px;font-size:11px;color:#766A68">Číslo dopytu: ${escapeHtml(input.requestId)}</p><p style="line-height:1.7;font-size:13px">${customer ? 'Ak chcete niečo doplniť, odpovedzte na tento e-mail.' : 'Odpoveď na tento e-mail bude smerovať zákazníkovi.'}</p></td></tr><tr><td style="padding:24px 32px;border-top:1px solid #DED0C8;font-size:12px;line-height:1.7">Viac života. Menej auta.<br><a href="https://cargobajk.sk" style="color:#6B0F1F">cargobajk.sk</a> · Vivid Production s.r.o.</td></tr></table></td></tr></table></body></html>`;
 }
 const emailPattern = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
@@ -25,10 +26,12 @@ export function mailReady(config: MailConfig) {
 export function parseInquiry(value: unknown, topics: string[]): Inquiry | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const v = value as Record<string, unknown>;
-  const input = { name: clean(v.name), email: clean(v.email), topic: clean(v.topic), message: clean(v.message), website: clean(v.website), requestId: clean(v.requestId) };
+  const input = { name: clean(v.name), email: clean(v.email), topic: clean(v.topic), message: clean(v.message), website: clean(v.website), requestId: clean(v.requestId), referralSource: clean(v.referralSource), referralDetail: clean(v.referralDetail) };
   if (input.name.length < 2 || input.name.length > 120 || /[\r\n\x00-\x1f]/.test(input.name) ||
     input.email.length > 254 || !emailPattern.test(input.email) || /[\r\n\x00-\x1f]/.test(input.email) ||
     !topics.includes(input.topic) || input.message.length < 10 || input.message.length > 4000 || input.message.includes('\0') ||
+    (input.referralSource !== '' && !referralSources.some(source => source.value === input.referralSource)) ||
+    input.referralDetail.length > 200 || /[\r\n\x00-\x1f]/.test(input.referralDetail) ||
     input.website.length > 200 || !requestIdPattern.test(input.requestId)) return null;
   return input;
 }
@@ -101,7 +104,7 @@ export function createInquiryHandler(config: () => MailConfig, sender: MailSende
     // Do not keep raw email addresses or request bodies in rate-limit state.
     const emailHash = await digest(input.email.toLowerCase());
     if (!limiter.take('site', 30, now) || !limiter.take(emailHash, 3, now)) return json({ error: 'Odoslali ste viacero dopytov. Skúste to o 10 minút alebo nám napíšte e-mail.' }, 429, { 'Retry-After': '600' });
-    const text = `Nový nezáväzný dopyt — cargobajk.sk\n\nMeno: ${input.name}\nE-mail: ${input.email}\nTéma / model: ${input.topic}\n\nSpráva:\n${input.message}\n\nIdentifikátor dopytu: ${input.requestId}\n\nOdpoveď na tento e-mail bude smerovať zákazníkovi.`;
+    const text = `Nový nezáväzný dopyt — cargobajk.sk\n\nMeno: ${input.name}\nE-mail: ${input.email}\nTéma / model: ${input.topic}\nOdkiaľ sa o nás dozvedeli: ${referralLabel(input.referralSource)}${input.referralDetail ? ` — ${input.referralDetail}` : ''}\n\nSpráva:\n${input.message}\n\nIdentifikátor dopytu: ${input.requestId}\n\nOdpoveď na tento e-mail bude smerovať zákazníkovi.`;
     const key = 'inquiry/' + await digest(JSON.stringify(input));
     try {
       const accepted = await sender({ from: settings.from!, to: [INQUIRY_RECIPIENT], reply_to: input.email, subject: `Cargobajk — ${input.topic}`, text, html: inquiryEmail(input) }, key, settings);
