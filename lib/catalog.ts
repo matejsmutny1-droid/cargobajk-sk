@@ -145,6 +145,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "longtail",
+    "priceEur": 3849,
     "name": "Longtail Varia",
     "family": "Longtail",
     "use": "Mesto",
@@ -160,6 +161,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "flex-kindergarten",
+    "priceEur": 4649,
     "name": "Flex Kindergarten",
     "family": "Flex",
     "use": "Pre škôlky",
@@ -247,6 +249,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "classic-kindergarten",
+    "priceEur": 4749,
     "name": "Classic Kindergarten",
     "family": "Classic",
     "use": "Pre škôlky",
@@ -410,6 +413,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "classic",
+    "priceEur": 3649,
     "name": "Classic",
     "family": "Classic",
     "use": "Rodina",
@@ -449,6 +453,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "classic-dog",
+    "priceEur": 3849,
     "name": "Classic Dog",
     "family": "Classic",
     "use": "So psom",
@@ -488,6 +493,7 @@ export const bikes: Bike[] = [
   },
   {
     "slug": "classic-box",
+    "priceEur": 4149,
     "name": "Classic Box",
     "family": "Classic",
     "use": "Náklad a podnikanie",
