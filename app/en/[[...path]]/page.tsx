@@ -1,3 +1,4 @@
+import QuotePage from '@/components/QuotePage';
 import { notFound } from 'next/navigation';
 import Home from '@/components/en/Home';
 import Catalog from '@/components/en/CatalogPage';
@@ -8,11 +9,13 @@ type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<{ mod
 export async function generateMetadata({params}: Props) {
   const {path = []} = await params;
   if(path[0] === 'bicykle' && path.length === 2) return productMetadata({params: Promise.resolve({slug:path[1]})});
+  if(path[0] === 'nezavazna-ponuka') return {title:'Request a non-binding quote'};
   return {title:path.length === 0 ? 'More life. Less car.' : path[0] === 'bicykle' ? 'Our cargo bikes' : pages[path[0]]?.title ?? 'Page not found'};
 }
 export default async function EnglishPage({params,searchParams}: Props) {
   const {path = []} = await params;
   if(path.length === 0) return <Home />;
+  if(path.length === 1 && path[0] === 'nezavazna-ponuka') return <QuotePage model={(await searchParams).model} english/>;
   if(path[0] === 'bicykle' && path.length === 1) return <Catalog />;
   if(path[0] === 'bicykle' && path.length === 2) return <Product params={Promise.resolve({slug:path[1]})} />;
   if(path.length === 1 && pages[path[0]]) return <Content params={Promise.resolve({page:path[0]})} searchParams={searchParams} />;

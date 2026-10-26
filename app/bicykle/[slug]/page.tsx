@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div className="product-info"><span className="eyebrow">CARGOBIKE OF SWEDEN · {b.use.toUpperCase()} · {b.sku}</span><h1>{b.name}</h1>
         {b.children && <span className="capacity-tag">{b.children === 2 ? 'Priestor až pre 2 deti' : `Priestor až pre ${b.children} detí`}</span>}
         <p>{b.description}</p><BikePrice price={b.priceEur}/>
-        <div><Link className="button dark" href={'/kontakt?model=' + encodeURIComponent(b.name) + '#dopyt'}>Mám záujem o tento model <Arrow /></Link></div>
+        <div><Link className="button dark" href={'/nezavazna-ponuka?model=' + encodeURIComponent(b.slug)}>Vyžiadať nezáväznú ponuku <Arrow /></Link></div>
         <small>Nezáväzný dopyt. Konfiguráciu, cenu v EUR, dostupnosť a podmienky dodania potvrdíme individuálne.</small>
         {variants.length > 1 && <div className="details"><h2 className="variant-heading">Vyberte si verziu radu {b.family}</h2><div className="variant-links">{variants.map(v => <Link href={'/bicykle/' + v.slug} key={v.slug} aria-current={v.slug === b.slug ? 'page' : undefined}>{v.name}</Link>)}</div></div>}
         <div className="details"><details open><summary>Technické údaje</summary>

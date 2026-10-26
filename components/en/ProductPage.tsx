@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div className="product-info"><span className="eyebrow">CARGOBIKE OF SWEDEN · {b.use.toUpperCase()} · {b.sku}</span><h1>{b.name}</h1>
         {b.children && <span className="capacity-tag">{b.children === 2 ? 'Room for up to 2 children' : `Room for up to ${b.children} children`}</span>}
         <p>{b.description}</p><BikePrice price={b.priceEur} english/>
-        <div><Link className="button dark" href={'/kontakt?model=' + encodeURIComponent(b.name) + '#dopyt'}>Enquire about this model <Arrow /></Link></div>
+        <div><Link className="button dark" href={'/nezavazna-ponuka?model=' + encodeURIComponent(b.slug)}>Request a non-binding quote <Arrow /></Link></div>
         <small>No-obligation enquiry. We will confirm the specification, price in EUR, availability and delivery terms individually.</small>
         {variants.length > 1 && <div className="details"><h2 className="variant-heading">Choose your version of the {b.family}</h2><div className="variant-links">{variants.map(v => <Link href={'/bicykle/' + v.slug} key={v.slug} aria-current={v.slug === b.slug ? 'page' : undefined}>{v.name}</Link>)}</div></div>}
         <div className="details"><details open><summary>Technical specifications</summary>

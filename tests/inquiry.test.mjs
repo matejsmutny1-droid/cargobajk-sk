@@ -128,3 +128,33 @@ test('invalid referral data is rejected before sending', async () => {
   assert.equal((await handler(request({...input,...patch}))).status, 400);
  }
 });
+
+
+const quote = {modelSlug:'flex',colour:'standard',accessories:['canopy','lock'],city:'Žilina',postalCode:'010 01',phone:'+421 900 123 456'};
+const quoteInput = {...input, topic:'Záujem o model Flex', quote};
+const quoteSettings = {...settings, topics:[...settings.topics,'Záujem o model Flex']};
+test('quote uses catalogue price despite forged client price and includes full owner details', async () => {
+ const calls=[];
+ const result = await createInquiryHandler(()=>quoteSettings,async mail=>{calls.push(mail);return true;})(request({...quoteInput,quote:{...quote,priceEur:1,modelName:'Forged'}}));
+ assert.equal(result.status,200);
+ assert.ok(calls[0].text.replace(/\s/g,'').includes('3849'));
+ assert.ok(calls[0].html.includes('Žilina 01001'));
+ assert.ok(calls[0].html.includes('+421 900 123 456'));
+ assert.ok(calls[1].html.includes('Vaša nezáväzná kalkulácia'));
+ assert.ok(calls[1].text.includes('nič teraz neplatíte'));
+ assert.ok(!calls[1].html.includes('Forged'));
+ assert.ok(!calls[1].html.includes('+421'));
+ assert.equal(calls[1].reply_to,'hello@cargobajk.sk');
+});
+test('invalid quote configurations are rejected without sending',async()=>{
+ const handler=createInquiryHandler(()=>quoteSettings,async()=>assert.fail('must not send'));
+ for(const patch of [{modelSlug:'unknown'},{accessories:['invented']},{accessories:['lock','lock']},{city:'x'},{postalCode:'invalid'},{phone:'not a phone'},{colour:'unlisted'}])assert.equal((await handler(request({...quoteInput,quote:{...quote,...patch}}))).status,400);
+ assert.equal((await handler(request({...quoteInput,topic:'Servis'}))).status,400);
+});
+test('English quote receipt is localised and does not echo private notes',async()=>{
+ const calls=[];await createInquiryHandler(()=>quoteSettings,async mail=>{calls.push(mail);return true;})(request({...quoteInput,language:'en',message:'Private delivery instructions'}));
+ assert.ok(calls[1].subject.includes('Your bike estimate'));
+ assert.ok(calls[1].html.includes('lang="en"'));
+ assert.ok(calls[1].text.includes('no payment is due'));
+ assert.ok(!calls[1].html.includes('Private delivery'));
+});
