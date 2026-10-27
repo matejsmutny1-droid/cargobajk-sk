@@ -240,3 +240,11 @@ test('customer submission validates address and confirmation and never trusts cl
  assert.equal((await handler(request(body,{origin:'https://evil.example'}))).status,403);
  assert.equal(parseCustomerDetails({...customerDetails,company:'Firma',companyId:''}),null);
 });
+
+import {publicReference,mailPreheader,receiptEmail} from '../lib/mail-presentation.ts';
+test('email presentation uses short references and a hidden meaningful inbox preview',()=>{
+ assert.equal(publicReference(input.requestId),'CB-7B18F33268');
+ const mail=inquiryEmail(input,true);assert.equal(mail.includes(input.requestId),false);assert.match(mail,/Váš dopyt sme prijali/);assert.match(mail,/mso-hide:all/);
+ assert.match(mailPreheader('<unsafe>'),/&lt;unsafe&gt;/);
+ const receipt=receiptEmail('Flex <script>','3849 EUR',input.requestId);assert.equal(receipt.includes(input.requestId),false);assert.match(receipt,/email-logo.png/);assert.match(receipt,/&lt;script&gt;/);
+});
