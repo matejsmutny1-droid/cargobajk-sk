@@ -1,3 +1,5 @@
+import StructuredData from '@/components/StructuredData';
+import {pageMetadata, productSchema, breadcrumbSchema} from '@/lib/seo';
 import BikePrice from '@/components/BikePrice';
 import Link from '@/components/en/PageLink';
 import { notFound } from 'next/navigation';
@@ -9,7 +11,8 @@ import ProductGallery from '@/components/en/ProductGallery';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const b = bikes.find(b => b.slug === slug);
-  return { title: b ? `Cargobike ${b.name}` : 'Model not found', description: b?.description };
+  if (!b) notFound();
+  return pageMetadata(`/en/bicykle/${slug}`, `Cargobike ${b.name} — electric cargo bike`, b.description, `/media/${b.image}.webp`);
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -18,6 +21,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!b) notFound();
   const variants = bikes.filter(v => b.variants.includes(v.slug));
   return <main id="main">
+    <StructuredData data={productSchema(b, true)}/>
+    <StructuredData data={breadcrumbSchema([{name: 'Home', path: '/en'}, {name: 'Cargo bikes', path: '/en/bicykle'}, {name: b.name, path: `/en/bicykle/${b.slug}`}])}/>
     <div className="section" style={{ paddingBottom: 0, paddingTop: 30 }}><div className="breadcrumbs"><Link href="/">Home</Link><span>/</span><Link href="/bicykle">Bikes</Link><span>/</span><span>{b.name}</span></div></div>
     <section className="product section">
       <div><ProductGallery name={b.name} image={b.slug} /><p className="gallery-caption">Official manufacturer photos. Accessories shown may not be included in the standard specification.</p></div>

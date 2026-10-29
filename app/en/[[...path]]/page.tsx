@@ -1,3 +1,4 @@
+import {pageMetadata} from '@/lib/seo';
 import QuotePage from '@/components/QuotePage';
 import { notFound } from 'next/navigation';
 import Home from '@/components/en/Home';
@@ -9,8 +10,12 @@ type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<{ mod
 export async function generateMetadata({params}: Props) {
   const {path = []} = await params;
   if(path[0] === 'bicykle' && path.length === 2) return productMetadata({params: Promise.resolve({slug:path[1]})});
-  if(path[0] === 'nezavazna-ponuka') return {title:'Request a non-binding quote'};
-  return {title:path.length === 0 ? 'More life. Less car.' : path[0] === 'bicykle' ? 'Our cargo bikes' : pages[path[0]]?.title ?? 'Page not found'};
+  const route = '/en' + (path.length ? '/' + path.join('/') : '');
+  if(path[0] === 'nezavazna-ponuka') return {...pageMetadata(route, 'Request a non-binding quote', 'Choose your cargo bike and equipment. Request a personalised quote.'), robots:{index:false,follow:false}};
+  const title = path.length === 0 ? 'Cargo bikes in Slovakia — Cargobike of Sweden' : path[0] === 'bicykle' ? 'Electric cargo bikes for sale in Slovakia' : pages[path[0]]?.title;
+  if (!title) notFound();
+  const description = path.length === 0 || path[0] === 'bicykle' ? 'Explore 14 Cargobike of Sweden electric cargo bikes, prices and equipment. Personal advice and delivery to order in Slovakia.' : pages[path[0]]?.intro ?? '';
+  return {...pageMetadata(route, title, description), ...(path[0] === 'sukromie' ? {robots:{index:false,follow:false}} : {})};
 }
 export default async function EnglishPage({params,searchParams}: Props) {
   const {path = []} = await params;

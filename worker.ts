@@ -16,6 +16,9 @@ export default {
     const response = await handler.fetch(new Request(request, {headers: requestHeaders}), env, ctx);
     if (!(response.headers.get('content-type') ?? '').includes('text/html')) return response;
     const headers = new Headers(response.headers);
+    if (/^\/(?:en\/)?(?:sprava-ponuky|potvrdenie-ponuky|nezavazna-ponuka|sukromie)(?:\/|$)/.test(url.pathname) || url.hostname !== 'cargobajk.sk') {
+      headers.set('X-Robots-Tag', 'noindex, nofollow');
+    }
     // Revalidate documents so an older page cannot retain a broken router build.
     headers.set('Cache-Control', 'no-store');
     return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
