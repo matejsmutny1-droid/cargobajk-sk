@@ -195,7 +195,7 @@ test('review preview and email rendering never send',async()=>{
 });
 test('review endpoint blocks unauthorised requests and incomplete final terms',async()=>{
  const {createOfferReviewHandler}=await import('../lib/offer-review-server.ts');const h=createOfferReviewHandler(()=>settings,async()=>assert.fail('must not send'));const token=await reviewFixture();assert.equal((await h(reviewRequest('invalid'))).status,403);assert.equal((await h(reviewRequest(token,'send',finalTerms,'https://attacker.example'))).status,403);
- for(const patch of [{confirmed:false},{taxNote:''},{shipping:''},{shipping:-1},{shipping:1.234},{discount:99999},{deliveryDays:0},{validityDays:999}])assert.equal((await h(reviewRequest(token,'send',{...finalTerms,...patch}))).status,400);
+ for(const patch of [{confirmed:false},{taxNote:''},{shipping:''},{shipping:'   '},{shipping:null},{shipping:false},{shipping:-1},{shipping:1.234},{discount:99999},{deliveryDays:0},{validityDays:999}])assert.equal((await h(reviewRequest(token,'send',{...finalTerms,...patch}))).status,400);
  assert.equal((await h(new Request(origin+'/api/offer-review'))).status,405);
 });
 test('final offer uses authenticated recipient and server totals with stable retry keys',async()=>{

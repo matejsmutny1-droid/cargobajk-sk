@@ -11,7 +11,8 @@
     "deploy": "wrangler deploy",
     "test:forms": "node --experimental-strip-types --test tests/inquiry.test.mjs",
     "typecheck": "tsc --noEmit",
-    "test:seo": "node --test tests/seo.mjs"
+    "test:seo": "node --test tests/seo.mjs",
+    "test:commerce": "node --experimental-strip-types --test tests/commerce.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

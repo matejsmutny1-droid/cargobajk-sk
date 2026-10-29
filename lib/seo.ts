@@ -1,3 +1,4 @@
+import {seller} from './seller';
 import type { Metadata } from 'next';
 import type { Bike } from './catalog';
 export const SITE_URL = 'https://cargobajk.sk';
@@ -29,6 +30,7 @@ export function pageMetadata(path: string, title: string, description: string, i
 export const organization = {
  '@type': 'Organization', '@id': ORGANIZATION_ID, name: 'cargobajk.sk', legalName: 'Vivid Production s.r.o.',
  url: SITE_URL, logo: `${SITE_URL}/brand/icon-192-v2.png`, email: 'hello@cargobajk.sk',
+ telephone: seller.phoneLink, address: {'@type':'PostalAddress',streetAddress:'Javorová 3072/7',postalCode:'010 07',addressLocality:'Žilina',addressCountry:'SK'},
  areaServed: {'@type': 'Country', name: 'Slovensko'},
  contactPoint: {'@type': 'ContactPoint', contactType: 'customer service', email: 'hello@cargobajk.sk', availableLanguage: ['sk', 'en']},
  sameAs: ['https://www.instagram.com/cargobajk.sk/'],
