@@ -2,7 +2,7 @@ import Catalog from '@/components/Catalog';
 import Link from '@/components/PageLink';
 import StructuredData from '@/components/StructuredData';
 import {bikes} from '@/lib/catalog';
-import {pageMetadata, breadcrumbSchema, SITE_URL} from '@/lib/seo';
+import {pageMetadata, breadcrumbSchema, collectionSchema} from '@/lib/seo';
 export const metadata = pageMetadata('/bicykle', 'Cargo bicykle na predaj — modely a ceny', 'Elektrické cargo bicykle Cargobike of Sweden na predaj na Slovensku. Porovnajte 14 modelov pre deti, psov a náklad, ceny v EUR a výbavu. Dodanie na objednávku.');
 const questions = [
  {question:'Koľko stojí cargo bicykel?', answer:`Ceny bicyklov v našej ponuke začínajú od ${new Intl.NumberFormat('sk-SK').format(Math.min(...bikes.flatMap(b => b.priceEur === undefined ? [] : [b.priceEur])))} €. Cenu konkrétneho modelu nájdete pri bicykli. Výbavu, dopravu a celkovú cenu potvrdíme v individuálnej ponuke pred objednaním.`},
@@ -12,7 +12,7 @@ const questions = [
 ];
 export default function Page(){return <main id="main">
  <StructuredData data={breadcrumbSchema([{name:'Domov',path:'/'},{name:'Cargo bicykle',path:'/bicykle'}])}/>
- <StructuredData data={{'@context':'https://schema.org','@type':'CollectionPage',url:SITE_URL+'/bicykle',name:'Cargo bicykle na predaj — modely a ceny',inLanguage:'sk-SK',mainEntity:{'@type':'ItemList',itemListElement:bikes.map((b,i)=>({'@type':'ListItem',position:i+1,url:SITE_URL+'/bicykle/'+b.slug,name:'Cargobike of Sweden '+b.name}))}}}/>
+ <StructuredData data={collectionSchema('/bicykle','Cargo bicykle na predaj — modely a ceny')}/>
  <section className="page-head section"><span className="eyebrow">CARGOBIKE OF SWEDEN · PREDAJ NA SLOVENSKU</span><h1>Cargo bicykle.<br/><em>Miesto pre váš svet.</em></h1><p>Elektrické nákladné bicykle pre rodinu, psa aj podnikanie. Porovnajte všetkých 14 modelov Cargobike of Sweden, ich ceny a výbavu. Pomôžeme vám s výberom a dodaním na objednávku pre celé Slovensko.</p></section>
  <section className="section catalog-page"><Catalog full/></section>
  <section className="section seo-content"><div className="section-heading"><div><span className="eyebrow">PRED NÁKUPOM</span><h2>Ako si vybrať svoj cargo bicykel?</h2></div></div><div className="seo-columns"><article><h3>Deti, pes alebo náklad?</h3><p>Začnite tým, koho a čo budete voziť. Rodinný cargo bicykel potrebuje vhodné sedadlá a pásy. Pri preprave psa myslite na nastupovanie a zabezpečenie v boxe. Pre pracovný náklad sú dôležité využiteľné rozmery a nosnosť.</p><Link className="text-link" href="/ako-vybrat-cargo-bicykel">Sprievodca výberom cargo bicykla →</Link></article><article><h3>Cena aj výbava zrozumiteľne.</h3><p>Pri každom modeli nájdete cenu bicykla v EUR a technické údaje. Doplnky vyberieme podľa vašich potrieb. Po odoslaní nezáväzného dopytu overíme dostupnosť a pripravíme konkrétnu ponuku vrátane dopravy.</p><Link className="text-link" href="/vyber-bicykla">Pomôžte mi s výberom →</Link></article></div><h2 className="seo-faq-heading">Otázky k predaju a dodaniu</h2>{questions.map(q=><details key={q.question}><summary>{q.question}</summary><p>{q.answer}</p></details>)}<p className="seo-faq-link"><Link className="text-link" href="/faq">Ďalšie otázky pred nákupom →</Link></p></section>

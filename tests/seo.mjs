@@ -7,6 +7,7 @@ const jsonLd = html => [...html.matchAll(/<script\b[^>]*type="application\/ld\+j
 const tag = (html, name) => html.match(new RegExp(`<meta\\b[^>]*name="${name}"[^>]*content="([^"]*)"`,'i'))?.[1];
 const canonical = html => html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]*)"/)?.[1];
 let sitemapPaths = [];
+const renderedPages = new Map();
 test('crawler access and valid public sitemap', async () => {
  const robots = await get('/robots.txt'); assert.equal(robots.status,200);
  const text = await robots.text(); assert.match(text,/Allow: \/(?:\r?\n|$)/); assert.doesNotMatch(text,/Disallow: \/(?:\r?\n|$)/);
@@ -28,6 +29,7 @@ test('all sitemap pages render indexable, canonical server HTML and valid JSON-L
  for (const path of sitemapPaths) {
   const response = await get(path); assert.equal(response.status,200,path);
   const html = await response.text();
+  renderedPages.set(path,html);
   assert.doesNotMatch(tag(html,'robots') || '', /noindex|nofollow/,path);
   assert.doesNotMatch(tag(html,'googlebot') || '', /noindex|nofollow/,path);
   assert.equal(new URL(canonical(html)).href,new URL(canonicalOrigin+path).href,path);
@@ -66,4 +68,41 @@ test('guide internal links are real destinations',async()=>{
  const html=await (await get('/ako-vybrat-cargo-bicykel')).text();
  const links=[...new Set([...html.matchAll(/<a\b[^>]*href="(\/[^"?#]*)"/g)].map(m=>m[1]))];
  for(const path of links) assert.equal((await get(path)).status,200,path);
+});
+
+test('image sitemap exposes real visible product photos and crawlable image responses',async()=>{
+ const xml=await (await get('/sitemap.xml')).text();
+ assert.match(xml,/xmlns:image="http:\/\/www.google.com\/schemas\/sitemap-image\/1.1"/);
+ const entries=[...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(m=>({
+  path:new URL(m[1].match(/<loc>([^<]+)<\/loc>/)[1]).pathname,
+  images:[...m[1].matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map(m=>m[1]),
+ }));
+ const illustrated=entries.filter(e=>e.images.length);
+ assert.equal(illustrated.length,32,'SK/EN home, catalog and 28 product pages');
+ const uniqueImages=new Set();
+ for(const entry of illustrated){
+  const html=renderedPages.get(entry.path)??await (await get(entry.path)).text();
+  const visible=new Set([...html.matchAll(/<img\b[^>]*src="([^"?#]+)"/g)].map(m=>new URL(m[1],canonicalOrigin).href));
+  assert.equal(new Set(entry.images).size,entry.images.length,entry.path+' duplicate image');
+  for(const image of entry.images){assert.ok(visible.has(image),entry.path+' image missing from rendered HTML: '+image);uniqueImages.add(image)}
+  assert.match(tag(html,'googlebot')||'',/max-image-preview:large/,entry.path);
+  if(['/', '/en', '/bicykle', '/en/bicykle'].includes(entry.path)){
+   const page=jsonLd(html).find(s=>s.mainEntity?.['@type']==='ItemList');
+   assert.ok(page,entry.path+' list metadata');
+   assert.ok(visible.has(page.primaryImageOfPage.url),entry.path+' preferred image');
+   assert.match(html,/<meta[^>]*property="og:image"[^>]*content="https:\/\/cargobajk.sk\/media\/(?!hero)/,entry.path);
+   assert.equal(page.mainEntity.numberOfItems,entry.path.endsWith('/bicykle')?14:4);
+  }else{
+   const product=jsonLd(html).find(s=>s['@type']==='Product');
+   assert.deepEqual(product.image,entry.images,entry.path+' gallery metadata matches sitemap');
+  }
+ }
+ const images=[...uniqueImages];let cursor=0;
+ await Promise.all(Array.from({length:6},async()=>{
+  while(cursor<images.length){const image=images[cursor++];const response=await fetch(origin+new URL(image).pathname,{method:'HEAD'});
+   assert.equal(response.status,200,image);assert.match(response.headers.get('content-type')||'',/^image\//,image);
+   assert.doesNotMatch(response.headers.get('x-robots-tag')||'',/noindex|noimageindex/,image);
+  }
+ }));
+ console.log(`Verified ${images.length} distinct crawlable photos on ${illustrated.length} image sitemap pages.`);
 });
