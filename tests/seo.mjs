@@ -4,8 +4,9 @@ const origin = process.env.SEO_BASE_URL || 'http://localhost:5173';
 const canonicalOrigin = 'https://cargobajk.sk';
 const get = path => fetch(origin + path, {redirect:'manual'});
 const jsonLd = html => [...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1]));
-const tag = (html, name) => html.match(new RegExp(`<meta\\b[^>]*name="${name}"[^>]*content="([^"]*)"`,'i'))?.[1];
-const canonical = html => html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]*)"/)?.[1];
+const head = html => html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? '';
+const tag = (html, name) => head(html).match(new RegExp(`<meta\\b[^>]*name="${name}"[^>]*content="([^"]*)"`,'i'))?.[1];
+const canonical = html => head(html).match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]*)"/)?.[1];
 let sitemapPaths = [];
 const renderedPages = new Map();
 test('crawler access and valid public sitemap', async () => {
@@ -35,7 +36,7 @@ test('all sitemap pages render indexable, canonical server HTML and valid JSON-L
   assert.equal(new URL(canonical(html)).href,new URL(canonicalOrigin+path).href,path);
   assert.match(html, path.startsWith('/en') ? /<html[^>]*lang="en"/ : /<html[^>]*lang="sk"/,path);
   assert.equal((html.match(/<h1\b/g)||[]).length,1,path);
-  const title = html.match(/<title>(.*?)<\/title>/)?.[1]; assert.ok(title,path); assert.ok(!titles.has(title),'duplicate title '+title); titles.add(title);
+  const title = head(html).match(/<title>(.*?)<\/title>/)?.[1]; assert.ok(title,path); assert.ok(!titles.has(title),'duplicate title '+title); titles.add(title);
   assert.ok(tag(html,'description')?.length > 40,path);
   {
    assert.match(html,/hrefLang="sk-SK"|hreflang="sk-SK"/,path);
@@ -90,7 +91,7 @@ test('image sitemap exposes real visible product photos and crawlable image resp
    const page=jsonLd(html).find(s=>s.mainEntity?.['@type']==='ItemList');
    assert.ok(page,entry.path+' list metadata');
    assert.ok(visible.has(page.primaryImageOfPage.url),entry.path+' preferred image');
-   assert.match(html,/<meta[^>]*property="og:image"[^>]*content="https:\/\/cargobajk.sk\/media\/(?!hero)/,entry.path);
+   assert.match(head(html),/<meta[^>]*property="og:image"[^>]*content="https:\/\/cargobajk.sk\/media\/(?!hero)/,entry.path);
    assert.equal(page.mainEntity.numberOfItems,entry.path.endsWith('/bicykle')?14:4);
   }else{
    const product=jsonLd(html).find(s=>s['@type']==='Product');
@@ -105,4 +106,13 @@ test('image sitemap exposes real visible product photos and crawlable image resp
   }
  }));
  console.log(`Verified ${images.length} distinct crawlable photos on ${illustrated.length} image sitemap pages.`);
+});
+
+test('Googlebot receives canonical and product preview metadata in the initial head',async()=>{
+ for(const path of ['/', '/bicykle', '/bicykle/flex', '/en/bicykle']){
+  const response=await fetch(origin+path,{headers:{'User-Agent':'Googlebot'}});assert.equal(response.status,200,path);
+  const html=await response.text();assert.equal(new URL(canonical(html)).href,new URL(canonicalOrigin+path).href,path);
+  assert.match(head(html),/<meta[^>]*property="og:image"[^>]*content="https:\/\/cargobajk.sk\/media\/(?!hero)/,path);
+  assert.match(tag(html,'googlebot')||'',/max-image-preview:large/,path);
+ }
 });
