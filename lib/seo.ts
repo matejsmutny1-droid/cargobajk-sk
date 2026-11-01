@@ -1,4 +1,4 @@
-import {seller} from './seller';
+import {businessLocation, seller} from './seller';
 import {coverImage, listedBikes, pageImagePaths, productImagePaths} from './search-images';
 import type { Metadata } from 'next';
 import type { Bike } from './catalog';
@@ -10,7 +10,7 @@ export const contentSeo: Record<string, {title: string; description: string}> = 
  'preco-cargobike': {title: 'Cargo bicykel pre deti, psa aj každodenný nákup', description: 'Čo je cargo bicykel a ako ho využiť? Spoznajte nákladné elektrobicykle pre rodiny s deťmi, prepravu psov, nákupy a podnikanie.'},
  'servis': {title: 'Servis a podpora pre cargo bicykle', description: 'Potrebujete poradiť s údržbou alebo dielmi na cargo bicykel? Kontaktujte cargobajk.sk. Možnosti servisu a ďalší postup potvrdíme individuálne.'},
  'vyber-bicykla': {title: 'Pomoc s výberom cargo bicykla a výbavy', description: 'Vyberáte nákladný elektrobicykel pre rodinu, psa alebo firmu? Pomôžeme s modelom, výbavou, cenou a dodaním na Slovensku.'},
- 'kontakt': {title: 'Kontakt — predaj cargo bicyklov na Slovensku', description: 'Kontaktujte cargobajk.sk: hello@cargobajk.sk. Poradíme s výberom cargo bicykla Cargobike of Sweden a pripravíme nezáväznú ponuku.'},
+ 'kontakt': {title: 'Kontakt — cargo bicykle v Rajeckých Tepliciach', description: 'cargobajk.sk: Lúčna 350/5, Rajecké Teplice. Osobné stretnutia po dohode, predaj cargo bicyklov, vrátenie tovaru a reklamácie. +421 904 501 703.'},
  'faq': {title: 'Cargo bicykle: cena, objednávka a dodanie — otázky', description: 'Odpovede pred nákupom cargo bicykla: ako vybrať model, objednať bicykel, overiť kapacitu, cenu, dopravu a servis na Slovensku.'},
  'obchodne-informacie': {title: 'Objednávka, ceny a dodanie cargo bicyklov', description: 'Ako prebieha nákup cargo bicykla cez cargobajk.sk. Individuálna ponuka, konfigurácia, platba, doprava a podpora pred objednaním.'},
 };
@@ -33,7 +33,7 @@ export function pageMetadata(path: string, title: string, description: string, i
 export const organization = {
  '@type': 'Organization', '@id': ORGANIZATION_ID, name: 'cargobajk.sk', legalName: 'Vivid Production s.r.o.',
  url: SITE_URL, logo: `${SITE_URL}/brand/icon-192-v2.png`, email: 'hello@cargobajk.sk',
- telephone: seller.phoneLink, address: {'@type':'PostalAddress',streetAddress:'Javorová 3072/7',postalCode:'010 07',addressLocality:'Žilina',addressCountry:'SK'},
+ telephone: seller.phoneLink, address: {'@type':'PostalAddress',...businessLocation},
  areaServed: {'@type': 'Country', name: 'Slovensko'},
  contactPoint: {'@type': 'ContactPoint', contactType: 'customer service', email: 'hello@cargobajk.sk', availableLanguage: ['sk', 'en']},
  sameAs: ['https://www.instagram.com/cargobajk.sk/'],

@@ -25,7 +25,7 @@ export type CommerceSettings = {
 };
 export const commerceSettings: CommerceSettings = {
  enabled: false,
- seller: {name: seller.name, companyId: seller.companyId, taxId: seller.taxId, address: seller.address, phone: seller.phone, email: seller.email, returnAddress: ''},
+ seller: {name: seller.name, companyId: seller.companyId, taxId: seller.taxId, address: seller.address, phone: seller.phone, email: seller.email, returnAddress: seller.returnAddress},
  taxNote: salesTerms.priceNote, merchantShippingMaxEur: null, shippingOriginPostalCode: '01007', termsVersion: '', termsApproved: false, privacyApproved: false, returnsApproved: false,
  products: {},
 };
