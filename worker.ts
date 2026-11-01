@@ -1,4 +1,5 @@
 import handler from "vinext/server/fetch-handler";
+import {webAnalyticsEnabled} from './lib/web-analytics';
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
@@ -12,6 +13,7 @@ export default {
       return Response.redirect(url.toString(), 308);
     }
     const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-site-web-analytics', webAnalyticsEnabled(url) ? 'enabled' : 'disabled');
     requestHeaders.set('x-site-language', /^\/en(?:\/|$)/.test(new URL(request.url).pathname) ? 'en' : 'sk');
     const response = await handler.fetch(new Request(request, {headers: requestHeaders}), env, ctx);
     if (!(response.headers.get('content-type') ?? '').includes('text/html')) return response;
