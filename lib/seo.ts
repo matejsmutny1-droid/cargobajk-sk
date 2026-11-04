@@ -1,5 +1,6 @@
 import {businessLocation, seller} from './seller';
 import {salesTerms} from './sales-terms';
+import {returnPolicy} from './return-policy';
 import {coverImage, listedBikes, pageImagePaths, productImagePaths} from './search-images';
 import type { Metadata } from 'next';
 import type { Bike } from './catalog';
@@ -36,6 +37,15 @@ export const organization = {
  url: SITE_URL, logo: `${SITE_URL}/brand/icon-192-v2.png`, email: 'hello@cargobajk.sk',
  telephone: seller.phoneLink, address: {'@type':'PostalAddress',...businessLocation},
  areaServed: {'@type': 'Country', name: 'Slovensko'},
+ hasMerchantReturnPolicy: {
+  '@type': 'MerchantReturnPolicy', '@id': returnPolicy.id,
+  applicableCountry: 'SK', returnPolicyCountry: 'SK',
+  returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+  merchantReturnDays: returnPolicy.days,
+  returnMethod: ['https://schema.org/ReturnByMail', 'https://schema.org/ReturnInStore'],
+  returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
+  merchantReturnLink: returnPolicy.id,
+ },
  contactPoint: {'@type': 'ContactPoint', contactType: 'customer service', email: 'hello@cargobajk.sk', availableLanguage: ['sk', 'en']},
  sameAs: ['https://www.instagram.com/cargobajk.sk/'],
 };
@@ -52,6 +62,7 @@ export function productSchema(bike: Bike, english = false) {
   ...(bike.priceEur === undefined ? {} : {offers: {'@type': 'Offer', url: SITE_URL + path, priceCurrency: 'EUR', price: bike.priceEur,
    // Orderable from the manufacturer; this does not claim local warehouse stock.
    ...(salesTerms.allModelsOrderable ? {availability: 'https://schema.org/BackOrder'} : {}),
+   hasMerchantReturnPolicy: {'@id': returnPolicy.id},
    itemCondition: 'https://schema.org/NewCondition', seller: {'@id': ORGANIZATION_ID},
    description: english
     ? `Available to order. Delivery within ${salesTerms.deliveryDays} calendar days from order confirmation and the agreed payment. Shipping quoted individually before ordering.`

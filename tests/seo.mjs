@@ -54,10 +54,29 @@ test('all sitemap pages render indexable, canonical server HTML and valid JSON-L
    assert.match(html,/21 (?:calendar|kalendárnych)/,path+' visible delivery matches schema');
    assert.ok(!product.offers.availabilityDate,'delivery lead time is not a confirmed restock date');
    assert.ok(!product.offers.shippingDetails,'no shipping rate has been confirmed');
+   const policy=schemas.find(s=>s['@type']==='Organization').hasMerchantReturnPolicy;
+   assert.equal(product.offers.hasMerchantReturnPolicy['@id'],policy['@id'],path+' standard returns policy reference');
+   assert.equal(policy.merchantReturnDays,14);
+   assert.equal(policy.returnPolicyCategory,'https://schema.org/MerchantReturnFiniteReturnWindow');
+   assert.equal(policy.applicableCountry,'SK');
+   assert.equal(policy.returnFees,'https://schema.org/ReturnFeesCustomerResponsibility');
    assert.equal((await fetch(origin+new URL(product.image[0]).pathname)).status,200,path+' image');
   }
  }
  console.log(`Verified ${titles.size} public pages, unique titles, canonicals and server-rendered content.`);
+});
+test('return policy is visible in both languages and its optional form is accessible',async()=>{
+ for(const path of ['/obchodne-informacie','/en/obchodne-informacie']){
+  const response=await get(path);assert.equal(response.status,200);
+  const html=await response.text();
+  assert.match(html,/<section[^>]*id="vratenie-tovaru"/);
+  assert.match(html,/14/);
+  assert.match(html,/hello@cargobajk.sk/);
+  assert.match(html,/Lúčna 350\/5/);
+  assert.match(html,/href="\/documents\/odstupenie-od-zmluvy.txt"/);
+ }
+ const form=await get('/documents/odstupenie-od-zmluvy.txt');assert.equal(form.status,200);
+ assert.match(await form.text(),/Vivid Production/);
 });
 test('private offers and forms remain noindex, including Googlebot',async()=>{
  for(const path of ['/sprava-ponuky','/potvrdenie-ponuky','/nezavazna-ponuka','/en/nezavazna-ponuka','/sukromie','/en/sukromie']){
