@@ -1,4 +1,5 @@
 import {businessLocation, seller} from './seller';
+import {salesTerms} from './sales-terms';
 import {coverImage, listedBikes, pageImagePaths, productImagePaths} from './search-images';
 import type { Metadata } from 'next';
 import type { Bike } from './catalog';
@@ -49,8 +50,12 @@ export function productSchema(bike: Bike, english = false) {
   category: english ? 'Electric cargo bike' : 'Elektrický nákladný bicykel',
   additionalProperty: bike.specs.map(([name, value]) => ({'@type': 'PropertyValue', name, value})),
   ...(bike.priceEur === undefined ? {} : {offers: {'@type': 'Offer', url: SITE_URL + path, priceCurrency: 'EUR', price: bike.priceEur,
+   // Orderable from the manufacturer; this does not claim local warehouse stock.
+   ...(salesTerms.allModelsOrderable ? {availability: 'https://schema.org/BackOrder'} : {}),
    itemCondition: 'https://schema.org/NewCondition', seller: {'@id': ORGANIZATION_ID},
-   description: english ? 'Supplied to order. Specification, availability and delivery confirmed in an individual quote.' : 'Dodanie na objednávku. Výbavu, dostupnosť a dopravu potvrdíme v individuálnej ponuke.'}}),
+   description: english
+    ? `Available to order. Delivery within ${salesTerms.deliveryDays} calendar days from order confirmation and the agreed payment. Shipping quoted individually before ordering.`
+    : `Na objednávku. Dodanie do ${salesTerms.deliveryDays} kalendárnych dní od potvrdenia objednávky a dohodnutej platby. Dopravu naceníme individuálne pred objednaním.`}}),
  };
 }
 /** Describe the visible list without pretending a category page is a single Product. */

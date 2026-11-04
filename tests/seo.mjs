@@ -48,7 +48,12 @@ test('all sitemap pages render indexable, canonical server HTML and valid JSON-L
    assert.equal(product.url,canonicalOrigin+path,path);
    assert.equal(product.offers.priceCurrency,'EUR',path); assert.ok(product.offers.price>0,path);
    assert.ok(!product.aggregateRating && !product.review,path);
-   assert.ok(!product.offers.availability,'unconfirmed stock must not be invented');
+   assert.equal(product.offers.availability,'https://schema.org/BackOrder',path+' orderable does not mean in stock');
+   assert.match(product.offers.description,/21/);
+   assert.match(html,path.startsWith('/en') ? /Available to order/ : /Na objednávku/,path+' visible availability matches schema');
+   assert.match(html,/21 (?:calendar|kalendárnych)/,path+' visible delivery matches schema');
+   assert.ok(!product.offers.availabilityDate,'delivery lead time is not a confirmed restock date');
+   assert.ok(!product.offers.shippingDetails,'no shipping rate has been confirmed');
    assert.equal((await fetch(origin+new URL(product.image[0]).pathname)).status,200,path+' image');
   }
  }
