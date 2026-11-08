@@ -1,3 +1,4 @@
+import {accessoryCatalog} from './accessory-catalog';
 import {bikes, featuredSlugs, type Bike} from './catalog';
 import {galleries} from './galleries';
 
@@ -13,6 +14,7 @@ export function listedBikes(path: string): Bike[] {
 }
 export function pageImagePaths(path: string): string[] {
  const sk = path.replace(/^\/en(?=\/|$)/, '') || '/';
+ if(sk === '/doplnky') return [...new Set(accessoryCatalog.flatMap(item=>[item.image,...(item.frame?[item.frame]:[])]))];
  const bike = bikes.find(bike => sk === `/bicykle/${bike.slug}`);
  if (bike) return productImagePaths(bike);
  const covers = listedBikes(path).map(bike => `/media/${bike.image}.webp`);

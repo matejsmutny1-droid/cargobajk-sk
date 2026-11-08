@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import type { Bike } from './catalog';
 export const SITE_URL = 'https://cargobajk.sk';
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
-export const publicPagePaths = ['/', '/bicykle', '/preco-cargobike', '/o-nas', '/servis', '/vyber-bicykla', '/kontakt', '/faq', '/obchodne-informacie', '/ako-vybrat-cargo-bicykel'];
+export const publicPagePaths = ['/', '/bicykle', '/doplnky', '/preco-cargobike', '/o-nas', '/servis', '/vyber-bicykla', '/kontakt', '/faq', '/obchodne-informacie', '/ako-vybrat-cargo-bicykel'];
 export const contentSeo: Record<string, {title: string; description: string}> = {
  'o-nas': {title: 'O nás — skúsenosť s cargo bicyklami zo Švédska', description: 'S cargobikom sme žili v Malmö. Dnes na cargobajk.sk pomáhame s výberom a predajom cargo bicyklov Cargobike of Sweden na Slovensku.'},
  'preco-cargobike': {title: 'Cargo bicykel pre deti, psa aj každodenný nákup', description: 'Čo je cargo bicykel a ako ho využiť? Spoznajte nákladné elektrobicykle pre rodiny s deťmi, prepravu psov, nákupy a podnikanie.'},

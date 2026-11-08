@@ -1,15 +1,15 @@
 'use client';
 import { referralSources } from '@/lib/referral';
 import Link from '@/components/en/PageLink';
-const topicLabel = (t: string) => t.startsWith('Záujem o model ') ? 'Enquiry about ' + t.slice(15) : ({ 'Záujem o bicykel': 'Bike enquiry', 'Výber bicykla': 'Bike selection', 'Skúšobná jazda': 'Test ride', 'Servis': 'Service', 'Firemná spolupráca': 'Business partnership' }[t] ?? t);
+const topicLabel = (t: string) => t.startsWith('Záujem o model ') ? 'Enquiry about ' + t.slice(15) : ({ 'Záujem o bicykel': 'Bike enquiry', 'Výber bicykla': 'Bike selection', 'Záujem o doplnky': 'Accessory enquiry', 'Skúšobná jazda': 'Test ride', 'Servis': 'Service', 'Firemná spolupráca': 'Business partnership' }[t] ?? t);
 import { useEffect, useRef, useState } from 'react';
 
 
 type State = 'loading' | 'ready' | 'unavailable' | 'sending' | 'sent' | 'error';
-export function Inquiry({ topic = 'Záujem o bicykel' }: { topic?: string }) {
-  return <InquiryForm key={topic} topic={topic} />;
+export function Inquiry({ topic = 'Záujem o bicykel', defaultMessage = '' }: { topic?: string; defaultMessage?: string }) {
+  return <InquiryForm key={topic+defaultMessage} topic={topic} defaultMessage={defaultMessage} />;
 }
-function InquiryForm({ topic }: { topic: string }) {
+function InquiryForm({ topic, defaultMessage }: { topic: string; defaultMessage: string }) {
   const [state, setState] = useState<State>('loading');
   const [message, setMessage] = useState('');
   const [selectedTopic, setSelectedTopic] = useState(topic);
@@ -46,8 +46,8 @@ function InquiryForm({ topic }: { topic: string }) {
     <p className="form-note">{unavailable ? 'The form is currently unavailable. Please contact us directly by email.' : 'A no-obligation enquiry. Tell us what you are interested in and we will reply by email.'} <a href="mailto:hello@cargobajk.sk">hello@cargobajk.sk</a></p>
     <fieldset disabled={state === 'sending' || state === 'sent'} className="inquiry-fields">
       <div className="form-row"><label>Your name<input required name="name" autoComplete="name" placeholder="Full name" minLength={2} maxLength={120} /></label><label>Email<input required type="email" name="email" autoComplete="email" placeholder="you@example.com" maxLength={254} /></label></div>
-      <label>What are you interested in?<select name="topic" value={selectedTopic} onChange={event => setSelectedTopic(event.target.value)}>{Array.from(new Set([topic, 'Záujem o bicykel', 'Výber bicykla', 'Skúšobná jazda', 'Servis', 'Firemná spolupráca'])).map(t => <option key={t} value={t}>{topicLabel(t)}</option>)}</select></label>
-      <label>Your message<textarea name="message" required rows={4} minLength={10} placeholder={selectedTopic==='Skúšobná jazda'?'Which model would you like to try, and when? We will confirm the appointment.':'Tell us how a cargo bike could fit into your life.'} maxLength={4000} /></label>
+      <label>What are you interested in?<select name="topic" value={selectedTopic} onChange={event => setSelectedTopic(event.target.value)}>{Array.from(new Set([topic, 'Záujem o bicykel', 'Výber bicykla', 'Záujem o doplnky', 'Skúšobná jazda', 'Servis', 'Firemná spolupráca'])).map(t => <option key={t} value={t}>{topicLabel(t)}</option>)}</select></label>
+      <label>Your message<textarea name="message" defaultValue={defaultMessage} required rows={4} minLength={10} placeholder={selectedTopic==='Skúšobná jazda'?'Which model would you like to try, and when? We will confirm the appointment.':'Tell us how a cargo bike could fit into your life.'} maxLength={4000} /></label>
       <label>How did you hear about us?<select name="referralSource" defaultValue="" aria-describedby="referral-note"><option value="">Choose an option</option>{referralSources.map(source => <option key={source.value} value={source.value}>{source.en}</option>)}</select></label>
       <p id="referral-note" className="form-note">Optional — helps us understand how you found us.</p>
       <label>Want to be more specific? (optional)<input name="referralDetail" maxLength={200} placeholder="E.g. a profile, post or event" /></label>

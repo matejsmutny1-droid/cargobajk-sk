@@ -1,3 +1,4 @@
+import AccessoriesPage from '@/components/AccessoriesPage';
 import {pageMetadata} from '@/lib/seo';
 import QuotePage from '@/components/QuotePage';
 import { notFound } from 'next/navigation';
@@ -11,6 +12,7 @@ export async function generateMetadata({params}: Props) {
   const {path = []} = await params;
   if(path[0] === 'bicykle' && path.length === 2) return productMetadata({params: Promise.resolve({slug:path[1]})});
   const route = '/en' + (path.length ? '/' + path.join('/') : '');
+  if(path.length === 1 && path[0] === 'doplnky') return pageMetadata('/en/doplnky', 'Cargo bike accessories — canopies, mirrors and lights', 'Genuine Cargobike of Sweden accessories: canopy bundles, mirrors, locks, lights and comfortable seating. Photos, prices and help choosing the right fit.');
   if(path[0] === 'nezavazna-ponuka') return {...pageMetadata(route, 'Request a non-binding quote', 'Choose your cargo bike and equipment. Request a personalised quote.'), robots:{index:false,follow:false}};
   const title = path.length === 0 ? 'Cargo bikes in Slovakia — Cargobike of Sweden' : path[0] === 'bicykle' ? 'Electric cargo bikes for sale in Slovakia' : pages[path[0]]?.title;
   if (!title) notFound();
@@ -20,6 +22,7 @@ export async function generateMetadata({params}: Props) {
 export default async function EnglishPage({params,searchParams}: Props) {
   const {path = []} = await params;
   if(path.length === 0) return <Home />;
+  if(path.length === 1 && path[0] === 'doplnky') return <AccessoriesPage english/>;
   if(path.length === 1 && path[0] === 'nezavazna-ponuka') return <QuotePage model={(await searchParams).model} english/>;
   if(path[0] === 'bicykle' && path.length === 1) return <Catalog />;
   if(path[0] === 'bicykle' && path.length === 2) return <Product params={Promise.resolve({slug:path[1]})} />;
