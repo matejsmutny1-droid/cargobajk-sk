@@ -1,0 +1,7 @@
+Slovak postcode/place suggestions from GeoNames.
+Source: https://download.geonames.org/export/zip/SK.zip
+Downloaded: 2026-11-08
+License: Creative Commons Attribution 4.0, https://creativecommons.org/licenses/by/4.0/
+https://www.geonames.org/
+Adaptation: selected postal code and place columns, grouped and deduplicated by postal code.
+Suggestions only: manual correction remains possible; not used as address validation.
