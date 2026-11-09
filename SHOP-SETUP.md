@@ -96,3 +96,9 @@ The seller approved initial scope: pay online for pickup; delivery is quoted bef
 - Customer service, fulfilment, invoicing, refunds and defect claims remain the seller's responsibility. Resend acceptance means queued delivery; inspect bounces if a customer reports a missing receipt. Stripe retries unsuccessful webhook deliveries; investigate failed deliveries promptly.
 - Local preview: `CARGOBAJK_LOCAL_PREVIEW=1 npm run dev` uses `wrangler.local.jsonc`, an isolated DB and SHOP_MODE=off. This deliberately uses the compatibility date supported by the bundled local runtime; production retains 2026-10-19.
 - Deployment: first deploy code with SHOP_MODE=off; configure the live encrypted key, signing secret and verified product data; activate SHOP_MODE=live only after reviewing the customer-facing production checkout. Never put secrets in source files or command arguments.
+
+
+## Production launch activation — 2026-11-09
+
+Seller approved exact full terms/privacy, existing LIVE key encrypted in production, production webhook, and 21-day orderability of all 14 bikes and 13 priced accessories. Availability review expiry: 2026-12-09 23:59:59 Europe/Bratislava; recheck and renew before then. Unpriced lights remain enquiry-only. Pickup is free; shipping requires a confirmed quote before payment.
+Live webhook: `we_1UZr73QnBF4F0Zee0HDfveYT`, name `cargobajk-sk-live-checkout`, endpoint `https://cargobajk.sk/api/shop/webhook`, Snapshot API2026-10-28.endive, only3approvedevents. No live payment was made by the agent.

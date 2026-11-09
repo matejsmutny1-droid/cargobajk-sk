@@ -19,7 +19,7 @@
     "directory": "dist/client"
   },
   "vars": {
-    "SHOP_MODE": "off",
+    "SHOP_MODE": "live",
     "INQUIRY_FROM": "cargobajk.sk <hello@vividproduction.sk>",
     "INQUIRY_ALLOWED_ORIGINS": "https://cargobajk.sk,https://www.cargobajk.sk",
     "SHOP_POLICIES_VERSION": "2026-11-09",
