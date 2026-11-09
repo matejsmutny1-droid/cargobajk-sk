@@ -4,7 +4,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {Script} from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {build} from 'esbuild';
-await build({entryPoints:['lib/shop/server.ts','lib/shop/shipping.ts','lib/shop/catalog.ts','lib/shop/stripe.ts','tests/shop-staging-worker.ts'],bundle:true,platform:'node',format:'esm',outdir:'/tmp/cargobajk-shop-tests',logLevel:'silent'});
+await build({entryPoints:['lib/shop/server.ts','lib/shop/shipping.ts','lib/shop/catalog.ts','lib/shop/stripe.ts','tests/shop-staging-worker.ts','lib/vat.ts','tests/vat-server-fixture.ts'],bundle:true,platform:'node',format:'esm',outdir:'/tmp/cargobajk-shop-tests',logLevel:'silent'});
 const {handleShop,shopReady}=await import('/tmp/cargobajk-shop-tests/lib/shop/server.js');
 const {priceCart}=await import('/tmp/cargobajk-shop-tests/lib/shop/catalog.js');
 const {bikeDeliveryCents,shippingPrice}=await import('/tmp/cargobajk-shop-tests/lib/shop/shipping.js');
@@ -153,4 +153,63 @@ test('retention deletes old unpaid PII, preserves recent and retained paid recor
  await maintainShop(env);
  assert.equal(store.db.prepare('SELECT id FROM shop_orders WHERE id=?').get(paid.orderId),undefined);
  assert.equal(store.db.prepare('SELECT COUNT(*) n FROM shop_mail WHERE order_id=?').get(paid.orderId).n,0);
+});
+
+test('VAT split preserves final prices and taxes freight, with no VAT in the current §7a regime',async()=>{
+ const {taxSummary,checkoutTaxWindow}=await import('/tmp/cargobajk-shop-tests/lib/vat.js');
+ const vat={enabled:true,effectiveFrom:'2027-01-01T00:00:00+01:00',ratePercent:23,pricesIncludeVat:true};
+ const bike=taxSummary([{priceCents:384900,quantity:1}],0,vat);
+ assert.equal(bike.grossCents,384900);assert.equal(bike.netCents,312927);assert.equal(bike.vatCents,71973);
+ const order=taxSummary([{priceCents:384900,quantity:1},{priceCents:2200,quantity:2}],15000,vat);
+ assert.equal(order.grossCents,404300);assert.equal(order.grossCents,order.netCents+order.vatCents);
+ assert.ok(order.vatCents>bike.vatCents);
+ const current=taxSummary([{priceCents:384900,quantity:1}],15000,{...vat,enabled:false});
+ assert.equal(current.vatCents,0);assert.equal(current.netCents,399900);assert.equal(current.regime,'section7a');
+ const start=Date.parse(vat.effectiveFrom);
+ assert.equal(checkoutTaxWindow(start-32*60000,{...vat,enabled:false}),true);
+ assert.equal(checkoutTaxWindow(start-30*60000,{...vat,enabled:false}),false);
+ assert.equal(checkoutTaxWindow(start,{...vat,enabled:false}),false);
+ assert.equal(checkoutTaxWindow(start-1,vat),false);assert.equal(checkoutTaxWindow(start,vat),true);
+ assert.throws(()=>taxSummary([{priceCents:-1,quantity:1}],0,vat));
+});
+test('Stripe manual VAT is inclusive and cannot add tax twice or accept an incorrect rate',async()=>{
+ const {taxSummary}=await import('/tmp/cargobajk-shop-tests/lib/vat.js');
+ const tax=taxSummary([{priceCents:384900,quantity:1}],15000,{enabled:true,effectiveFrom:'2027-01-01T00:00:00+01:00',ratePercent:23,pricesIncludeVat:true});
+ const order={id:crypto.randomUUID(),email:'customer@example.test',createdAt:Date.now(),lines:[{name:'Flex',quantity:1,priceCents:384900}],shipping:{name:'Doprava',cents:15000},totalCents:399900,tax,taxRateId:'txr_mock'};
+ let params,calls=0;
+ const mock=async(url,options)=>{calls++;if(String(url).includes('/tax_rates/'))return Response.json({id:'txr_mock',active:true,inclusive:true,percentage:23,country:'SK',livemode:false});params=new URLSearchParams(options.body);return Response.json({id:'cs_test_vat',url:'https://checkout.stripe.com/c/pay/cs_test_vat',currency:'eur',amount_total:399900,livemode:false,total_details:{amount_tax:tax.vatCents}});};
+ await stripeSession('sk_test_mock',order,mock);assert.equal(calls,2);
+ assert.equal(params.get('line_items[0][price_data][unit_amount]'),'384900');
+ assert.equal(params.get('line_items[0][tax_rates][0]'),'txr_mock');
+ assert.equal(params.get('line_items[1][tax_rates][0]'),'txr_mock');
+ assert.equal(params.get('metadata[tax_regime]'),'vat_payer');assert.equal(params.has('automatic_tax[enabled]'),false);
+ await assert.rejects(()=>stripeSession('sk_test_mock',{...order,taxRateId:undefined},mock));
+ await assert.rejects(()=>stripeSession('sk_test_mock',order,async()=>Response.json({id:'txr_mock',active:true,inclusive:false,percentage:23,country:'SK',livemode:false})));
+ await assert.rejects(()=>stripeSession('sk_test_mock',order,async()=>Response.json({id:'txr_mock',active:true,inclusive:true,percentage:20,country:'SK',livemode:false})));
+});
+test('future VAT checkout snapshots its tax split, while historical §7a receipts keep their original regime',async()=>{
+ const vatServer=await import('/tmp/cargobajk-shop-tests/tests/vat-server-fixture.js');
+ const {env,store,mock}=setup();
+ assert.equal(vatServer.shopReady(env),false);
+ env.SHOP_VAT_TAX_RATE_ID='txr_mock';assert.equal(vatServer.shopReady(env),true);
+ const before=await handleShop(request('checkout',input()),env,mock);const old=await before.json();
+ const historical=JSON.parse(store.db.prepare('SELECT payload FROM shop_orders WHERE id=?').get(old.orderId).payload);
+ assert.equal(historical.tax.regime,'section7a');
+ delete historical.tax; // Orders created before this feature have no tax object.
+ store.db.prepare('UPDATE shop_orders SET payload=? WHERE id=?').run(JSON.stringify(historical),old.orderId);
+ // A later code deployment must render the stored historical tax and terms, not today's settings.
+ let receipt='';
+ assert.equal((await vatServer.handleShop(await eventRequest(old.orderId),env,async(url,options)=>{receipt=JSON.parse(options.body).text;return Response.json({id:'mail'});})).status,200);
+ assert.match(receipt,/Registrácia podľa §7a/);assert.doesNotMatch(receipt,/Základ dane:/);
+ const realNow=Date.now;
+ try{
+  Date.now=()=>Date.parse('2027-01-01T12:00:00+01:00');
+  store.db.prepare('UPDATE shop_orders SET stripe_session=NULL WHERE id=?').run(old.orderId);
+  const q=await(await vatServer.handleShop(request('quote',input()),env,mock)).json();
+  assert.equal(q.tax.regime,'vat_payer');assert.equal(q.totalCents,387100);
+  const futureMock=async(url,options)=>String(url).includes('/tax_rates/')?Response.json({id:'txr_mock',active:true,inclusive:true,percentage:23,country:'SK',livemode:false}):Response.json({id:'cs_test_newvat',url:'https://checkout.stripe.com/c/pay/cs_test_newvat',currency:'eur',amount_total:387100,livemode:false,total_details:{amount_tax:q.tax.vatCents}});
+  const created=await vatServer.handleShop(request('checkout',input()),env,futureMock);assert.equal(created.status,200);
+  const {orderId}=await created.json();const snapshot=JSON.parse(store.db.prepare('SELECT payload FROM shop_orders WHERE id=?').get(orderId).payload);
+  assert.equal(snapshot.tax.regime,'vat_payer');assert.equal(snapshot.tax.vatCents,q.tax.vatCents);assert.match(snapshot.termsText,/Platiteľ DPH podľa §4/);
+ }finally{Date.now=realNow;}
 });

@@ -1,5 +1,7 @@
+import {vatConfig} from '../vat-config.ts';
+import {vatRegistrationNote,retailTaxNote} from '../vat.ts';
 /** Online-sale terms and privacy approved by the operator on 2026-11-09. */
-export const shopPolicyVersion='2026-11-09';
+export const shopPolicyVersion=vatConfig.enabled?'2027-01-01-vat':'2026-11-09';
 export const shopTermsBlocks=[
  {
   "title": "Predávajúci a kontakt",
@@ -42,6 +44,7 @@ export const shopTermsBlocks=[
   "text": "So žiadosťou o nápravu sa obráťte na hello@cargobajk.sk. Ak ju zamietneme alebo neodpovieme do 30 dní, spotrebiteľ môže za zákonných podmienok podať návrh na alternatívne riešenie sporu Slovenskej obchodnej inšpekcii alebo inému príslušnému subjektu. Informácie: https://www.soi.sk/alternativne-riesenie-spotrebitelskych-sporov. Dohľad v príslušnom rozsahu vykonáva Slovenská obchodná inšpekcia, www.soi.sk. Právo obrátiť sa na súd zostáva zachované. Tieto podmienky neobmedzujú kogentné spotrebiteľské práva."
  }
 ];
+if(vatConfig.enabled){shopTermsBlocks[0].text=shopTermsBlocks[0].text.replace('Registrácia pre DPH podľa § 7a nie je všeobecným platiteľstvom DPH podľa § 4; k uvedeným konečným cenám DPH nepripočítavame.',vatRegistrationNote()+' '+retailTaxNote());shopTermsBlocks[2].text=retailTaxNote()+' '+shopTermsBlocks[2].text;}
 export const shopTermsText='cargobajk.sk — obchodné podmienky, verzia '+shopPolicyVersion+'\n\n'+shopTermsBlocks.map(b=>b.title+'\n'+b.text).join('\n\n');
 
 export const shopPrivacyBlocks=[

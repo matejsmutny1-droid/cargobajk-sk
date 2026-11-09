@@ -1,3 +1,5 @@
+import {vatConfig} from '../vat-config.ts';
+import {taxSummary,checkoutTaxWindow,type TaxSummary} from '../vat.ts';
 import {shopPolicyVersion,shopTermsText} from './policies.ts';
 import {readBody} from '../inquiry-server.ts';
 import {priceCart} from './catalog.ts';
@@ -6,13 +8,13 @@ import {parseOrderCustomer} from '../checkout.ts';
 import {stripeSession,verifyStripeEvent} from './stripe.ts';
 
 export type ShopEnv = {
- SHOP_DB?:D1Database; SHOP_MODE?:string; STRIPE_SECRET_KEY?:string; STRIPE_WEBHOOK_SECRET?:string;
+ SHOP_VAT_TAX_RATE_ID?:string; SHOP_DB?:D1Database; SHOP_MODE?:string; STRIPE_SECRET_KEY?:string; STRIPE_WEBHOOK_SECRET?:string;
  SHOP_POLICIES_VERSION?:string; SHOP_PRODUCTS_JSON?:string; SHOP_ROUTES_JSON?:string; SHOP_PARCEL_IDS_JSON?:string; SHOP_TEST_EMAILS_JSON?:string;
  SHOP_TEST_ORIGIN?:string; SHOP_TEST_DISABLE_EMAILS?:string;
  RESEND_API_KEY?:string; INQUIRY_FROM?:string;
 };
 type Order = {id:string;request_key:string;fingerprint:string;total_cents:number;mode:string;status:string;payload:string;stripe_session:string|null;checkout_url:string|null;created_at:number};
-type Snapshot={cart:ReturnType<typeof priceCart>;shipping:{name:string;cents:number};customer:NonNullable<ReturnType<typeof parseOrderCustomer>>;termsVersion:string;termsText?:string;deliveryDays:number};
+type Snapshot={cart:ReturnType<typeof priceCart>;shipping:{name:string;cents:number};customer:NonNullable<ReturnType<typeof parseOrderCustomer>>;termsVersion:string;termsText?:string;tax?:TaxSummary;deliveryDays:number};
 const response=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'",'X-Content-Type-Options':'nosniff'}});
 const jsonArray=(s:string|undefined):string[]=>{try{const v=JSON.parse(s||'[]');return Array.isArray(v)&&v.every(x=>typeof x==='string')?v:[];}catch{return [];}};
 export function shopReady(env:ShopEnv) {
@@ -20,7 +22,7 @@ export function shopReady(env:ShopEnv) {
  const mailReady=mode==='test'&&env.SHOP_TEST_DISABLE_EMAILS==='true'||!!env.RESEND_API_KEY?.startsWith('re_')&&/^[^\r\n]+@(?:[a-z0-9-]+\.)*vividproduction\.sk>?$/i.test(env.INQUIRY_FROM||'');
  return (mode==='test'||mode==='live')&&!!env.SHOP_DB&&!!env.STRIPE_WEBHOOK_SECRET&&mailReady&&!!env.SHOP_POLICIES_VERSION&&(mode!=='live'||env.SHOP_POLICIES_VERSION===shopPolicyVersion)&&
  new RegExp('^(?:sk|rk)_'+mode+'_').test(env.STRIPE_SECRET_KEY||'')&&
- (mode!=='test'||jsonArray(env.SHOP_TEST_EMAILS_JSON).length>0);
+ (mode!=='test'||jsonArray(env.SHOP_TEST_EMAILS_JSON).length>0)&&(!vatConfig.enabled||/^txr_[A-Za-z0-9]+$/.test(env.SHOP_VAT_TAX_RATE_ID||''));
 }
 async function hash(value:string){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))).map(b=>b.toString(16).padStart(2,'0')).join('');}
 function routeFor(env:ShopEnv,postalCode:string,city:string):VerifiedRoute|undefined {
@@ -71,10 +73,12 @@ export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetc
   if(!deliveryDays)throw new Error('Dostupnosť vybraných produktov musíme pred platbou znovu potvrdiť.');
   const shipping=shippingPrice(cart,input.shipping as ShippingMethod,customer,routeFor(env,customer.postalCode,customer.city),jsonArray(env.SHOP_PARCEL_IDS_JSON));
   const totalCents=cart.subtotalCents+shipping.cents;
-  if(path==='/api/shop/quote')return response({cart,shipping,totalCents,deliveryDays,termsVersion:env.SHOP_POLICIES_VERSION});
+  const tax=taxSummary(cart.lines,shipping.cents);
+  if(path==='/api/shop/quote')return response({cart,shipping,totalCents,tax,deliveryDays,termsVersion:env.SHOP_POLICIES_VERSION});
+  if(!checkoutTaxWindow())throw new Error('Platobnú stránku počas zmeny daňového režimu dočasne nemožno otvoriť. Skúste to neskôr alebo nás kontaktujte.');
   if(input.acceptedTerms!==env.SHOP_POLICIES_VERSION)throw new Error('Potvrďte aktuálne obchodné podmienky.');
   if(!/^[a-f0-9-]{36}$/.test(String(input.requestKey||'')))throw new Error('Obnovte formulár a skúste to znova.');
-  const snapshot:Snapshot={cart,shipping,customer,deliveryDays,termsVersion:env.SHOP_POLICIES_VERSION!,termsText:shopTermsText};
+  const snapshot:Snapshot={cart,shipping,customer,deliveryDays,tax,termsVersion:env.SHOP_POLICIES_VERSION!,termsText:shopTermsText};
   const payload=JSON.stringify(snapshot),fingerprint=await hash(payload);
   await env.SHOP_DB!.prepare('INSERT INTO shop_orders(id,request_key,fingerprint,total_cents,mode,payload,created_at) VALUES (?,?,?,?,?,?,?) ON CONFLICT(request_key) DO NOTHING').bind(crypto.randomUUID(),String(input.requestKey),fingerprint,totalCents,env.SHOP_MODE!,payload,Date.now()).run();
   const order=await env.SHOP_DB!.prepare('SELECT * FROM shop_orders WHERE request_key = ?').bind(String(input.requestKey)).first<Order>();
@@ -82,7 +86,7 @@ export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetc
   if(order.fingerprint!==fingerprint||order.mode!==env.SHOP_MODE)return response({error:'Obsah objednávky sa zmenil. Obnovte súhrn pred zaplatením.'},409);
   if(order.status!=='pending'||Date.now()-order.created_at>25*60*1000)return response({error:'Platnosť platobnej požiadavky skončila alebo už bola zaplatená. Skontrolujte stav objednávky.'},409);
   if(order.checkout_url)return response({url:order.checkout_url,orderId:order.id});
-  const session=await stripeSession(env.STRIPE_SECRET_KEY!,{id:order.id,totalCents,email:customer.email,lines:cart.lines,shipping,createdAt:order.created_at,...(staging?{testOrigin:target.origin}:{})},fetcher);
+  const session=await stripeSession(env.STRIPE_SECRET_KEY!,{id:order.id,totalCents,email:customer.email,lines:cart.lines,shipping,tax,taxRateId:env.SHOP_VAT_TAX_RATE_ID,createdAt:order.created_at,...(staging?{testOrigin:target.origin}:{})},fetcher);
   await env.SHOP_DB!.prepare('UPDATE shop_orders SET stripe_session=?,checkout_url=? WHERE id=? AND status=\'pending\'').bind(session.id,session.url,order.id).run();
   return response({url:session.url,orderId:order.id});
  }catch(error){
@@ -130,7 +134,7 @@ async function sendReceipts(env:ShopEnv,order:Order,fetcher:typeof fetch) {
  const snapshot=JSON.parse(order.payload) as Snapshot;
  const money=(n:number)=>new Intl.NumberFormat('sk-SK',{style:'currency',currency:'EUR'}).format(n/100);
  const short=order.id.slice(0,8).toUpperCase();
- const text=[`Platba za objednávku ${short} bola prijatá.`,...snapshot.cart.lines.map(l=>`${l.quantity} × ${l.name} (${l.model}): ${money(l.priceCents*l.quantity)}`),`${snapshot.shipping.name}: ${money(snapshot.shipping.cents)}`,`Spolu: ${money(order.total_cents)}`,'',`Zákazník: ${snapshot.customer.name}`,`Email: ${snapshot.customer.email}`,`Telefón: ${snapshot.customer.phone}`,`Adresa: ${snapshot.customer.street}, ${snapshot.customer.postalCode} ${snapshot.customer.city}`,snapshot.customer.company?`Firma: ${snapshot.customer.company}, IČO ${snapshot.customer.companyId}`:'',snapshot.customer.billingAddress?`Fakturačná adresa: ${snapshot.customer.billingAddress}`:'',`Dodanie tovaru do ${snapshot.deliveryDays} kalendárnych dní od potvrdenia objednávky a platby. Podrobnosti odovzdania s vami dohodneme.`,`Obchodné podmienky: https://cargobajk.sk/obchodne-informacie (verzia ${snapshot.termsVersion})`,'Podmienky vrátenia: https://cargobajk.sk/obchodne-informacie#vratenie-tovaru','Kontakt: hello@cargobajk.sk, +421 904 501 703',snapshot.termsText||shopTermsText].filter(Boolean).join('\n');
+ const text=[`Platba za objednávku ${short} bola prijatá.`,...snapshot.cart.lines.map(l=>`${l.quantity} × ${l.name} (${l.model}): ${money(l.priceCents*l.quantity)}`),`${snapshot.shipping.name}: ${money(snapshot.shipping.cents)}`,`Spolu: ${money(order.total_cents)}`,snapshot.tax?.regime==='vat_payer'?`Základ dane: ${money(snapshot.tax.netCents)}; DPH ${snapshot.tax.ratePercent} %: ${money(snapshot.tax.vatCents)} (zahrnutá v cene).`:snapshot.tax?.note||'Registrácia podľa §7a; DPH neúčtovaná.',`Predávajúci: Vivid Production s. r. o., IČO 57440603, IČ DPH SK2122732480`,'',`Zákazník: ${snapshot.customer.name}`,`Email: ${snapshot.customer.email}`,`Telefón: ${snapshot.customer.phone}`,`Adresa: ${snapshot.customer.street}, ${snapshot.customer.postalCode} ${snapshot.customer.city}`,snapshot.customer.company?`Firma: ${snapshot.customer.company}, IČO ${snapshot.customer.companyId}`:'',snapshot.customer.billingAddress?`Fakturačná adresa: ${snapshot.customer.billingAddress}`:'',`Dodanie tovaru do ${snapshot.deliveryDays} kalendárnych dní od potvrdenia objednávky a platby. Podrobnosti odovzdania s vami dohodneme.`,`Obchodné podmienky: https://cargobajk.sk/obchodne-informacie (verzia ${snapshot.termsVersion})`,'Podmienky vrátenia: https://cargobajk.sk/obchodne-informacie#vratenie-tovaru','Kontakt: hello@cargobajk.sk, +421 904 501 703',snapshot.termsText||shopTermsText].filter(Boolean).join('\n');
  for(const recipient of ['customer','seller']){
   const mail=await env.SHOP_DB!.prepare('SELECT sent_at FROM shop_mail WHERE order_id=? AND recipient=?').bind(order.id,recipient).first<{sent_at:number|null}>();
   if(mail?.sent_at)continue;
