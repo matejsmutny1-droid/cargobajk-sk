@@ -21,7 +21,7 @@ Samostatné doplnky: Packeta 5,90 €, kuriér 7,90 €. Konkrétny produkt a ce
 
 ## Produkčné závislosti — NEOBCHÁDZAŤ
 
-1. Hosting Cloudflare účtu `8e9cc22af924d22924d1432aa0cdffc4` bol dohľadaný v schválenom registračnom e-maile na vividproductionsro@gmail.com; čaká sa na prihlásenie týmto účtom (matejsmutny1@gmail.com má iba samostatný účet pre analytiku). Bežné GitHub nasadenie do main funguje, ale nemôže samo vytvoriť D1 ani nastaviť tajné kľúče bez prístupu k hostingu.
+1. Hosting Cloudflare účtu `8e9cc22af924d22924d1432aa0cdffc4` bol dohľadaný v schválenom registračnom e-maile na vividproductionsro@gmail.com; prístup týmto účtom bol overený 9. 11. 2026; (matejsmutny1@gmail.com má iba samostatný účet pre analytiku). Bežné GitHub nasadenie do main funguje, ale nemôže samo vytvoriť D1 ani nastaviť tajné kľúče bez prístupu k hostingu.
 2. V správnom účte vytvoriť D1, spustiť `migrations/0001_shop.sql`, pridať `SHOP_DB` binding do wrangler.jsonc. Žiadne osobné údaje sa nesmú ukladať do verejného repozitára.
 3. Stripe existujúci účet Vivid Production s.r.o.: prihlásenie overené v Chrome. Nastaviť secret key bezpečne do Cloudflare secrets, nie do chatu/commitu. Neoverené: oprávnenie prijímať platby, výplaty, podporované peňaženky a obchodné údaje/doména cargobajk.sk v nastavení účtu.
 4. Stripe webhook `https://cargobajk.sk/api/shop/webhook`: checkout.session.completed, checkout.session.async_payment_succeeded, checkout.session.expired. Webhook secret uložiť bezpečne do `STRIPE_WEBHOOK_SECRET`.
@@ -30,7 +30,7 @@ Samostatné doplnky: Packeta 5,90 €, kuriér 7,90 €. Konkrétny produkt a ce
 7. Doprava bicykla: `SHOP_ROUTES_JSON` obsahuje serverom/obchodníkom overené `{postalCode,city,km,expiresAt}`. Klient nesmie určovať kilometre ani cenu. Automatický routing zatiaľ NIE je napojený. Bez overenej trasy funguje iba osobný odber / individuálna ponuka.
 8. `SHOP_PARCEL_IDS_JSON`: iba ID produktov so skutočne overeným kuriérskym balením. Kombinované balíky a viac kusov vyžadujú ďalšie overenie.
 9. `RESEND_API_KEY` a `INQUIRY_FROM`: serverové existujúce nastavenie pre e-maily. Testovať iba s mockom alebo testovacími adresami pod kontrolou predajcu.
-10. Najprv Stripe test režim a skutočný test webhooku. Až potom `SHOP_MODE=live`, zodpovedajúce live secrets a produkčné overenie. Bez platnej konfigurácie backend odmieta objednávky.
+10. `SHOP_TEST_EMAILS_JSON`: explicitný zoznam testovacích adries pod kontrolou obchodníka. Bez neho test checkout nie je pripravený; iné adresy sa odmietnu ešte pred uložením objednávky a Stripe požiadavkou. Najprv Stripe test režim a skutočný test webhooku. Až potom `SHOP_MODE=live`, zodpovedajúce live secrets a produkčné overenie. Bez platnej konfigurácie backend odmieta objednávky.
 
 ## Overenie
 
@@ -47,4 +47,4 @@ Osobné údaje zatiaľ klient udržiava len v pamäti formulára. localStorage o
 - 12 checkout testov, 44 existujúcich testov formulárov/obchodu/analytiky, TypeScript a produkčný build prešli.
 - 9 SEO testov overilo 50 stránok a 113 obrázkov v samostatnej produkčnej oprave.
 - V Chrome manuálne overené: Flex + kompatibilné zrkadlo, košík 3 871 €, zadanie PSČ 01313 a výber Rajeckých Teplíc, kontrola objednávky. Bez zadania karty, skutočnej platby alebo externého testovacieho e-mailu.
-- Ostrý Stripe kľúč nebol skopírovaný, vytvorený ani uložený. Produkčná D1 ešte nie je vytvorená; výlučne lokálna testovacia D1 bola inicializovaná.
+- Ostrý Stripe kľúč nebol skopírovaný, vytvorený ani uložený. Produkčná D1 `cargobajk-orders` bola vytvorená v jurisdikcii EÚ: `96d6d5c1-ff9a-412e-80cb-deca2a7e20b2`. V konzole boli vytvorené a overené tabuľky `shop_orders`, `shop_mail`, `shop_rate`. Binding je pripravený v zdrojovej konfigurácii, zatiaľ nenasadený. UI formulár nebol uložený.

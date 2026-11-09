@@ -11,7 +11,7 @@ const {verifyStripeEvent}=await import('/tmp/cargobajk-shop-tests/stripe.js');
 function database(){const db=new DatabaseSync(':memory:');db.exec(readFileSync('migrations/0001_shop.sql','utf8'));return {db,prepare(sql){const statement=db.prepare(sql);return {bind(...args){return {first:async()=>statement.get(...args)||null,run:async()=>statement.run(...args),sql,args};}};},async batch(statements){db.exec('BEGIN');try{const results=statements.map(s=>db.prepare(s.sql).run(...s.args));db.exec('COMMIT');return results;}catch(e){db.exec('ROLLBACK');throw e;}}};}
 const customer={name:'Test Customer',email:'customer@example.test',street:'Testovacia 1',city:'Žilina',postalCode:'01001',phone:'+421900000000'};
 const cart=[{id:'bike:flex',quantity:1},{id:'accessory:1577-1',quantity:1,model:'flex'}];
-function setup(){const store=database();const env={SHOP_DB:store,SHOP_MODE:'test',STRIPE_SECRET_KEY:'sk_test_mock',STRIPE_WEBHOOK_SECRET:'whsec_mock',SHOP_POLICIES_VERSION:'test-terms',SHOP_PRODUCTS_JSON:JSON.stringify(Object.fromEntries(cart.map(l=>[l.id,{verifiedUntil:'2099-01-01',deliveryDays:21}]))),RESEND_API_KEY:'re_mock',INQUIRY_FROM:'test@vividproduction.sk'};let stripeCalls=0,mailCalls=0;const mock=async(url,options)=>{if(String(url).includes('stripe.com')){stripeCalls++;const p=new URLSearchParams(options.body);assert.equal(p.get('mode'),'payment');assert.equal(p.get('line_items[0][price_data][unit_amount]'),'384900');return Response.json({id:'cs_test_mock',url:'https://checkout.stripe.com/c/pay/cs_test_mock',currency:'eur',amount_total:387100,livemode:false});}mailCalls++;return Response.json({id:'mock-mail'});};return {store,env,mock,counts:()=>({stripeCalls,mailCalls})};}
+function setup(){const store=database();const env={SHOP_DB:store,SHOP_MODE:'test',SHOP_TEST_EMAILS_JSON:'["customer@example.test"]',STRIPE_SECRET_KEY:'sk_test_mock',STRIPE_WEBHOOK_SECRET:'whsec_mock',SHOP_POLICIES_VERSION:'test-terms',SHOP_PRODUCTS_JSON:JSON.stringify(Object.fromEntries(cart.map(l=>[l.id,{verifiedUntil:'2099-01-01',deliveryDays:21}]))),RESEND_API_KEY:'re_mock',INQUIRY_FROM:'test@vividproduction.sk'};let stripeCalls=0,mailCalls=0;const mock=async(url,options)=>{if(String(url).includes('stripe.com')){stripeCalls++;const p=new URLSearchParams(options.body);assert.equal(p.get('mode'),'payment');assert.equal(p.get('line_items[0][price_data][unit_amount]'),'384900');return Response.json({id:'cs_test_mock',url:'https://checkout.stripe.com/c/pay/cs_test_mock',currency:'eur',amount_total:387100,livemode:false});}mailCalls++;return Response.json({id:'mock-mail'});};return {store,env,mock,counts:()=>({stripeCalls,mailCalls})};}
 const request=(path,input)=>new Request('https://cargobajk.sk/api/shop/'+path,{method:'POST',headers:{Origin:'https://cargobajk.sk','Content-Type':'application/json'},body:JSON.stringify(input)});
 const input=()=>({cart,customer,shipping:'pickup',acceptedTerms:'test-terms',requestKey:crypto.randomUUID()});
 async function signature(raw,secret='whsec_mock',timestamp=Math.floor(Date.now()/1000)){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);const bytes=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(timestamp+'.'+raw));return `t=${timestamp},v1=${Buffer.from(bytes).toString('hex')}`;}
@@ -38,4 +38,14 @@ test('failed durable save never starts a payment; unknown paths and malformed JS
  const failed=await handleShop(request('checkout',input()),broken,mock);assert.equal(failed.status,400);assert.doesNotMatch(await failed.text(),/private SQL/);assert.equal(counts().stripeCalls,0);
  assert.equal((await handleShop(request('unknown',{}),env,mock)).status,404);
  assert.equal((await handleShop(new Request('https://cargobajk.sk/api/shop/checkout',{method:'POST',headers:{Origin:'https://cargobajk.sk','Content-Type':'application/json'},body:'{broken'}),env,mock)).status,400);
+});
+
+test('test checkout only accepts explicitly controlled recipients',async()=>{
+ const {env,mock,counts,store}=setup();
+ assert.equal(shopReady({...env,SHOP_TEST_EMAILS_JSON:undefined}),false);
+ const rejected=await handleShop(request('checkout',{...input(),customer:{...customer,email:'unrelated@example.test'}}),env,mock);
+ assert.equal(rejected.status,400);
+ assert.match((await rejected.json()).error,/testovacom režime/);
+ assert.equal(counts().stripeCalls,0);
+ assert.equal(store.db.prepare('SELECT COUNT(*) AS n FROM shop_orders').get().n,0);
 });

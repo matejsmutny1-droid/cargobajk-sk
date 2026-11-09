@@ -5,11 +5,20 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "d1_databases": [
+    {
+      "binding": "SHOP_DB",
+      "database_name": "cargobajk-orders",
+      "database_id": "96d6d5c1-ff9a-412e-80cb-deca2a7e20b2",
+      "migrations_dir": "migrations"
+    }
+  ],
   "assets": {
     "binding": "ASSETS",
     "directory": "dist/client"
   },
   "vars": {
+    "SHOP_MODE": "off",
     "INQUIRY_FROM": "cargobajk.sk <hello@vividproduction.sk>",
     "INQUIRY_ALLOWED_ORIGINS": "https://cargobajk.sk,https://www.cargobajk.sk"
   },

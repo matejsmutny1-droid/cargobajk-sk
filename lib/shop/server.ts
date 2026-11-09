@@ -6,7 +6,7 @@ import {stripeSession,verifyStripeEvent} from './stripe.ts';
 
 export type ShopEnv = {
  SHOP_DB?:D1Database; SHOP_MODE?:string; STRIPE_SECRET_KEY?:string; STRIPE_WEBHOOK_SECRET?:string;
- SHOP_POLICIES_VERSION?:string; SHOP_PRODUCTS_JSON?:string; SHOP_ROUTES_JSON?:string; SHOP_PARCEL_IDS_JSON?:string;
+ SHOP_POLICIES_VERSION?:string; SHOP_PRODUCTS_JSON?:string; SHOP_ROUTES_JSON?:string; SHOP_PARCEL_IDS_JSON?:string; SHOP_TEST_EMAILS_JSON?:string;
  RESEND_API_KEY?:string; INQUIRY_FROM?:string;
 };
 type Order = {id:string;request_key:string;fingerprint:string;total_cents:number;mode:string;status:string;payload:string;stripe_session:string|null;checkout_url:string|null;created_at:number};
@@ -16,7 +16,8 @@ const jsonArray=(s:string|undefined):string[]=>{try{const v=JSON.parse(s||'[]');
 export function shopReady(env:ShopEnv) {
  const mode=env.SHOP_MODE;
  return (mode==='test'||mode==='live')&&!!env.SHOP_DB&&!!env.STRIPE_WEBHOOK_SECRET&&!!env.RESEND_API_KEY?.startsWith('re_')&&/^[^\r\n]+@(?:[a-z0-9-]+\.)*vividproduction\.sk>?$/i.test(env.INQUIRY_FROM||'')&&!!env.SHOP_POLICIES_VERSION&&
- new RegExp('^(?:sk|rk)_'+mode+'_').test(env.STRIPE_SECRET_KEY||'');
+ new RegExp('^(?:sk|rk)_'+mode+'_').test(env.STRIPE_SECRET_KEY||'')&&
+ (mode!=='test'||jsonArray(env.SHOP_TEST_EMAILS_JSON).length>0);
 }
 async function hash(value:string){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))).map(b=>b.toString(16).padStart(2,'0')).join('');}
 function routeFor(env:ShopEnv,postalCode:string,city:string):VerifiedRoute|undefined {
@@ -61,6 +62,7 @@ export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetc
   const cart=priceCart(input.cart);
   const customer=parseOrderCustomer(input.customer);
   if(!customer)throw new Error('Skontrolujte kontaktné a adresné údaje.');
+  if(env.SHOP_MODE==='test'&&!jsonArray(env.SHOP_TEST_EMAILS_JSON).some(email=>email.toLowerCase()===customer.email.toLowerCase()))throw new Error('Objednávku v testovacom režime možno vytvoriť iba s povolenou testovacou e-mailovou adresou.');
   const deliveryDays=deliveryDaysFor(env,cart.lines);
   if(!deliveryDays)throw new Error('Dostupnosť vybraných produktov musíme pred platbou znovu potvrdiť.');
   const shipping=shippingPrice(cart,input.shipping as ShippingMethod,customer,routeFor(env,customer.postalCode,customer.city),jsonArray(env.SHOP_PARCEL_IDS_JSON));
