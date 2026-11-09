@@ -10,6 +10,7 @@
       "binding": "SHOP_DB",
       "database_name": "cargobajk-orders",
       "database_id": "96d6d5c1-ff9a-412e-80cb-deca2a7e20b2",
+      "preview_database_id": "286406c3-7b40-46f3-bf75-1c4966596a3f",
       "migrations_dir": "migrations"
     }
   ],
