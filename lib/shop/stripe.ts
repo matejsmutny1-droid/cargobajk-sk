@@ -1,0 +1,26 @@
+export async function stripeSession(key:string,order:{id:string;totalCents:number;email:string;createdAt:number;lines:{name:string;quantity:number;priceCents:number}[];shipping:{name:string;cents:number}},fetcher:typeof fetch=fetch) {
+ const body=new URLSearchParams({mode:'payment',locale:'sk',customer_email:order.email,client_reference_id:order.id,'metadata[order_id]':order.id,'payment_method_types[0]':'card',
+  success_url:'https://cargobajk.sk/objednavka#'+order.id,cancel_url:'https://cargobajk.sk/kosik?platba=zrusena',expires_at:String(Math.floor(order.createdAt/1000)+1800)});
+ [...order.lines,{name:order.shipping.name,quantity:1,priceCents:order.shipping.cents}].filter(l=>l.priceCents>0).forEach((l,i)=>{
+  body.set(`line_items[${i}][quantity]`,String(l.quantity));body.set(`line_items[${i}][price_data][currency]`,'eur');body.set(`line_items[${i}][price_data][unit_amount]`,String(l.priceCents));body.set(`line_items[${i}][price_data][product_data][name]`,l.name);
+ });
+ const result=await fetcher('https://api.stripe.com/v1/checkout/sessions',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/x-www-form-urlencoded','Idempotency-Key':'checkout-'+order.id,'Stripe-Version':'2026-10-28.endive'},body});
+ if(!result.ok)throw new Error('Platobnú stránku sa nepodarilo vytvoriť. Skúste to znova.');
+ const value=await result.json() as {id:string;url:string;amount_total:number;currency:string;livemode:boolean};
+ if(!value.id?.startsWith('cs_')||typeof value.url!=='string'||new URL(value.url).hostname!=='checkout.stripe.com'||new URL(value.url).protocol!=='https:'||value.amount_total!==order.totalCents||value.currency!=='eur'||value.livemode!==/^(?:sk|rk)_live_/.test(key))throw new Error('Platobnú stránku sa nepodarilo overiť.');
+ return value;
+}
+export async function verifyStripeEvent(raw:string,signature:string,secret:string,now=Date.now()) {
+ const parts=signature.split(',').map(p=>p.split('='));
+ const timestamp=parts.find(p=>p[0]==='t')?.[1];
+ if(!timestamp||!/^\d+$/.test(timestamp)||Math.abs(now/1000-Number(timestamp))>300)throw new Error('Invalid signature');
+ const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['verify']);
+ let valid=false;
+ for(const [,hex] of parts.filter(p=>p[0]==='v1')) {
+  if(!/^[a-f0-9]{64}$/.test(hex))continue;
+  const bytes=new Uint8Array(hex.match(/../g)!.map(v=>parseInt(v,16)));
+  if(await crypto.subtle.verify('HMAC',key,bytes,new TextEncoder().encode(timestamp+'.'+raw)))valid=true;
+ }
+ if(!valid)throw new Error('Invalid signature');
+ return JSON.parse(raw);
+}

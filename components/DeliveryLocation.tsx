@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useId, useState} from 'react';
+import {useEffect, useId, useState, useRef} from 'react';
 
 type Postcodes = Record<string, string[]>;
 let postcodes: Promise<Postcodes> | undefined;
@@ -10,21 +10,22 @@ function loadPostcodes() {
   }).catch(error => {postcodes = undefined; throw error;});
 }
 
-export default function DeliveryLocation({english = false}: {english?: boolean}) {
+export default function DeliveryLocation({english = false, initialPostalCode = '', initialCity = ''}: {english?: boolean; initialPostalCode?: string; initialCity?: string}) {
   const id = useId();
   const t = (sk: string, en: string) => english ? en : sk;
-  const [postalCode, setPostalCode] = useState('');
-  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState(initialPostalCode);
+  const [city, setCity] = useState(initialCity);
   const [places, setPlaces] = useState<string[]>([]);
   const [manual, setManual] = useState(false);
   const [status, setStatus] = useState('');
   const code = postalCode.replace(/\s/g, '');
+  const previousCode = useRef(code);
 
   useEffect(() => {
     let current = true;
     setPlaces([]); setManual(false); setStatus('');
     if (!/^\d{5}$/.test(code)) return;
-    setCity('');
+    if (previousCode.current !== code) {setCity(''); previousCode.current = code;}
     setStatus(t('Hľadám mesto…', 'Looking up town…'));
     loadPostcodes().then(data => {
       if (!current) return;

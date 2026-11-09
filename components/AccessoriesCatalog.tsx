@@ -1,4 +1,5 @@
 'use client';
+import {AddToCart} from './ShopCart';
 import {useRef, useState} from 'react';
 import Link from '@/components/PageLink';
 import Arrow from '@/components/Arrow';
@@ -24,7 +25,7 @@ export default function AccessoriesCatalog({english=false}:{english?:boolean}) {
       </button>
       <div className="accessory-card-copy"><span className="eyebrow">{english?accessoryCategories.find(group=>group.id===item.category)?.en:accessoryCategories.find(group=>group.id===item.category)?.sk}</span><h2>{name(item)}</h2><p>{english?item.descriptionEn:item.description}</p>
       <strong className="accessory-catalog-price">{item.priceEur===null?t('Cena na dopyt','Price on request'):quoteMoney(item.priceEur,english)}</strong>
-      <details className="accessory-fit"><summary>{t('Pre ktoré bicykle?','Which bikes does it fit?')}</summary><p>{item.models.length?item.models.map(slug=>bikes.find(bike=>bike.slug===slug)?.name).join(', '):t('Vhodné vyhotovenie vyberieme podľa konkrétneho bicykla.','We will select a suitable version for your specific bike.')}</p><p>{t('Kompatibilitu s ročníkom a verziou potvrdíme pred objednaním.','We confirm compatibility with the model year and version before ordering.')}</p></details>
+      {item.priceEur!==null&&<AddToCart id={'accessory:'+item.id} english={english}/>}<details className="accessory-fit"><summary>{t('Pre ktoré bicykle?','Which bikes does it fit?')}</summary><p>{item.models.length?item.models.map(slug=>bikes.find(bike=>bike.slug===slug)?.name).join(', '):t('Vhodné vyhotovenie vyberieme podľa konkrétneho bicykla.','We will select a suitable version for your specific bike.')}</p><p>{t('Kompatibilitu s ročníkom a verziou potvrdíme pred objednaním.','We confirm compatibility with the model year and version before ordering.')}</p></details>
       <Link className="text-link" href={(english?'/en':'')+'/kontakt?doplnok='+encodeURIComponent(item.id)+'#dopyt'}>{t('Mám záujem','Enquire about this')} <Arrow/></Link></div>
     </article>)}</div>
     {!items.length&&<div className="accessories-empty"><h2>{t('S touto výbavou vám poradíme osobne.','We can help you choose equipment personally.')}</h2><p>{t('Pre zvolený model tu zatiaľ nemáme potvrdený doplnok z tejto kategórie. Napíšte nám, čo potrebujete.','We do not yet list confirmed accessories in this category for your chosen model. Tell us what you need.')}</p><Link href={(english?'/en':'')+'/kontakt#dopyt'} className="button dark">{t('Poradiť s doplnkami','Ask about accessories')} <Arrow/></Link></div>}

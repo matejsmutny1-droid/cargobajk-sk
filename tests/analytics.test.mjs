@@ -8,7 +8,7 @@ test('production catalogue, product and contact pages are measured in both langu
  }
 });
 test('private offers, quote forms and API routes never load analytics, including query or fragment links',()=>{
- for(const path of ['/sprava-ponuky#private-offer','/potvrdenie-ponuky#customer-offer','/nezavazna-ponuka?model=flex','/api/inquiry','/en/nezavazna-ponuka?model=flex','/en/potvrdenie-ponuky#customer-offer','/sprava-ponuky/']) {
+ for(const path of ['/sprava-ponuky#private-offer','/potvrdenie-ponuky#customer-offer','/nezavazna-ponuka?model=flex','/kosik','/objednavka','/api/inquiry','/en/nezavazna-ponuka?model=flex','/en/potvrdenie-ponuky#customer-offer','/sprava-ponuky/']) {
   assert.equal(webAnalyticsEnabled(new URL('https://cargobajk.sk'+path)),false,path);
  }
 });

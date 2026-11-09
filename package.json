@@ -12,7 +12,8 @@
     "test:forms": "node --experimental-strip-types --test tests/inquiry.test.mjs",
     "typecheck": "tsc --noEmit",
     "test:seo": "node --test tests/seo.mjs",
-    "test:commerce": "node --experimental-strip-types --test tests/commerce.test.mjs"
+    "test:commerce": "node --experimental-strip-types --test tests/commerce.test.mjs",
+    "test:shop": "node --test tests/shop.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -60,7 +61,8 @@
     "typescript": "5.9.3",
     "vinext": "1.0.0-beta.5",
     "vite": "8.0.13",
-    "wrangler": "4.92.0"
+    "wrangler": "4.92.0",
+    "esbuild": "0.28.0"
   },
   "type": "module",
   "overrides": {

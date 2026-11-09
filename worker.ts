@@ -1,3 +1,4 @@
+import {handleShop,type ShopEnv} from './lib/shop/server';
 import handler from "vinext/server/fetch-handler";
 import {webAnalyticsEnabled} from './lib/web-analytics';
 
@@ -8,6 +9,7 @@ export default {
       url.hostname = 'cargobajk.sk'; url.protocol = 'https:';
       return Response.redirect(url.toString(), 308);
     }
+    if (url.pathname.startsWith('/api/shop/')) return handleShop(request,env as ShopEnv);
     // Historical malformed catalogue URL reported by Search Console (crawl 2026-10-30).
     // Match only this known URL; genuine missing pages must retain their HTTP 404.
     if (url.pathname === '/bicykle:1nfp05z') {
@@ -24,7 +26,7 @@ export default {
     const response = await handler.fetch(new Request(request, {headers: requestHeaders}), env, ctx);
     if (!(response.headers.get('content-type') ?? '').includes('text/html')) return response;
     const headers = new Headers(response.headers);
-    if (/^\/(?:en\/)?(?:sprava-ponuky|potvrdenie-ponuky|nezavazna-ponuka|sukromie)(?:\/|$)/.test(url.pathname) || url.hostname !== 'cargobajk.sk') {
+    if (/^\/(?:en\/)?(?:sprava-ponuky|potvrdenie-ponuky|nezavazna-ponuka|sukromie|kosik|objednavka)(?:\/|$)/.test(url.pathname) || url.hostname !== 'cargobajk.sk') {
       headers.set('X-Robots-Tag', 'noindex, nofollow');
     }
     // Revalidate documents so an older page cannot retain a broken router build.

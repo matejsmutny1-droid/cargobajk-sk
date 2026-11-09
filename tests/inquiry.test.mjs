@@ -225,7 +225,7 @@ test('customer links are purpose separated, encrypted, expire and reject tamperi
  assert.equal(token.includes('buyer'),false);
  await assert.rejects(()=>openCustomerToken(token,'different-key'));
  await assert.rejects(()=>openCustomerToken(token,settings.apiKey,Date.now()+15*86400000));
- await assert.rejects(()=>openCustomerToken(token.slice(0,30)+'A'+token.slice(31),settings.apiKey));
+ await assert.rejects(()=>openCustomerToken(token.slice(0,30)+(token[30]==='A'?'B':'A')+token.slice(31),settings.apiKey));
  await assert.rejects(()=>openReviewToken(token,settings.apiKey));
 });
 test('customer submission validates address and confirmation and never trusts client price or email',async()=>{
