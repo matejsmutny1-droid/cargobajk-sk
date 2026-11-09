@@ -1,4 +1,4 @@
-/** Launch policy candidate. Publication requires the operator's approval. */
+/** Online-sale terms and privacy approved by the operator on 2026-11-09. */
 export const shopPolicyVersion='2026-11-09';
 export const shopTermsBlocks=[
  {
