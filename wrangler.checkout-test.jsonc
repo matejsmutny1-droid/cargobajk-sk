@@ -1,0 +1,22 @@
+{
+  "name": "cargobajk-checkout-test",
+  "account_id": "8e9cc22af924d22924d1432aa0cdffc4",
+  "main": "tests/shop-staging-worker.ts",
+  "compatibility_date": "2026-10-19",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [],
+  "d1_databases": [{
+    "binding": "SHOP_DB",
+    "database_name": "cargobajk-orders-test",
+    "database_id": "286406c3-7b40-46f3-bf75-1c4966596a3f"
+  }],
+  "vars": {
+    "SHOP_MODE": "test",
+    "SHOP_TEST_DISABLE_EMAILS": "true",
+    "SHOP_TEST_EMAILS_JSON": "[\"smutny@cargobajk.sk\"]",
+    "SHOP_POLICIES_VERSION": "TEST_ONLY_NO_SALE_2026-11-09",
+    "SHOP_PRODUCTS_JSON": "{\"bike:flex\":{\"verifiedUntil\":\"2099-01-01\",\"deliveryDays\":21},\"accessory:1577-1\":{\"verifiedUntil\":\"2099-01-01\",\"deliveryDays\":21}}"
+  },
+  "observability": {"enabled": false}
+}

@@ -15,7 +15,7 @@ function setup(){const store=database();const env={SHOP_DB:store,SHOP_MODE:'test
 const request=(path,input)=>new Request('https://cargobajk.sk/api/shop/'+path,{method:'POST',headers:{Origin:'https://cargobajk.sk','Content-Type':'application/json'},body:JSON.stringify(input)});
 const input=()=>({cart,customer,shipping:'pickup',acceptedTerms:'test-terms',requestKey:crypto.randomUUID()});
 async function signature(raw,secret='whsec_mock',timestamp=Math.floor(Date.now()/1000)){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);const bytes=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(timestamp+'.'+raw));return `t=${timestamp},v1=${Buffer.from(bytes).toString('hex')}`;}
-async function eventRequest(orderId,overrides={},type='checkout.session.completed'){const body=JSON.stringify({id:'evt_mock',type,livemode:false,data:{object:{id:'cs_test_mock',metadata:{order_id:orderId},client_reference_id:orderId,mode:'payment',livemode:false,currency:'eur',amount_total:387100,payment_status:'paid',...overrides}}});return new Request('https://cargobajk.sk/api/shop/webhook',{method:'POST',headers:{'stripe-signature':await signature(body)},body});}
+async function eventRequest(orderId,overrides={},type='checkout.session.completed'){const body=JSON.stringify({id:'evt_mock',type,livemode:false,data:{object:{id:'cs_test_mock',metadata:{order_id:orderId,store:'cargobajk.sk'},client_reference_id:orderId,mode:'payment',livemode:false,currency:'eur',amount_total:387100,payment_status:'paid',...overrides}}});return new Request('https://cargobajk.sk/api/shop/webhook',{method:'POST',headers:{'stripe-signature':await signature(body)},body});}
 test('approved shipping boundaries and invalid distances',()=>{for(const [km,cents] of [[0,15000],[100,15000],[100.01,22000],[200,22000],[200.01,29000],[300,29000],[301,35000]])assert.equal(bikeDeliveryCents(km),cents);for(const km of [-1,NaN,Infinity])assert.throws(()=>bikeDeliveryCents(km));});
 test('catalogue owns prices; unknown, incompatible and duplicate products fail',()=>{assert.equal(priceCart(cart.map(l=>({...l,priceCents:1}))).subtotalCents,387100);assert.throws(()=>priceCart([{id:'accessory:1529-17',quantity:1}]));assert.throws(()=>priceCart([...cart,cart[0]]));assert.throws(()=>priceCart([{id:'bike:flex',quantity:1},{id:'accessory:canopy',model:'delight',quantity:1}]));assert.throws(()=>priceCart([{id:'bike:flex',quantity:2}]));});
 test('no delivery fallback to free; route must match exact town and be current',()=>{const c=priceCart(cart);assert.throws(()=>shippingPrice(c,'bike-delivery',customer));assert.throws(()=>shippingPrice(c,'courier',customer));assert.throws(()=>shippingPrice(c,'bike-delivery',customer,{postalCode:'01001',city:'Bratislava',km:10,expiresAt:Date.now()+10000}));assert.equal(shippingPrice(c,'bike-delivery',customer,{postalCode:'01001',city:'Žilina',km:101,expiresAt:Date.now()+10000}).cents,22000);});
@@ -63,4 +63,46 @@ test('cargobajk payments carry their own branding and statement suffix',async()=
  assert.equal(sent.get('payment_intent_data[statement_descriptor_suffix]'),'CARGOBAJK.SK');
  assert.equal(sent.get('payment_intent_data[metadata][store]'),'cargobajk.sk');
  assert.equal(sent.has('payment_intent_data[statement_descriptor]'),false);
+});
+
+test('shared-account events for other shops are acknowledged without processing',async()=>{
+ const {env,mock,counts,store}=setup();
+ const r=await handleShop(await eventRequest(crypto.randomUUID(),{metadata:{store:'merch'}}),env,mock);
+ assert.equal(r.status,200); assert.equal(counts().mailCalls,0);
+ assert.equal(store.db.prepare('SELECT COUNT(*) AS n FROM shop_orders').get().n,0);
+});
+test('test email bypass cannot activate a live shop without email configuration',async()=>{
+ const {env}=setup();
+ const testOnly={...env,RESEND_API_KEY:undefined,INQUIRY_FROM:undefined,SHOP_TEST_DISABLE_EMAILS:'true'};
+ assert.equal(shopReady(testOnly),true);
+ assert.equal(shopReady({...testOnly,SHOP_MODE:'live',STRIPE_SECRET_KEY:'sk_live_mock'}),false);
+});
+test('verified test payments can be exercised without sending emails',async()=>{
+ const {env,mock,counts,store}=setup();env.SHOP_TEST_DISABLE_EMAILS='true';
+ const order=await(await handleShop(request('checkout',input()),env,mock)).json();
+ assert.equal((await handleShop(await eventRequest(order.orderId),env,mock)).status,200);
+ assert.equal(store.db.prepare('SELECT status FROM shop_orders').get().status,'paid');
+ assert.equal(counts().mailCalls,0);
+});
+
+test('staging API accepts only configured test origin and never extends live origins',async()=>{
+ const {env,mock}=setup();
+ const origin='https://cargobajk-checkout-test.example.workers.dev';
+ const r=()=>new Request(origin+'/api/shop/quote',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify(input())});
+ assert.equal((await handleShop(r(),env,mock)).status,403);
+ assert.equal((await handleShop(r(),{...env,SHOP_TEST_ORIGIN:origin},mock)).status,200);
+ assert.equal((await handleShop(r(),{...env,SHOP_TEST_ORIGIN:origin,SHOP_MODE:'live',STRIPE_SECRET_KEY:'sk_live_mock'},mock)).status,403);
+});
+test('Stripe test return origin is restricted to workers.dev and ignored by live keys',async()=>{
+ const base={id:crypto.randomUUID(),email:'customer@example.test',createdAt:Date.now(),totalCents:1000,lines:[{name:'Test',quantity:1,priceCents:1000}],shipping:{name:'Pickup',cents:0}};
+ for(const [key,testOrigin,expected] of [
+  ['sk_test_mock','https://cargobajk-checkout-test.example.workers.dev','https://cargobajk-checkout-test.example.workers.dev'],
+  ['sk_test_mock','https://evil.example','https://cargobajk.sk'],
+  ['sk_live_mock','https://cargobajk-checkout-test.example.workers.dev','https://cargobajk.sk']
+ ]){
+  let params;
+  await stripeSession(key,{...base,testOrigin},async(url,options)=>{params=new URLSearchParams(options.body);return Response.json({id:'cs_test_return',url:'https://checkout.stripe.com/c/pay/cs_test_return',currency:'eur',amount_total:1000,livemode:key.startsWith('sk_live')});});
+  assert.equal(params.get('success_url'),expected+'/objednavka#'+base.id);
+  assert.equal(params.get('cancel_url'),expected+'/kosik?platba=zrusena');
+ }
 });

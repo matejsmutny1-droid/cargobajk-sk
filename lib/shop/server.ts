@@ -7,6 +7,7 @@ import {stripeSession,verifyStripeEvent} from './stripe.ts';
 export type ShopEnv = {
  SHOP_DB?:D1Database; SHOP_MODE?:string; STRIPE_SECRET_KEY?:string; STRIPE_WEBHOOK_SECRET?:string;
  SHOP_POLICIES_VERSION?:string; SHOP_PRODUCTS_JSON?:string; SHOP_ROUTES_JSON?:string; SHOP_PARCEL_IDS_JSON?:string; SHOP_TEST_EMAILS_JSON?:string;
+ SHOP_TEST_ORIGIN?:string; SHOP_TEST_DISABLE_EMAILS?:string;
  RESEND_API_KEY?:string; INQUIRY_FROM?:string;
 };
 type Order = {id:string;request_key:string;fingerprint:string;total_cents:number;mode:string;status:string;payload:string;stripe_session:string|null;checkout_url:string|null;created_at:number};
@@ -15,7 +16,8 @@ const response=(value:unknown,status=200)=>Response.json(value,{status,headers:{
 const jsonArray=(s:string|undefined):string[]=>{try{const v=JSON.parse(s||'[]');return Array.isArray(v)&&v.every(x=>typeof x==='string')?v:[];}catch{return [];}};
 export function shopReady(env:ShopEnv) {
  const mode=env.SHOP_MODE;
- return (mode==='test'||mode==='live')&&!!env.SHOP_DB&&!!env.STRIPE_WEBHOOK_SECRET&&!!env.RESEND_API_KEY?.startsWith('re_')&&/^[^\r\n]+@(?:[a-z0-9-]+\.)*vividproduction\.sk>?$/i.test(env.INQUIRY_FROM||'')&&!!env.SHOP_POLICIES_VERSION&&
+ const mailReady=mode==='test'&&env.SHOP_TEST_DISABLE_EMAILS==='true'||!!env.RESEND_API_KEY?.startsWith('re_')&&/^[^\r\n]+@(?:[a-z0-9-]+\.)*vividproduction\.sk>?$/i.test(env.INQUIRY_FROM||'');
+ return (mode==='test'||mode==='live')&&!!env.SHOP_DB&&!!env.STRIPE_WEBHOOK_SECRET&&mailReady&&!!env.SHOP_POLICIES_VERSION&&
  new RegExp('^(?:sk|rk)_'+mode+'_').test(env.STRIPE_SECRET_KEY||'')&&
  (mode!=='test'||jsonArray(env.SHOP_TEST_EMAILS_JSON).length>0);
 }
@@ -38,7 +40,8 @@ export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetc
  if(request.method!=='POST')return response({error:'Method not allowed'},405);
  const origin=request.headers.get('Origin');
  const target=new URL(request.url);
- if(origin!==target.origin||(!['cargobajk.sk','localhost','127.0.0.1'].includes(target.hostname)))return response({error:'Nepovolený pôvod požiadavky.'},403);
+ const staging=env.SHOP_MODE==='test'&&target.origin===env.SHOP_TEST_ORIGIN&&target.protocol==='https:'&&target.hostname.endsWith('.workers.dev');
+ if(origin!==target.origin||(!['cargobajk.sk','localhost','127.0.0.1'].includes(target.hostname)&&!staging))return response({error:'Nepovolený pôvod požiadavky.'},403);
  if(!request.headers.get('Content-Type')?.startsWith('application/json'))return response({error:'Vyžaduje sa JSON.'},415);
  if(!shopReady(env))return response({error:'Online platby zatiaľ nie sú aktivované. Napíšte nám pre dokončenie objednávky.'},503);
  try{
@@ -78,7 +81,7 @@ export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetc
   if(order.fingerprint!==fingerprint||order.mode!==env.SHOP_MODE)return response({error:'Obsah objednávky sa zmenil. Obnovte súhrn pred zaplatením.'},409);
   if(order.status!=='pending'||Date.now()-order.created_at>25*60*1000)return response({error:'Platnosť platobnej požiadavky skončila alebo už bola zaplatená. Skontrolujte stav objednávky.'},409);
   if(order.checkout_url)return response({url:order.checkout_url,orderId:order.id});
-  const session=await stripeSession(env.STRIPE_SECRET_KEY!,{id:order.id,totalCents,email:customer.email,lines:cart.lines,shipping,createdAt:order.created_at},fetcher);
+  const session=await stripeSession(env.STRIPE_SECRET_KEY!,{id:order.id,totalCents,email:customer.email,lines:cart.lines,shipping,createdAt:order.created_at,...(staging?{testOrigin:target.origin}:{})},fetcher);
   await env.SHOP_DB!.prepare('UPDATE shop_orders SET stripe_session=?,checkout_url=? WHERE id=? AND status=\'pending\'').bind(session.id,session.url,order.id).run();
   return response({url:session.url,orderId:order.id});
  }catch(error){
@@ -104,6 +107,8 @@ async function webhook(request:Request,env:ShopEnv,fetcher:typeof fetch) {
  if(!['checkout.session.completed','checkout.session.async_payment_succeeded','checkout.session.expired'].includes(event.type))return response({received:true});
  const session=event.data?.object;
  if(event.livemode!==(env.SHOP_MODE==='live')||session?.livemode!==event.livemode)return response({},400);
+ // A shared merchant account also serves other shops. Never process their sessions.
+ if(session?.metadata?.store!=='cargobajk.sk')return response({received:true});
  const order=await env.SHOP_DB!.prepare('SELECT * FROM shop_orders WHERE id = ?').bind(session?.metadata?.order_id||'').first<Order>();
  if(!order||order.stripe_session!==session.id)return response({},503);
  if(order.mode!==env.SHOP_MODE||session.currency!=='eur'||session.amount_total!==order.total_cents||session.client_reference_id!==order.id||session.mode!=='payment')return response({},400);
@@ -116,7 +121,7 @@ async function webhook(request:Request,env:ShopEnv,fetcher:typeof fetch) {
    env.SHOP_DB!.prepare("UPDATE shop_orders SET status='paid',paid_at=COALESCE(paid_at,?) WHERE id=?").bind(Date.now(),order.id),
    ...['customer','seller'].map(recipient=>env.SHOP_DB!.prepare('INSERT OR IGNORE INTO shop_mail(order_id,recipient) VALUES (?,?)').bind(order.id,recipient))
   ]);
-  await sendReceipts(env,order,fetcher);
+  if(!(env.SHOP_MODE==='test'&&env.SHOP_TEST_DISABLE_EMAILS==='true'))await sendReceipts(env,order,fetcher);
   return response({received:true});
  }catch{return response({},503);}
 }

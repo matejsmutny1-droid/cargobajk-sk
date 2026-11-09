@@ -60,3 +60,16 @@ Osobné údaje zatiaľ klient udržiava len v pamäti formulára. localStorage o
 - `payment_intent_data.statement_descriptor_suffix=CARGOBAJK.SK`; po používateľom schválenej zmene skráteného prefixu účtu na `VIVID` sa skladá `VIVID* CARGOBAJK.SK`. Skutočné zobrazenie závisí od banky. Základný descriptor pre existujúce platby zostal zachovaný.
 - Doplnená identifikácia obchodu a objednávky do PaymentIntent metadata.
 - 14 shop testov prešlo vrátane regresie týchto parametrov. Skutočná Stripe Checkout session so značkou sa ešte netestovala, zmena kódu ešte nie je nasadená.
+
+## Oddelené testovanie (pripravené, zatiaľ nenasadené)
+
+`wrangler.checkout-test.jsonc` definuje Worker `cargobajk-checkout-test` bez vlastných domén a bez produkčnej databázy. Viaže iba `cargobajk-orders-test`.
+
+- Webový test v `tests/shop-staging-worker.ts` používa syntetickú objednávku a jedinú povolenú adresu obchodníka. Zobrazuje výslovné označenie TEST.
+- `SHOP_TEST_DISABLE_EMAILS=true` vynechá odosielanie e-mailov iba pri `SHOP_MODE=test`; pri live režime sa bez Resend konfigurácie checkout neaktivuje.
+- Po prvom nasadení nastaviť `SHOP_TEST_ORIGIN` na presnú získanú HTTPS workers.dev adresu. Iba v test režime je povolený tento pôvod a návrat zo Stripe na staging.
+- Pri vytváraní Checkout session sa posiela `metadata.store=cargobajk.sk`; webhook ignoruje udalosti iných obchodov spoločného účtu.
+- Produkčný Worker už bezpečne uchováva testovací Stripe kľúč ako šifrovaný `STRIPE_SECRET_KEY`. Do test Workeru sa má vložiť rovnakým UI prenosom až po jeho vytvorení. Žiadne secrets v zdrojových súboroch.
+- Testovací webhook zatiaľ NIE je vytvorený. Pripravený formulár Stripe sa pred uložením musí nastaviť na skutočnú testovaciu workers.dev adresu. Udalosti: completed, async_payment_succeeded, expired; snapshot API 2026-10-28.endive.
+- Wrangler zatiaľ nemá autorizáciu. Používateľ dostal konkrétnu otázku na OAuth rozsahy Workers:write + account/profile read a samostatne na testovací webhook.
+- 19 shop testov prešlo. Samostatný testovací Worker sa úspešne zbalil ako ESM pre browser/Workers (53,7 kB). Skutočná Stripe platobná session a podpísaný externý callback ešte neboli overené.
