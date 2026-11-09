@@ -1,5 +1,16 @@
 export async function stripeSession(key:string,order:{id:string;totalCents:number;email:string;createdAt:number;lines:{name:string;quantity:number;priceCents:number}[];shipping:{name:string;cents:number}},fetcher:typeof fetch=fetch) {
  const body=new URLSearchParams({mode:'payment',locale:'sk',customer_email:order.email,client_reference_id:order.id,'metadata[order_id]':order.id,'payment_method_types[0]':'card',
+  'branding_settings[display_name]':'cargobajk.sk',
+  'branding_settings[background_color]':'#F6F2EC',
+  'branding_settings[button_color]':'#6B0F1F',
+  'branding_settings[logo][type]':'url',
+  'branding_settings[logo][url]':'https://cargobajk.sk/brand/email-logo.png',
+  'branding_settings[icon][type]':'url',
+  'branding_settings[icon][url]':'https://cargobajk.sk/brand/icon-512-v2.png',
+  'payment_intent_data[statement_descriptor_suffix]':'CARGOBAJK.SK',
+  'payment_intent_data[description]':'cargobajk.sk — objednávka '+order.id.slice(0,8).toUpperCase(),
+  'payment_intent_data[metadata][order_id]':order.id,
+  'payment_intent_data[metadata][store]':'cargobajk.sk',
   success_url:'https://cargobajk.sk/objednavka#'+order.id,cancel_url:'https://cargobajk.sk/kosik?platba=zrusena',expires_at:String(Math.floor(order.createdAt/1000)+1800)});
  [...order.lines,{name:order.shipping.name,quantity:1,priceCents:order.shipping.cents}].filter(l=>l.priceCents>0).forEach((l,i)=>{
   body.set(`line_items[${i}][quantity]`,String(l.quantity));body.set(`line_items[${i}][price_data][currency]`,'eur');body.set(`line_items[${i}][price_data][unit_amount]`,String(l.priceCents));body.set(`line_items[${i}][price_data][product_data][name]`,l.name);

@@ -53,3 +53,10 @@ Osobné údaje zatiaľ klient udržiava len v pamäti formulára. localStorage o
 
 - Zmeny `c1ec4ba`: 13 shop testov prešlo. Opakovaná kontrola TypeScript sa zasekla na existujúcej zdieľanej závislostnej ceste a bola prerušená; nejde o úspešnú novú kontrolu typov.
 - D1 produkcia a náhľady sú oddelené a uložené v Cloudflare. Checkout kód ani Stripe secrets zatiaľ nie sú nasadené; platby zostávajú vypnuté.
+
+## Označenie cargobajk platieb
+
+- Checkout session má samostatné `branding_settings`: cargobajk.sk, verejné logo a ikona, krémové pozadie a burgundové tlačidlo. Ide iba o platby vytvárané týmto obchodom, nie o globálny rebranding účtu.
+- `payment_intent_data.statement_descriptor_suffix=CARGOBAJK.SK`; po používateľom schválenej zmene skráteného prefixu účtu na `VIVID` sa skladá `VIVID* CARGOBAJK.SK`. Skutočné zobrazenie závisí od banky. Základný descriptor pre existujúce platby zostal zachovaný.
+- Doplnená identifikácia obchodu a objednávky do PaymentIntent metadata.
+- 14 shop testov prešlo vrátane regresie týchto parametrov. Skutočná Stripe Checkout session so značkou sa ešte netestovala, zmena kódu ešte nie je nasadená.

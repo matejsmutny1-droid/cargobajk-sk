@@ -7,7 +7,7 @@ await build({entryPoints:['lib/shop/server.ts','lib/shop/shipping.ts','lib/shop/
 const {handleShop,shopReady}=await import('/tmp/cargobajk-shop-tests/server.js');
 const {priceCart}=await import('/tmp/cargobajk-shop-tests/catalog.js');
 const {bikeDeliveryCents,shippingPrice}=await import('/tmp/cargobajk-shop-tests/shipping.js');
-const {verifyStripeEvent}=await import('/tmp/cargobajk-shop-tests/stripe.js');
+const {stripeSession,verifyStripeEvent}=await import('/tmp/cargobajk-shop-tests/stripe.js');
 function database(){const db=new DatabaseSync(':memory:');db.exec(readFileSync('migrations/0001_shop.sql','utf8'));return {db,prepare(sql){const statement=db.prepare(sql);return {bind(...args){return {first:async()=>statement.get(...args)||null,run:async()=>statement.run(...args),sql,args};}};},async batch(statements){db.exec('BEGIN');try{const results=statements.map(s=>db.prepare(s.sql).run(...s.args));db.exec('COMMIT');return results;}catch(e){db.exec('ROLLBACK');throw e;}}};}
 const customer={name:'Test Customer',email:'customer@example.test',street:'Testovacia 1',city:'Žilina',postalCode:'01001',phone:'+421900000000'};
 const cart=[{id:'bike:flex',quantity:1},{id:'accessory:1577-1',quantity:1,model:'flex'}];
@@ -48,4 +48,19 @@ test('test checkout only accepts explicitly controlled recipients',async()=>{
  assert.match((await rejected.json()).error,/testovacom režime/);
  assert.equal(counts().stripeCalls,0);
  assert.equal(store.db.prepare('SELECT COUNT(*) AS n FROM shop_orders').get().n,0);
+});
+
+test('cargobajk payments carry their own branding and statement suffix',async()=>{
+ let sent;
+ const order={id:crypto.randomUUID(),email:'customer@example.test',createdAt:Date.now(),totalCents:1000,lines:[{name:'Test',quantity:1,priceCents:1000}],shipping:{name:'Osobný odber',cents:0}};
+ await stripeSession('sk_test_mock',order,async(url,options)=>{
+  sent=new URLSearchParams(options.body);
+  return Response.json({id:'cs_test_brand',url:'https://checkout.stripe.com/c/pay/cs_test_brand',currency:'eur',amount_total:1000,livemode:false});
+ });
+ assert.equal(sent.get('branding_settings[display_name]'),'cargobajk.sk');
+ assert.equal(sent.get('branding_settings[logo][url]'),'https://cargobajk.sk/brand/email-logo.png');
+ assert.equal(sent.get('branding_settings[button_color]'),'#6B0F1F');
+ assert.equal(sent.get('payment_intent_data[statement_descriptor_suffix]'),'CARGOBAJK.SK');
+ assert.equal(sent.get('payment_intent_data[metadata][store]'),'cargobajk.sk');
+ assert.equal(sent.has('payment_intent_data[statement_descriptor]'),false);
 });
