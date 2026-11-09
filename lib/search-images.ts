@@ -14,11 +14,11 @@ export function listedBikes(path: string): Bike[] {
 }
 export function pageImagePaths(path: string): string[] {
  const sk = path.replace(/^\/en(?=\/|$)/, '') || '/';
- if(sk === '/doplnky') return [...new Set(accessoryCatalog.flatMap(item=>[item.image,...(item.frame?[item.frame]:[])]))];
+ if(sk === '/doplnky') return [...new Set(accessoryCatalog.map(item=>item.image))];
  const bike = bikes.find(bike => sk === `/bicykle/${bike.slug}`);
  if (bike) return productImagePaths(bike);
  const covers = listedBikes(path).map(bike => `/media/${bike.image}.webp`);
- return sk === '/' ? [...covers, '/media/hero.webp', '/media/family.webp', '/media/story.webp'] : covers;
+ return sk === '/' ? [...covers, '/media/hero-life-desktop.webp', '/media/family.webp', '/media/story.webp'] : covers;
 }
 export function coverImage(bike: Bike) {
  const path = `/media/${bike.image}.webp`;

@@ -16,7 +16,7 @@ test('crawler access and valid public sitemap', async () => {
  const sitemap = await get('/sitemap.xml'); assert.equal(sitemap.status,200); assert.match(sitemap.headers.get('content-type'),/xml/);
  const xml = await sitemap.text();
  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
- assert.equal(urls.length,48); assert.equal(new Set(urls).size,48);
+ assert.equal(urls.length,50); assert.equal(new Set(urls).size,50);
  assert.ok(urls.every(url=>url.startsWith(canonicalOrigin+'/')));
  assert.ok(urls.every(url=>!/(?:sprava-ponuky|potvrdenie-ponuky|nezavazna-ponuka|sukromie|api)/.test(url)));
  assert.match(xml,/hreflang="sk-SK"/); assert.match(xml,/hreflang="en"/);
@@ -25,7 +25,7 @@ test('crawler access and valid public sitemap', async () => {
 test('all sitemap pages render indexable, canonical server HTML and valid JSON-LD', async () => {
  const xml = await (await get('/sitemap.xml')).text();
  sitemapPaths = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1].slice(canonicalOrigin.length));
- assert.equal(sitemapPaths.length,48);
+ assert.equal(sitemapPaths.length,50);
  const titles = new Set();
  for (const path of sitemapPaths) {
   const response = await get(path); assert.equal(response.status,200,path);
@@ -103,7 +103,7 @@ test('image sitemap exposes real visible product photos and crawlable image resp
   images:[...m[1].matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map(m=>m[1]),
  }));
  const illustrated=entries.filter(e=>e.images.length);
- assert.equal(illustrated.length,32,'SK/EN home, catalog and 28 product pages');
+ assert.equal(illustrated.length,34,'SK/EN home, bike and accessory catalogues, and 28 product pages');
  const uniqueImages=new Set();
  for(const entry of illustrated){
   const html=renderedPages.get(entry.path)??await (await get(entry.path)).text();
@@ -117,9 +117,12 @@ test('image sitemap exposes real visible product photos and crawlable image resp
    assert.ok(visible.has(page.primaryImageOfPage.url),entry.path+' preferred image');
    assert.match(head(html),/<meta[^>]*property="og:image"[^>]*content="https:\/\/cargobajk.sk\/media\/(?!hero)/,entry.path);
    assert.equal(page.mainEntity.numberOfItems,entry.path.endsWith('/bicykle')?14:4);
-  }else{
+  }else if(entry.path.includes('/bicykle/')){
    const product=jsonLd(html).find(s=>s['@type']==='Product');
    assert.deepEqual(product.image,entry.images,entry.path+' gallery metadata matches sitemap');
+  }else{
+   const collection=jsonLd(html).find(s=>s['@type']==='CollectionPage');
+   assert.equal(collection?.mainEntity?.numberOfItems,15,entry.path+' accessory catalogue metadata');
   }
  }
  const images=[...uniqueImages];let cursor=0;
@@ -139,4 +142,11 @@ test('Googlebot receives canonical and product preview metadata in the initial h
   assert.match(head(html),/<meta[^>]*property="og:image"[^>]*content="https:\/\/cargobajk.sk\/media\/(?!hero)/,path);
   assert.match(tag(html,'googlebot')||'',/max-image-preview:large/,path);
  }
+});
+
+test('known malformed catalogue URL redirects permanently while preserving query parameters',async()=>{
+ const response=await get('/bicykle:1nfp05z?utm_source=legacy');
+ assert.equal(response.status,308);
+ const target=new URL(response.headers.get('location'));
+ assert.equal(target.pathname,'/bicykle');assert.equal(target.search,'?utm_source=legacy');
 });

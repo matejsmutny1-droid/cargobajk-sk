@@ -8,6 +8,12 @@ export default {
       url.hostname = 'cargobajk.sk'; url.protocol = 'https:';
       return Response.redirect(url.toString(), 308);
     }
+    // Historical malformed catalogue URL reported by Search Console (crawl 2026-10-30).
+    // Match only this known URL; genuine missing pages must retain their HTTP 404.
+    if (url.pathname === '/bicykle:1nfp05z') {
+      url.pathname = '/bicykle';
+      return Response.redirect(url.toString(), 308);
+    }
     if (url.pathname === '/testovacie-jazdy' || url.pathname === '/en/testovacie-jazdy') {
       url.pathname = url.pathname.replace('/testovacie-jazdy', '/vyber-bicykla');
       return Response.redirect(url.toString(), 308);
