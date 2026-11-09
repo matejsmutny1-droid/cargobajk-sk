@@ -61,7 +61,7 @@ Osobné údaje zatiaľ klient udržiava len v pamäti formulára. localStorage o
 - Doplnená identifikácia obchodu a objednávky do PaymentIntent metadata.
 - 14 shop testov prešlo vrátane regresie týchto parametrov. Skutočná Stripe Checkout session so značkou sa ešte netestovala, zmena kódu ešte nie je nasadená.
 
-## Oddelené testovanie (pripravené, zatiaľ nenasadené)
+## Oddelené testovanie (nasadené a overené 9. 11. 2026)
 
 `wrangler.checkout-test.jsonc` definuje Worker `cargobajk-checkout-test` bez vlastných domén a bez produkčnej databázy. Viaže iba `cargobajk-orders-test`.
 
@@ -70,6 +70,16 @@ Osobné údaje zatiaľ klient udržiava len v pamäti formulára. localStorage o
 - Po prvom nasadení nastaviť `SHOP_TEST_ORIGIN` na presnú získanú HTTPS workers.dev adresu. Iba v test režime je povolený tento pôvod a návrat zo Stripe na staging.
 - Pri vytváraní Checkout session sa posiela `metadata.store=cargobajk.sk`; webhook ignoruje udalosti iných obchodov spoločného účtu.
 - Produkčný Worker už bezpečne uchováva testovací Stripe kľúč ako šifrovaný `STRIPE_SECRET_KEY`. Do test Workeru sa má vložiť rovnakým UI prenosom až po jeho vytvorení. Žiadne secrets v zdrojových súboroch.
-- Testovací webhook zatiaľ NIE je vytvorený. Pripravený formulár Stripe sa pred uložením musí nastaviť na skutočnú testovaciu workers.dev adresu. Udalosti: completed, async_payment_succeeded, expired; snapshot API 2026-10-28.endive.
-- Wrangler zatiaľ nemá autorizáciu. Používateľ dostal konkrétnu otázku na OAuth rozsahy Workers:write + account/profile read a samostatne na testovací webhook.
-- 19 shop testov prešlo. Samostatný testovací Worker sa úspešne zbalil ako ESM pre browser/Workers (53,7 kB). Skutočná Stripe platobná session a podpísaný externý callback ešte neboli overené.
+- Testovací webhook je vytvorený pre `https://cargobajk-checkout-test.vividproductionsro.workers.dev/api/shop/webhook`. Udalosti: completed, async_payment_succeeded, expired; snapshot API 2026-10-28.endive. Podpisový secret je šifrovaný v test Workerovi.
+- Wrangler má používateľom výslovne schválenú autorizáciu na account/profile read, Workers Write a Workers Scripts Write. D1:write ani ostatné predvolené rozsahy sa neudelili. Testovací Worker bol nasadený s existujúcou testovacou databázou.
+- 20 shop testov prešlo. Testovací Worker sa úspešne zbalil a nasadil. Reálna testovacia Stripe session s kartou 4242 prešla, banka sa neúčtovala; objednávka má serverový stav paid až po podpísanom externom callbacku. Stripe destination: Total 1, Failed 0.
+
+### Výsledok integrácie so Stripe
+
+Test: Flex 3 849 € + zrkadlo 22 €, osobný odber, spolu 3 871 €. Stripe Checkout zobrazuje logo/názov cargobajk.sk, vlastné farby, Apple Pay a kartu. Viditeľnosť Apple Pay je overená; platba cez samotnú peňaženku sa netestovala. Uskutočnená bola výhradne simulovaná platba oficiálnou testovacou kartou v sandboxe.
+
+Stripe payment Succeeded, descriptor `VIVID* CARGOBAJK.SK`; serverový status `{status:paid,totalCents:387100}`. Stripe webhook doručený bez chyby. Žiadny zákaznícky e-mail neposlaný.
+
+Pri skutočnej API skúške sa odstránil už nepodporovaný parameter `payment_method_types` a nahradil aktuálnym `allowed_payment_method_types`. Doplnený regresný test. Opravené escapovanie nových riadkov testovacieho HTML skriptu a doplnený test, ktorý výsledný skript parsuje.
+
+Verejný obchod zatiaľ neobsahuje nový checkout kód, produkčný režim zostáva vypnutý. Na ostré spustenie zostávajú body vyššie: finálne schválené podmienky/súkromie a ich doručenie e-mailom, retenčné pravidlá, dostupnosť/vyhotovenie, doprava a konkrétne schválenie bezpečného live kľúča a live webhooku. Testovací secret sa nesmie považovať za live kľúč.

@@ -1,6 +1,6 @@
 export async function stripeSession(key:string,order:{id:string;totalCents:number;email:string;createdAt:number;lines:{name:string;quantity:number;priceCents:number}[];shipping:{name:string;cents:number};testOrigin?:string},fetcher:typeof fetch=fetch) {
  const returnOrigin=order.testOrigin&&/^(?:sk|rk)_test_/.test(key)&&/^https:\/\/[a-z0-9-]+\.[a-z0-9-]+\.workers\.dev$/.test(order.testOrigin)?order.testOrigin:'https://cargobajk.sk';
- const body=new URLSearchParams({mode:'payment',locale:'sk',customer_email:order.email,client_reference_id:order.id,'metadata[order_id]':order.id,'payment_method_types[0]':'card',
+ const body=new URLSearchParams({mode:'payment',locale:'sk',customer_email:order.email,client_reference_id:order.id,'metadata[order_id]':order.id,'allowed_payment_method_types[0]':'card',
   'branding_settings[display_name]':'cargobajk.sk',
   'branding_settings[background_color]':'#F6F2EC',
   'branding_settings[button_color]':'#6B0F1F',

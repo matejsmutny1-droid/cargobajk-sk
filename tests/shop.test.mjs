@@ -1,13 +1,14 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
+import {Script} from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {build} from 'esbuild';
-await build({entryPoints:['lib/shop/server.ts','lib/shop/shipping.ts','lib/shop/catalog.ts','lib/shop/stripe.ts'],bundle:true,platform:'node',format:'esm',outdir:'/tmp/cargobajk-shop-tests',logLevel:'silent'});
-const {handleShop,shopReady}=await import('/tmp/cargobajk-shop-tests/server.js');
-const {priceCart}=await import('/tmp/cargobajk-shop-tests/catalog.js');
-const {bikeDeliveryCents,shippingPrice}=await import('/tmp/cargobajk-shop-tests/shipping.js');
-const {stripeSession,verifyStripeEvent}=await import('/tmp/cargobajk-shop-tests/stripe.js');
+await build({entryPoints:['lib/shop/server.ts','lib/shop/shipping.ts','lib/shop/catalog.ts','lib/shop/stripe.ts','tests/shop-staging-worker.ts'],bundle:true,platform:'node',format:'esm',outdir:'/tmp/cargobajk-shop-tests',logLevel:'silent'});
+const {handleShop,shopReady}=await import('/tmp/cargobajk-shop-tests/lib/shop/server.js');
+const {priceCart}=await import('/tmp/cargobajk-shop-tests/lib/shop/catalog.js');
+const {bikeDeliveryCents,shippingPrice}=await import('/tmp/cargobajk-shop-tests/lib/shop/shipping.js');
+const {stripeSession,verifyStripeEvent}=await import('/tmp/cargobajk-shop-tests/lib/shop/stripe.js');
 function database(){const db=new DatabaseSync(':memory:');db.exec(readFileSync('migrations/0001_shop.sql','utf8'));return {db,prepare(sql){const statement=db.prepare(sql);return {bind(...args){return {first:async()=>statement.get(...args)||null,run:async()=>statement.run(...args),sql,args};}};},async batch(statements){db.exec('BEGIN');try{const results=statements.map(s=>db.prepare(s.sql).run(...s.args));db.exec('COMMIT');return results;}catch(e){db.exec('ROLLBACK');throw e;}}};}
 const customer={name:'Test Customer',email:'customer@example.test',street:'Testovacia 1',city:'Žilina',postalCode:'01001',phone:'+421900000000'};
 const cart=[{id:'bike:flex',quantity:1},{id:'accessory:1577-1',quantity:1,model:'flex'}];
@@ -58,6 +59,8 @@ test('cargobajk payments carry their own branding and statement suffix',async()=
   return Response.json({id:'cs_test_brand',url:'https://checkout.stripe.com/c/pay/cs_test_brand',currency:'eur',amount_total:1000,livemode:false});
  });
  assert.equal(sent.get('branding_settings[display_name]'),'cargobajk.sk');
+ assert.equal(sent.get('allowed_payment_method_types[0]'),'card');
+ assert.equal(sent.has('payment_method_types[0]'),false);
  assert.equal(sent.get('branding_settings[logo][url]'),'https://cargobajk.sk/brand/email-logo.png');
  assert.equal(sent.get('branding_settings[button_color]'),'#6B0F1F');
  assert.equal(sent.get('payment_intent_data[statement_descriptor_suffix]'),'CARGOBAJK.SK');
@@ -105,4 +108,14 @@ test('Stripe test return origin is restricted to workers.dev and ignored by live
   assert.equal(params.get('success_url'),expected+'/objednavka#'+base.id);
   assert.equal(params.get('cancel_url'),expected+'/kosik?platba=zrusena');
  }
+});
+
+test('staging page renders executable JavaScript and remains test-only',async()=>{
+ const {default:worker}=await import('/tmp/cargobajk-shop-tests/tests/shop-staging-worker.js');
+ const page=await worker.fetch(new Request('https://test.example.workers.dev/'),{SHOP_MODE:'test',SHOP_TEST_DISABLE_EMAILS:'true'});
+ const html=await page.text();
+ const script=html.match(/<script[^>]*>([\s\S]*?)<\/script>/)[1];
+ assert.doesNotThrow(()=>new Script(script));
+ assert.match(page.headers.get('X-Robots-Tag'),/noindex/);
+ assert.equal((await worker.fetch(new Request('https://test.example.workers.dev/'),{SHOP_MODE:'live',SHOP_TEST_DISABLE_EMAILS:'true'})).status,503);
 });

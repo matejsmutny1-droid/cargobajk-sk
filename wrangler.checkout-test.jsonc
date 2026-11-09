@@ -13,6 +13,7 @@
   }],
   "vars": {
     "SHOP_MODE": "test",
+    "SHOP_TEST_ORIGIN": "https://cargobajk-checkout-test.vividproductionsro.workers.dev",
     "SHOP_TEST_DISABLE_EMAILS": "true",
     "SHOP_TEST_EMAILS_JSON": "[\"smutny@cargobajk.sk\"]",
     "SHOP_POLICIES_VERSION": "TEST_ONLY_NO_SALE_2026-11-09",
