@@ -1,3 +1,4 @@
+import {shopPolicyVersion,shopTermsText} from './policies.ts';
 import {readBody} from '../inquiry-server.ts';
 import {priceCart} from './catalog.ts';
 import {shippingPrice,type ShippingMethod,type VerifiedRoute} from './shipping.ts';
@@ -11,13 +12,13 @@ export type ShopEnv = {
  RESEND_API_KEY?:string; INQUIRY_FROM?:string;
 };
 type Order = {id:string;request_key:string;fingerprint:string;total_cents:number;mode:string;status:string;payload:string;stripe_session:string|null;checkout_url:string|null;created_at:number};
-type Snapshot={cart:ReturnType<typeof priceCart>;shipping:{name:string;cents:number};customer:NonNullable<ReturnType<typeof parseOrderCustomer>>;termsVersion:string;deliveryDays:number};
+type Snapshot={cart:ReturnType<typeof priceCart>;shipping:{name:string;cents:number};customer:NonNullable<ReturnType<typeof parseOrderCustomer>>;termsVersion:string;termsText?:string;deliveryDays:number};
 const response=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'",'X-Content-Type-Options':'nosniff'}});
 const jsonArray=(s:string|undefined):string[]=>{try{const v=JSON.parse(s||'[]');return Array.isArray(v)&&v.every(x=>typeof x==='string')?v:[];}catch{return [];}};
 export function shopReady(env:ShopEnv) {
  const mode=env.SHOP_MODE;
  const mailReady=mode==='test'&&env.SHOP_TEST_DISABLE_EMAILS==='true'||!!env.RESEND_API_KEY?.startsWith('re_')&&/^[^\r\n]+@(?:[a-z0-9-]+\.)*vividproduction\.sk>?$/i.test(env.INQUIRY_FROM||'');
- return (mode==='test'||mode==='live')&&!!env.SHOP_DB&&!!env.STRIPE_WEBHOOK_SECRET&&mailReady&&!!env.SHOP_POLICIES_VERSION&&
+ return (mode==='test'||mode==='live')&&!!env.SHOP_DB&&!!env.STRIPE_WEBHOOK_SECRET&&mailReady&&!!env.SHOP_POLICIES_VERSION&&(mode!=='live'||env.SHOP_POLICIES_VERSION===shopPolicyVersion)&&
  new RegExp('^(?:sk|rk)_'+mode+'_').test(env.STRIPE_SECRET_KEY||'')&&
  (mode!=='test'||jsonArray(env.SHOP_TEST_EMAILS_JSON).length>0);
 }
@@ -73,7 +74,7 @@ export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetc
   if(path==='/api/shop/quote')return response({cart,shipping,totalCents,deliveryDays,termsVersion:env.SHOP_POLICIES_VERSION});
   if(input.acceptedTerms!==env.SHOP_POLICIES_VERSION)throw new Error('Potvrďte aktuálne obchodné podmienky.');
   if(!/^[a-f0-9-]{36}$/.test(String(input.requestKey||'')))throw new Error('Obnovte formulár a skúste to znova.');
-  const snapshot:Snapshot={cart,shipping,customer,deliveryDays,termsVersion:env.SHOP_POLICIES_VERSION!};
+  const snapshot:Snapshot={cart,shipping,customer,deliveryDays,termsVersion:env.SHOP_POLICIES_VERSION!,termsText:shopTermsText};
   const payload=JSON.stringify(snapshot),fingerprint=await hash(payload);
   await env.SHOP_DB!.prepare('INSERT INTO shop_orders(id,request_key,fingerprint,total_cents,mode,payload,created_at) VALUES (?,?,?,?,?,?,?) ON CONFLICT(request_key) DO NOTHING').bind(crypto.randomUUID(),String(input.requestKey),fingerprint,totalCents,env.SHOP_MODE!,payload,Date.now()).run();
   const order=await env.SHOP_DB!.prepare('SELECT * FROM shop_orders WHERE request_key = ?').bind(String(input.requestKey)).first<Order>();
@@ -129,12 +130,24 @@ async function sendReceipts(env:ShopEnv,order:Order,fetcher:typeof fetch) {
  const snapshot=JSON.parse(order.payload) as Snapshot;
  const money=(n:number)=>new Intl.NumberFormat('sk-SK',{style:'currency',currency:'EUR'}).format(n/100);
  const short=order.id.slice(0,8).toUpperCase();
- const text=[`Platba za objednávku ${short} bola prijatá.`,...snapshot.cart.lines.map(l=>`${l.quantity} × ${l.name} (${l.model}): ${money(l.priceCents*l.quantity)}`),`${snapshot.shipping.name}: ${money(snapshot.shipping.cents)}`,`Spolu: ${money(order.total_cents)}`,'',`Zákazník: ${snapshot.customer.name}`,`Email: ${snapshot.customer.email}`,`Telefón: ${snapshot.customer.phone}`,`Adresa: ${snapshot.customer.street}, ${snapshot.customer.postalCode} ${snapshot.customer.city}`,snapshot.customer.company?`Firma: ${snapshot.customer.company}, IČO ${snapshot.customer.companyId}`:'',snapshot.customer.billingAddress?`Fakturačná adresa: ${snapshot.customer.billingAddress}`:'',`Dodanie tovaru do ${snapshot.deliveryDays} kalendárnych dní od potvrdenia objednávky a platby. Podrobnosti odovzdania s vami dohodneme.`,`Obchodné podmienky: https://cargobajk.sk/obchodne-informacie (verzia ${snapshot.termsVersion})`,'Podmienky vrátenia: https://cargobajk.sk/obchodne-informacie#vratenie-tovaru','Kontakt: hello@cargobajk.sk, +421 904 501 703'].filter(Boolean).join('\n');
+ const text=[`Platba za objednávku ${short} bola prijatá.`,...snapshot.cart.lines.map(l=>`${l.quantity} × ${l.name} (${l.model}): ${money(l.priceCents*l.quantity)}`),`${snapshot.shipping.name}: ${money(snapshot.shipping.cents)}`,`Spolu: ${money(order.total_cents)}`,'',`Zákazník: ${snapshot.customer.name}`,`Email: ${snapshot.customer.email}`,`Telefón: ${snapshot.customer.phone}`,`Adresa: ${snapshot.customer.street}, ${snapshot.customer.postalCode} ${snapshot.customer.city}`,snapshot.customer.company?`Firma: ${snapshot.customer.company}, IČO ${snapshot.customer.companyId}`:'',snapshot.customer.billingAddress?`Fakturačná adresa: ${snapshot.customer.billingAddress}`:'',`Dodanie tovaru do ${snapshot.deliveryDays} kalendárnych dní od potvrdenia objednávky a platby. Podrobnosti odovzdania s vami dohodneme.`,`Obchodné podmienky: https://cargobajk.sk/obchodne-informacie (verzia ${snapshot.termsVersion})`,'Podmienky vrátenia: https://cargobajk.sk/obchodne-informacie#vratenie-tovaru','Kontakt: hello@cargobajk.sk, +421 904 501 703',snapshot.termsText||shopTermsText].filter(Boolean).join('\n');
  for(const recipient of ['customer','seller']){
   const mail=await env.SHOP_DB!.prepare('SELECT sent_at FROM shop_mail WHERE order_id=? AND recipient=?').bind(order.id,recipient).first<{sent_at:number|null}>();
   if(mail?.sent_at)continue;
-  const result=await fetcher('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':`order-${order.id}-${recipient}`},body:JSON.stringify({from:env.INQUIRY_FROM,to:[recipient==='customer'?snapshot.customer.email:'hello@cargobajk.sk'],subject:`${order.mode==='test'?'TEST — ':''}Zaplatená objednávka ${short} — cargobajk.sk`,text:recipient==='seller'&&snapshot.customer.note?text+'\nPoznámka: '+snapshot.customer.note:text})});
+  const result=await fetcher('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':`order-${order.id}-${recipient}`},body:JSON.stringify({from:env.INQUIRY_FROM,reply_to:'hello@cargobajk.sk',to:[recipient==='customer'?snapshot.customer.email:'hello@cargobajk.sk'],subject:`${order.mode==='test'?'TEST — ':''}Zaplatená objednávka ${short} — cargobajk.sk`,text:recipient==='seller'&&snapshot.customer.note?text+'\nPoznámka: '+snapshot.customer.note:text})});
   if(!result.ok)throw new Error('Receipt delivery failed');
   await env.SHOP_DB!.prepare('UPDATE shop_mail SET sent_at=? WHERE order_id=? AND recipient=?').bind(Date.now(),order.id,recipient).run();
  }
+}
+
+/** Daily deletion of abandoned checkout PII; paid orders are retained as contract/accounting records. */
+export async function maintainShop(env:ShopEnv,now=Date.now()) {
+ if(!env.SHOP_DB)return;
+ const unpaidCutoff=now-31*86400000;
+ const paidCutoff=Date.UTC(new Date(now).getUTCFullYear()-10,0,1);
+ await env.SHOP_DB.batch([
+  env.SHOP_DB.prepare("DELETE FROM shop_mail WHERE order_id IN (SELECT id FROM shop_orders WHERE (status!='paid' AND created_at < ?) OR (status='paid' AND paid_at < ?))").bind(unpaidCutoff,paidCutoff),
+  env.SHOP_DB.prepare("DELETE FROM shop_orders WHERE (status!='paid' AND created_at < ?) OR (status='paid' AND paid_at < ?)").bind(unpaidCutoff,paidCutoff),
+  env.SHOP_DB.prepare('DELETE FROM shop_rate WHERE expires_at < ?').bind(now),
+ ]);
 }

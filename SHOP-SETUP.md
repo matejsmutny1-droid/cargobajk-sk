@@ -83,3 +83,16 @@ Stripe payment Succeeded, descriptor `VIVID* CARGOBAJK.SK`; serverový status `{
 Pri skutočnej API skúške sa odstránil už nepodporovaný parameter `payment_method_types` a nahradil aktuálnym `allowed_payment_method_types`. Doplnený regresný test. Opravené escapovanie nových riadkov testovacieho HTML skriptu a doplnený test, ktorý výsledný skript parsuje.
 
 Verejný obchod zatiaľ neobsahuje nový checkout kód, produkčný režim zostáva vypnutý. Na ostré spustenie zostávajú body vyššie: finálne schválené podmienky/súkromie a ich doručenie e-mailom, retenčné pravidlá, dostupnosť/vyhotovenie, doprava a konkrétne schválenie bezpečného live kľúča a live webhooku. Testovací secret sa nesmie považovať za live kľúč.
+
+## Launch candidate 2026-11-09 — policy and operations
+
+The seller approved initial scope: pay online for pickup; delivery is quoted before payment. Production is still OFF until live credentials and the concrete policies are approved and installed.
+
+- Complete terms are in `lib/shop/policies.ts`; each saved order snapshots the exact text and the receipt contains it. The live readiness gate requires the matching policy version. Publishing this candidate requires the seller's explicit approval.
+- `/kontakt?tema=doprava&kosik=...#dopyt` prefills a delivery enquiry from server-recalculated cart IDs. The URL contains product selections only, never customer contact/address data.
+- To authorize a delivery price after checking road distance, add a trusted server `SHOP_ROUTES_JSON` entry `{postalCode:"01001",city:"Žilina",km:...,expiresAt:...}`. Do not copy customer-supplied kilometres. The purchaser can then return to the same saved cart, enter the confirmed town/postcode, and select delivery. Check the street as part of the enquiry if a postcode covers materially different distances. Quote separately if the route or packaging is ambiguous.
+- Product orderability is in `SHOP_PRODUCTS_JSON`; use genuine review expiry dates and delivery days. Recheck before expiry; expired/unverified entries cannot be paid for. Accessories must be confirmed separately, not inferred from the bicycle's availability.
+- Daily cron at 03:17 UTC removes unpaid orders older than 31 days and paid records older than the ten-year accounting retention. Email copies and external service records require the seller's own retention review; software does not purge their mailboxes. Review closed enquiries after 12 months. Preserve any legally required litigation records before the normal retention ends.
+- Customer service, fulfilment, invoicing, refunds and defect claims remain the seller's responsibility. Resend acceptance means queued delivery; inspect bounces if a customer reports a missing receipt. Stripe retries unsuccessful webhook deliveries; investigate failed deliveries promptly.
+- Local preview: `CARGOBAJK_LOCAL_PREVIEW=1 npm run dev` uses `wrangler.local.jsonc`, an isolated DB and SHOP_MODE=off. This deliberately uses the compatibility date supported by the bundled local runtime; production retains 2026-10-19.
+- Deployment: first deploy code with SHOP_MODE=off; configure the live encrypted key, signing secret and verified product data; activate SHOP_MODE=live only after reviewing the customer-facing production checkout. Never put secrets in source files or command arguments.

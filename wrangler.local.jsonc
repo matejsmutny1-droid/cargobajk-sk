@@ -1,0 +1,28 @@
+{
+  "name": "cargobajk-local",
+  "main": "worker.ts",
+  "compatibility_date": "2026-05-22",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "SHOP_DB",
+      "database_name": "cargobajk-orders",
+      "database_id": "local-only-database",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "dist/client"
+  },
+  "vars": {
+    "SHOP_MODE": "off",
+    "INQUIRY_FROM": "cargobajk.sk <hello@vividproduction.sk>",
+    "INQUIRY_ALLOWED_ORIGINS": "https://cargobajk.sk,https://www.cargobajk.sk"
+  },
+  "workers_dev": false,
+  "routes": [],
+  "preview_urls": false
+}

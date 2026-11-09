@@ -119,3 +119,38 @@ test('staging page renders executable JavaScript and remains test-only',async()=
  assert.match(page.headers.get('X-Robots-Tag'),/noindex/);
  assert.equal((await worker.fetch(new Request('https://test.example.workers.dev/'),{SHOP_MODE:'live',SHOP_TEST_DISABLE_EMAILS:'true'})).status,503);
 });
+
+test('receipt contains the exact complete terms accepted when ordering',async()=>{
+ const {env,mock,store}=setup();
+ const order=await(await handleShop(request('checkout',input()),env,mock)).json();
+ const snapshot=JSON.parse(store.db.prepare('SELECT payload FROM shop_orders WHERE id=?').get(order.orderId).payload);
+ assert.match(snapshot.termsText,/Vzor odstúpenia/);
+ assert.match(snapshot.termsText,/Reklamácie|reklamácie/);
+ const sent=[];
+ const mail=async(url,options)=>{sent.push(JSON.parse(options.body));return Response.json({id:'mail'});};
+ assert.equal((await handleShop(await eventRequest(order.orderId),env,mail)).status,200);
+ assert.equal(sent.length,2);
+ assert.ok(sent.every(email=>email.text.includes(snapshot.termsText)));
+});
+test('retention deletes old unpaid PII, preserves recent and retained paid records',async()=>{
+ const {maintainShop}=await import('/tmp/cargobajk-shop-tests/lib/shop/server.js');
+ const {env,store,mock}=setup();
+ const old=await(await handleShop(request('checkout',input()),env,mock)).json();
+ store.db.prepare('UPDATE shop_orders SET stripe_session=NULL WHERE id=?').run(old.orderId);
+ const recent=await(await handleShop(request('checkout',input()),env,mock)).json();
+ store.db.prepare('UPDATE shop_orders SET created_at=? WHERE id=?').run(Date.now()-32*86400000,old.orderId);
+ await maintainShop(env);
+ assert.equal(store.db.prepare('SELECT id FROM shop_orders WHERE id=?').get(old.orderId),undefined);
+ assert.ok(store.db.prepare('SELECT id FROM shop_orders WHERE id=?').get(recent.orderId));
+ store.db.prepare('UPDATE shop_orders SET stripe_session=NULL WHERE id=?').run(recent.orderId);
+ const paid=await(await handleShop(request('checkout',input()),env,mock)).json();
+ await handleShop(await eventRequest(paid.orderId),env,mock);
+ store.db.prepare('UPDATE shop_orders SET created_at=?,paid_at=? WHERE id=?').run(Date.now()-40*86400000,Date.now()-40*86400000,paid.orderId);
+ await maintainShop(env);
+ assert.ok(store.db.prepare('SELECT id FROM shop_orders WHERE id=?').get(paid.orderId));
+ assert.equal(store.db.prepare('SELECT COUNT(*) n FROM shop_mail WHERE order_id=?').get(paid.orderId).n,2);
+ store.db.prepare('UPDATE shop_orders SET paid_at=? WHERE id=?').run(Date.UTC(2010,0,1),paid.orderId);
+ await maintainShop(env);
+ assert.equal(store.db.prepare('SELECT id FROM shop_orders WHERE id=?').get(paid.orderId),undefined);
+ assert.equal(store.db.prepare('SELECT COUNT(*) n FROM shop_mail WHERE order_id=?').get(paid.orderId).n,0);
+});

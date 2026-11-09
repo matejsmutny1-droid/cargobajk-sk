@@ -1,8 +1,9 @@
-import {handleShop,type ShopEnv} from './lib/shop/server';
+import {handleShop,maintainShop,type ShopEnv} from './lib/shop/server';
 import handler from "vinext/server/fetch-handler";
 import {webAnalyticsEnabled} from './lib/web-analytics';
 
 export default {
+  async scheduled(_event: ScheduledController, env: ShopEnv, ctx: ExecutionContext) { ctx.waitUntil(maintainShop(env)); },
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const url = new URL(request.url);
     if (url.hostname === 'www.cargobajk.sk' || (url.hostname === 'cargobajk.sk' && url.protocol === 'http:')) {
