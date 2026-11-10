@@ -6,8 +6,9 @@ import type { Metadata } from 'next';
 import type { Bike } from './catalog';
 export const SITE_URL = 'https://cargobajk.sk';
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
-export const publicPagePaths = ['/', '/bicykle', '/doplnky', '/preco-cargobike', '/o-nas', '/servis', '/vyber-bicykla', '/kontakt', '/faq', '/obchodne-informacie', '/ako-vybrat-cargo-bicykel'];
+export const publicPagePaths = ['/', '/bicykle', '/doplnky', '/preco-cargobike', '/o-nas', '/servis', '/vyber-bicykla', '/kontakt', '/faq', '/obchodne-informacie', '/ako-vybrat-cargo-bicykel', '/pre-hotely-a-firmy'];
 export const contentSeo: Record<string, {title: string; description: string}> = {
+ 'pre-hotely-a-firmy': {title:'Cargo bicykle pre hotely, požičovne a firmy', description:'Cargo bicykle Cargobike of Sweden pre hotely, rezorty, požičovne, škôlky a pracovný náklad. Individuálny výber, kalkulácia a skúšobná jazda po dohode.'},
  'o-nas': {title: 'O nás — skúsenosť s cargo bicyklami zo Švédska', description: 'S cargobikom sme žili v Malmö. Dnes na cargobajk.sk pomáhame s výberom a predajom cargo bicyklov Cargobike of Sweden na Slovensku.'},
  'preco-cargobike': {title: 'Cargo bicykel pre deti, psa aj každodenný nákup', description: 'Čo je cargo bicykel a ako ho využiť? Spoznajte nákladné elektrobicykle pre rodiny s deťmi, prepravu psov, nákupy a podnikanie.'},
  'servis': {title: 'Servis a podpora pre cargo bicykle', description: 'Potrebujete poradiť s údržbou alebo dielmi na cargo bicykel? Kontaktujte cargobajk.sk. Možnosti servisu a ďalší postup potvrdíme individuálne.'},

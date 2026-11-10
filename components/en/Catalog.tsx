@@ -29,7 +29,7 @@ export default function Catalog({ full = false, exclude }: { full?: boolean; exc
       {shown.map(b => <Link className="bike-card" href={'/bicykle/' + b.slug} key={b.slug}>
         <div className="bike-picture"><span className="bike-label">{b.children === 6 ? 'Up to 6 children · Kindergarten' : b.use}</span><BrandImage src={'/media/' + b.image + '.webp'} alt={'Cargobike of Sweden ' + b.name} loading="lazy" /><span className="round-arrow"><Arrow /></span></div>
         <div className="bike-card-title"><h3>{b.name}</h3><span>Electric cargo bike</span></div>
-        <p>{b.description}</p><BikePrice price={b.priceEur} english/>
+        <p>{b.description}</p>{b.specs.find(([label])=>label==='Battery')&&<p className="card-spec">Battery: {b.specs.find(([label])=>label==='Battery')?.[1]}</p>}<BikePrice price={b.priceEur} english/>
       </Link>)}
     </div>
     {shown.length === 0 && <div className="empty-catalog"><h3>Let us try a different selection.</h3><p>No models match this combination.</p><button className="button dark" onClick={() => { setFilter('All'); setFamily('All ranges'); setQuery(''); }}>Show all models <Arrow /></button></div>}

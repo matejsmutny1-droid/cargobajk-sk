@@ -1,13 +1,12 @@
 import Link from '@/components/PageLink';
-import BrandImage from '@/components/BrandImage';
 import Arrow from '@/components/Arrow';
 
 export default function TestRide({english = false}: {english?: boolean}) {
   const t = (sk: string, en: string) => english ? en : sk;
   return <section className="test-ride section" id="vyskusat" aria-labelledby="test-ride-title">
-    <div className="test-ride-photo"><BrandImage src="/media/family.webp" loading="lazy"
-      alt={t('Spoločné chvíle s rodinným cargo bicyklom', 'Time together with a family cargo bike')}/>
-      <span>{t('NAJLEPŠIE JE ZAŽIŤ TO NA VLASTNEJ KOŽI.', 'THE BEST WAY TO KNOW IS TO TRY.')}</span>
+    <div className="test-ride-photo"><img src="/media/hero-life-desktop.webp" width={1600} height={900} loading="lazy"
+      alt={t('Rodina počas jazdy na cargo bicykli – ilustračná fotografia výrobcu', 'Family riding a cargo bike — illustrative manufacturer image')}/>
+      <span>{t('INŠPIRÁCIA ZO ŠVÉDSKA · FOTO VÝROBCU', 'INSPIRATION FROM SWEDEN · MANUFACTURER IMAGE')}</span>
     </div>
     <div className="test-ride-copy"><span className="eyebrow">{t('SKÚŠOBNÁ JAZDA · RAJECKÉ TEPLICE', 'TEST RIDE · RAJECKÉ TEPLICE')}</span>
       <h2 id="test-ride-title">{t('Najprv sa prevezte.', 'Take a ride first.')}<br/><em>{t('Potom sa rozhodnite.', 'Then decide.')}</em></h2>

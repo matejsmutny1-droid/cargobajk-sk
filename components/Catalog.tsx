@@ -29,10 +29,10 @@ export default function Catalog({ full = false, exclude }: { full?: boolean; exc
       {shown.map(b => <Link className="bike-card" href={'/bicykle/' + b.slug} key={b.slug}>
         <div className="bike-picture"><span className="bike-label">{b.children === 6 ? 'Až 6 detí · Kindergarten' : b.use}</span><BrandImage src={'/media/' + b.image + '.webp'} alt={'Cargobike of Sweden ' + b.name} loading="lazy" /><span className="round-arrow"><Arrow /></span></div>
         <div className="bike-card-title"><h3>{b.name}</h3><span>Elektrický cargo bicykel</span></div>
-        <p>{b.description}</p><BikePrice price={b.priceEur}/>
+        <p>{b.description}</p>{b.specs.find(([label])=>label==='Batéria')&&<p className="card-spec">Batéria: {b.specs.find(([label])=>label==='Batéria')?.[1]}</p>}<BikePrice price={b.priceEur}/>
       </Link>)}
     </div>
     {shown.length === 0 && <div className="empty-catalog"><h3>Skúsme iný výber.</h3><p>Pre túto kombináciu sme nenašli model.</p><button className="button dark" onClick={() => { setFilter('Všetky'); setFamily('Všetky rady'); setQuery(''); }}>Zobraziť všetky modely <Arrow /></button></div>}
-    {full && <div className="more-models"><span className="eyebrow">VŠETKY MODELY NA JEDNOM MIESTE</span><h2>Každý deň je iný.<br />Rovnako aj vaše možnosti.</h2><div>{bikes.map(b => <Link href={'/bicykle/' + b.slug} key={b.slug}>{b.name} <Arrow /></Link>)}</div><p>Každý model má vlastný detail a fotografiu z knižnice výrobcu. Slovenskú konfiguráciu, cenu a dostupnosť potvrdíme pri dopyte.</p></div>}
+    {full && <div className="more-models"><span className="eyebrow">VŠETKY MODELY NA JEDNOM MIESTE</span><h2>Každý deň je iný.<br />Rovnako aj vaše možnosti.</h2><div>{bikes.map(b => <Link href={'/bicykle/' + b.slug} key={b.slug}>{b.name} <Arrow /></Link>)}</div><p>Každý model má vlastný detail a fotografiu z knižnice výrobcu. Konfiguráciu a príslušenstvo dodávanej verzie si potvrdíme pred objednaním.</p></div>}
   </>;
 }

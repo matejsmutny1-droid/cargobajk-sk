@@ -1,0 +1,14 @@
+import Link from '@/components/PageLink';
+
+export default function OrderProcess({english = false}: {english?: boolean}) {
+  const t = (sk: string, en: string) => english ? en : sk;
+  const prefix = english ? '/en' : '';
+  return <section className="order-process section" id="ako-nakupit" aria-labelledby="order-process-title">
+    <div className="section-heading"><div><span className="eyebrow">{t('OD VÝBERU K PRVEJ JAZDE', 'FROM CHOOSING TO YOUR FIRST RIDE')}</span><h2 id="order-process-title">{t('Ako u nás nakúpite.', 'How to buy from us.')}</h2></div><Link className="text-link" href={prefix + '/faq'}>{t('Otázky pred nákupom', 'Questions before buying')} →</Link></div>
+    <div className="purchase-options">
+      <article><span className="eyebrow">01 · {t('VIETE, ČO CHCETE', 'READY TO CHOOSE')}</span><h3>{t('Košík a osobný odber', 'Cart and collection')}</h3><p>{t('Vyberte bicykel a kompatibilné doplnky, pridajte ich do košíka a zvoľte osobný odber. Zaplatíte online cez Stripe. Odber na Lúčnej 350/5 v Rajeckých Tepliciach je zadarmo; termín si dohodneme.', 'Choose a bike and compatible accessories, add them to your cart and select collection. Pay online through Stripe. Collection at Lúčna 350/5 in Rajecké Teplice is free; we arrange the handover time.')}</p><Link className="text-link" href={prefix + '/bicykle'}>{t('Vybrať bicykel', 'Choose a bike')} →</Link></article>
+      <article><span className="eyebrow">02 · {t('CHCETE DOVOZ', 'NEED DELIVERY')}</span><h3>{t('Najprv potvrdíme dopravu', 'Delivery confirmed first')}</h3><p>{t('V košíku požiadajte o nacenenie dopravy. Podľa adresy vám potvrdíme spôsob a cenu dovozu aj celkovú ponuku. Platba nasleduje až po odsúhlasení ponuky.', 'Request a delivery quote from your cart. We confirm the shipping method, cost and complete quote for your address. Payment follows after you approve the quote.')}</p><Link className="text-link" href={prefix + '/obchodne-informacie'}>{t('Dodanie a podmienky', 'Delivery and terms')} →</Link></article>
+      <article><span className="eyebrow">03 · {t('EŠTE SA ROZHODUJETE', 'STILL DECIDING')}</span><h3>{t('Vyskúšajte a porovnajte', 'Try and compare')}</h3><p>{t('Dohodnite si skúšobnú jazdu alebo nám napíšte, koho a čo chcete voziť. Nezáväzná ponuka slúži na poradenstvo a výber konfigurácie. Bicykle a objednateľné doplnky dodávame do 21 kalendárnych dní od potvrdenia objednávky a dohodnutej platby.', 'Arrange a test ride or tell us who and what you want to carry. A non-binding quote helps with advice and configuration. Bikes and orderable accessories are supplied within 21 calendar days from order confirmation and the agreed payment.')}</p><Link className="text-link" href={prefix + '/kontakt?tema=skusobna-jazda#dopyt'}>{t('Dohodnúť skúšobnú jazdu', 'Arrange a test ride')} →</Link></article>
+    </div>
+  </section>;
+}

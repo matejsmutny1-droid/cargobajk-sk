@@ -16,7 +16,7 @@ test('crawler access and valid public sitemap', async () => {
  const sitemap = await get('/sitemap.xml'); assert.equal(sitemap.status,200); assert.match(sitemap.headers.get('content-type'),/xml/);
  const xml = await sitemap.text();
  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
- assert.equal(urls.length,50); assert.equal(new Set(urls).size,50);
+ assert.equal(urls.length,52); assert.equal(new Set(urls).size,52);
  assert.ok(urls.every(url=>url.startsWith(canonicalOrigin+'/')));
  assert.ok(urls.every(url=>!/(?:sprava-ponuky|potvrdenie-ponuky|nezavazna-ponuka|sukromie|api)/.test(url)));
  assert.match(xml,/hreflang="sk-SK"/); assert.match(xml,/hreflang="en"/);
@@ -25,7 +25,7 @@ test('crawler access and valid public sitemap', async () => {
 test('all sitemap pages render indexable, canonical server HTML and valid JSON-LD', async () => {
  const xml = await (await get('/sitemap.xml')).text();
  sitemapPaths = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1].slice(canonicalOrigin.length));
- assert.equal(sitemapPaths.length,50);
+ assert.equal(sitemapPaths.length,52);
  const titles = new Set();
  for (const path of sitemapPaths) {
   const response = await get(path); assert.equal(response.status,200,path);
@@ -149,4 +149,23 @@ test('known malformed catalogue URL redirects permanently while preserving query
  assert.equal(response.status,308);
  const target=new URL(response.headers.get('location'));
  assert.equal(target.pathname,'/bicykle');assert.equal(target.search,'?utm_source=legacy');
+});
+
+test('buying guidance, comparison and business enquiries are reachable in both languages',async()=>{
+ for(const prefix of ['', '/en']){
+  const home=await (await get(prefix || '/')).text();
+  assert.match(home,/href="\/(?:en)?\/?#vyskusat"/);
+  assert.match(home,/id="vyskusat"/);
+  assert.match(home,/id="ako-nakupit"/);
+  assert.match(home,/Stripe/);
+  assert.match(home,/href="(?:\/en)?\/pre-hotely-a-firmy"/);
+  const business=await get(prefix+'/pre-hotely-a-firmy');assert.equal(business.status,200);
+  const html=await business.text();assert.match(html,/id="dopyt"/);assert.match(html,/b2b@cargobajk.sk/);assert.match(html,/Firemná spolupráca/);
+  const catalog=await (await get(prefix+'/bicykle')).text();assert.match(catalog,/id="porovnanie"/);
+  assert.match(catalog,/19,6 Ah/);assert.match(catalog,/12,8 Ah/);assert.match(catalog,/110 Nm/);
+  for(const model of ['classic','flex','delight','flex-dog'])assert.ok(catalog.includes('href="'+prefix+'/bicykle/'+model+'"'));
+  const faq=await (await get(prefix+'/faq')).text();assert.match(faq,/Stripe/);assert.match(faq,/Apple Pay/);assert.match(faq,/150/);assert.match(faq,/350/);
+  const service=await (await get(prefix+'/servis')).text();assert.match(service,/service@cargobajk.sk/);assert.ok(service.includes('href="'+prefix+'/obchodne-informacie"'));
+  const product=await (await get(prefix+'/bicykle/flex')).text();assert.match(product,prefix?/Add to cart/:/Do košíka/);
+ }
 });
