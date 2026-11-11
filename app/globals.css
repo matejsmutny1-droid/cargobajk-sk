@@ -77,3 +77,7 @@ body{font-family:Sora,Arial,sans-serif;color:var(--charcoal)}h1,h2,h3{font-famil
 @media(max-width:360px){.header{padding-left:4%;padding-right:4%;gap:8px}.header .brand{width:130px}.header .identity-bike{width:30px}.header .identity-word{font-size:15px}.header .identity-tagline{font-size:3.2px}.header-actions{gap:7px;font-size:9px}.header-actions .language-switch,.menu{font-size:9px}}
 .comparison-swipe{display:none}.bike-card>p.card-spec{font-size:10px;color:var(--ink);border-top:1px solid var(--line);padding-top:10px}
 @media(max-width:760px){.comparison-swipe{display:block;margin-top:18px;font-size:11px;color:var(--ink)}.comparison-scroll{margin-top:15px}}
+
+/* All catalogue models are comparable; use filters to narrow the wide table. */
+.comparison-filters{flex-wrap:wrap}.comparison-count{font-size:12px;color:var(--ink)}.comparison-scroll th:first-child{width:180px}.comparison-scroll tr>:first-child{position:sticky;left:0;z-index:1;background:var(--paper);box-shadow:1px 0 0 var(--line)}.comparison-scroll thead tr>:first-child{z-index:2;background:#eee4db}.comparison-scroll tbody tr:nth-child(even)>:first-child{background:#fff9f3}.comparison-swipe{display:block;margin-top:18px;font-size:11px;color:var(--ink)}
+@media(max-width:760px){.comparison-filters{gap:8px}.comparison-filters button{white-space:normal;text-align:left}.comparison-scroll th:first-child{width:135px}.comparison-scroll tr>:first-child{box-shadow:1px 0 0 var(--line),4px 0 9px #00000008}}

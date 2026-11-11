@@ -163,7 +163,11 @@ test('buying guidance, comparison and business enquiries are reachable in both l
   const html=await business.text();assert.match(html,/id="dopyt"/);assert.match(html,/b2b@cargobajk.sk/);assert.match(html,/Firemná spolupráca/);
   const catalog=await (await get(prefix+'/bicykle')).text();assert.match(catalog,/id="porovnanie"/);
   assert.match(catalog,/19,6 Ah/);assert.match(catalog,/12,8 Ah/);assert.match(catalog,/110 Nm/);
-  for(const model of ['classic','flex','delight','flex-dog'])assert.ok(catalog.includes('href="'+prefix+'/bicykle/'+model+'"'));
+  const comparison=catalog.split('data-model-count="14"')[1]?.split('</table>')[0];
+  assert.ok(comparison, 'all 14 models must be in the initial comparison');
+  for(const model of ['flex','delight','flex-dog','longtail','flex-kindergarten','delight-kindergarten','classic-kindergarten','flex-box','delight-box','delight-dog','classic','classic-dog','classic-box','longlite'])assert.ok(comparison.includes('href="'+prefix+'/bicykle/'+model+'"'),model+' is missing from comparison');
+  assert.match(comparison,prefix?/Up to 6 children/:/Až 6 detí/);
+  assert.match(catalog,/Kindergarten ·/);
   const faq=await (await get(prefix+'/faq')).text();assert.match(faq,/Stripe/);assert.match(faq,/Apple Pay/);assert.match(faq,/150/);assert.match(faq,/350/);
   const service=await (await get(prefix+'/servis')).text();assert.match(service,/service@cargobajk.sk/);assert.ok(service.includes('href="'+prefix+'/obchodne-informacie"'));
   const product=await (await get(prefix+'/bicykle/flex')).text();assert.match(product,prefix?/Add to cart/:/Do košíka/);
