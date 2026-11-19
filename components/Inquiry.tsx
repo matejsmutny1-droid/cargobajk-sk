@@ -52,7 +52,7 @@ function InquiryForm({ topic, defaultMessage, defaultName = '', defaultEmail = '
       <label>Čo vás zaujíma?<select name="topic" value={selectedTopic} onChange={event => setSelectedTopic(event.target.value)}>{Array.from(new Set([topic, 'Záujem o bicykel', 'Výber bicykla', 'Záujem o doplnky', 'Skúšobná jazda', 'Servis', 'Firemná spolupráca'])).map(t => <option key={t}>{t}</option>)}</select></label>
       {selectedTopic==='Skúšobná jazda' && <>
         <label>Kde si chcete bicykel vyskúšať?<select name="trialLocation" defaultValue={trialLocation==='bratislava'?'Bratislava — záujem o budúcu ukážku':'Rajecké Teplice — návšteva po dohode'}><option>Rajecké Teplice — návšteva po dohode</option><option>Bratislava — záujem o budúcu ukážku</option></select></label>
-        <p className="form-note">V Rajeckých Tepliciach si potvrdíme termín aj dostupný model. Pri Bratislave zatiaľ zbierame záujem; miesto ani dátum ukážky nie sú určené. Odoslanie nie je potvrdená rezervácia.</p>
+        <p className="form-note">V Rajeckých Tepliciach si môžete po dohode vyskúšať Flex so strieškou. Ostatné modely vo výbere vyjadrujú váš záujem, nie ich dostupnosť na skúšku. Pri Bratislave zatiaľ zbierame záujem; miesto ani dátum ukážky nie sú určené. Odoslanie nie je potvrdená rezervácia.</p>
         <label>Ktorý model vás zaujíma?<select name="trialModel"><option>Nechám si poradiť</option>{bikes.map(b=><option key={b.slug}>{b.name}</option>)}</select></label>
         <div className="form-row"><label>Preferovaný termín (nepovinné)<input type="date" name="trialDate"/></label><label>Telefón (nepovinné)<input type="tel" name="trialPhone" autoComplete="tel" maxLength={40}/></label></div>
       </>}
