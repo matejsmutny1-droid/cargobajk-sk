@@ -14,6 +14,7 @@ export default function TestRide({english = false}: {english?: boolean}) {
       <address>Lúčna 350/5, 013 13 Rajecké Teplice</address>
       <p className="test-ride-note">{t('Návštevy sú po dohode. Pred cestou si s nami potvrďte termín a model, ktorý si chcete vyskúšať.', 'Visits are by appointment. Please confirm the time and the model you want to try before travelling.')}</p>
       <div className="test-ride-actions"><Link href={(english ? '/en' : '') + '/kontakt?tema=skusobna-jazda#dopyt'} className="button dark">{t('Dohodnúť skúšobnú jazdu', 'Arrange a test ride')} <Arrow/></Link>
+      {!english&&<Link className="text-link" href="/kontakt?tema=skusobna-jazda&mesto=bratislava#dopyt">Mám záujem o ukážku v Bratislave →</Link>}
       <a className="text-link" href="tel:+421904501703">+421 904 501 703</a></div>
     </div>
   </section>;
