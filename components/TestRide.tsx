@@ -12,9 +12,9 @@ export default function TestRide({english = false}: {english?: boolean}) {
       <h2 id="test-ride-title">{t('Najprv sa prevezte.', 'Take a ride first.')}<br/><em>{t('Potom sa rozhodnite.', 'Then decide.')}</em></h2>
       <p>{t('Ako sa na cargobajku zatáča? Aký je pocit viezť deti či nákup? Príďte si ho vyskúšať do nášho showroomu v Rajeckých Tepliciach. Ukážeme vám bicykel, odpovieme na otázky a spolu zistíme, čo vám sadne.', 'How does a cargo bike handle? What does it feel like to carry children or shopping? Come and try one at our showroom in Rajecké Teplice. We will show you the bike, answer your questions and help you find what feels right.')}</p>
       <address>Lúčna 350/5, 013 13 Rajecké Teplice</address>
-      <p className="test-ride-note">{t('Na skúšobnú jazdu máme pripravený model Flex so strieškou. Návštevy sú po dohode; pred cestou si s nami potvrďte termín.', 'The Flex model with a canopy is available for test rides. Visits are by appointment; please confirm the time before travelling.')}</p>
+      <p className="test-ride-note">{t('V showroome si môžete vyskúšať model Flex so strieškou. Návštevu si dohodnite vopred. Ak vám vyhovuje iné miesto, kontaktujte nás a dohodneme individuálne možnosti.', 'Try the Flex model with a canopy at our showroom by appointment. If another location suits you better, contact us to discuss individual arrangements.')}</p>
       <div className="test-ride-actions"><Link href={(english ? '/en' : '') + '/kontakt?tema=skusobna-jazda#dopyt'} className="button dark">{t('Dohodnúť skúšobnú jazdu', 'Arrange a test ride')} <Arrow/></Link>
-      {!english&&<Link className="text-link" href="/kontakt?tema=skusobna-jazda&mesto=bratislava#dopyt">Mám záujem o ukážku v Bratislave →</Link>}
+      {!english&&<Link className="text-link" href="/kontakt?tema=skusobna-jazda&mesto=ine#dopyt">Vyskúšanie na inom mieste →</Link>}
       <a className="text-link" href="tel:+421904501703">+421 904 501 703</a></div>
     </div>
   </section>;
