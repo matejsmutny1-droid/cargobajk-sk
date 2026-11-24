@@ -47,4 +47,11 @@ const vocabulary:Record<string,string>={
   "dĺžka 87 cm, šírka 59 cm, výška vzadu 59 cm, výška vpredu 55 cm": "length 87 cm, width 59 cm, rear height 59 cm, front height 55 cm",
   "Až 2 deti": "Up to 2 children"
 };
-export const bikes=slovakBikes.map(bike=>({...bike,use:vocabulary[bike.use]??bike.use,description:descriptions[bike.slug]??bike.description,specs:bike.specs.map(row=>row.map(value=>vocabulary[value]??value))}));
+const novaDescriptions:Record<string,string>={
+ 'flex-nova':'Durable plastic Nova box with removable benches for up to four children. Easy to clean and adapt for family trips and everyday cargo.',
+ 'delight-nova':'Durable plastic Nova box and a powerful mid-drive motor for family journeys. Removable benches let you switch between passengers and cargo.',
+ 'flex-nova-dog':'Plastic Nova box with a front dog hatch and removable benches. Flexible space for your dog, children or everyday cargo.',
+ 'delight-nova-dog':'Plastic Nova box with a front dog hatch, removable benches and a powerful mid-drive motor for everyday trips with your dog.'
+};
+vocabulary['Box']='Box';vocabulary['Strieška']='Canopy';vocabulary['NOVA · odolný LDPE plast']='Nova · durable LDPE plastic';vocabulary['Strieška a konštrukcia sa kupujú osobitne · iba vyhotovenie NOVA']='Canopy and frame sold separately · Nova version only';vocabulary['82 × 64,5 cm · výška vzadu 59 cm, vpredu 47 cm']='82 × 64.5 cm · rear height 59 cm, front height 47 cm';
+export const bikes=slovakBikes.map(bike=>({...bike,use:vocabulary[bike.use]??bike.use,description:novaDescriptions[bike.slug]??descriptions[bike.slug]??bike.description,specs:bike.specs.map(row=>row.map(value=>vocabulary[value]??value))}));

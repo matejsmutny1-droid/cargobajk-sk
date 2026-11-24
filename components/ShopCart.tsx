@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 import {shopProducts,priceCart,type CartInput} from '@/lib/shop/catalog';
 import DeliveryLocation from './DeliveryLocation';
 import {Inquiry} from './Inquiry';
+import {onlinePurchasesEnabled} from '@/lib/shop-availability';
 const storageKey='cargobajk-cart-v1';
 const money=(n:number)=>new Intl.NumberFormat('sk-SK',{style:'currency',currency:'EUR'}).format(n/100);
 function loadCart():CartInput{try{const v=JSON.parse(localStorage.getItem(storageKey)||'[]');return Array.isArray(v)?v.filter(i=>i&&typeof i.id==='string'&&Number.isInteger(i.quantity)&&i.quantity>0&&i.quantity<=10).slice(0,30):[];}catch{return [];}}
@@ -14,10 +15,11 @@ export function AddToCart({id,english=false}:{id:string;english?:boolean}){
  const product=shopProducts.find(p=>p.id===id);
  const [model,setModel]=useState(product?.models.length===1?product.models[0]:'');
  if(!product)return null;
+ if(!onlinePurchasesEnabled)return <p className="shop-paused">{english?'Online purchases are temporarily paused.':'Online nákup je dočasne pozastavený.'} <a className="text-link" href={(english?'/en':'')+'/kontakt?produkt='+encodeURIComponent(product.name)+'#dopyt'}>{english?'Request a quote →':'Nezáväzne sa informovať →'}</a></p>;
  return <div className="shop-add">{product.kind==='accessory'&&<label>{english?'Bike model':'Model bicykla'}<select value={model} onChange={e=>setModel(e.target.value)}><option value="">{english?'Choose compatible model':'Vyberte kompatibilný model'}</option>{product.models.map(slug=><option key={slug} value={slug}>{shopProducts.find(p=>p.id==='bike:'+slug)?.name||slug}</option>)}</select></label>}
  <button type="button" className="button dark" disabled={!hydrated||(product.kind==='accessory'&&!model)} onClick={()=>{try{const cart=loadCart();const existing=cart.find(l=>l.id===id);if(existing){setMessage(english?'Already in your cart.':'Produkt už máte v košíku.');return;}const next=[...cart,{id,quantity:1,...(model?{model}:{})}];priceCart(next);saveCart(next);setMessage(english?'Added to cart.':'Pridané do košíka.');}catch(e){setMessage(e instanceof Error?e.message:'Košík sa nepodarilo uložiť.');}}}>{english?'Add to cart':'Do košíka'}</button><p role="status">{message}</p><a className="text-link" href="/kosik">{english?'View cart':'Prejsť do košíka'} →</a></div>;
 }
-export function CartLink({english=false}:{english?:boolean}={}){const [count,setCount]=useState(0);useEffect(()=>{const update=()=>setCount(loadCart().reduce((n,l)=>n+l.quantity,0));update();window.addEventListener('shop-cart',update);window.addEventListener('storage',update);return()=>{window.removeEventListener('shop-cart',update);window.removeEventListener('storage',update);};},[]);return <a href="/kosik" aria-label={(english?'Cart, number of products: ':'Košík, počet produktov: ')+count}>{english?'Cart':'Košík'}{count?' ('+count+')':''}</a>;}
+export function CartLink({english=false}:{english?:boolean}={}){const [count,setCount]=useState(0);useEffect(()=>{const update=()=>setCount(loadCart().reduce((n,l)=>n+l.quantity,0));update();window.addEventListener('shop-cart',update);window.addEventListener('storage',update);return()=>{window.removeEventListener('shop-cart',update);window.removeEventListener('storage',update);};},[]);if(!onlinePurchasesEnabled)return null;return <a href="/kosik" aria-label={(english?'Cart, number of products: ':'Košík, počet produktov: ')+count}>{english?'Cart':'Košík'}{count?' ('+count+')':''}</a>;}
 type Quote={cart:ReturnType<typeof priceCart>;shipping:{name:string;cents:number};totalCents:number;deliveryDays:number;termsVersion:string};
 export default function ShopCart(){
  const [cart,setCart]=useState<CartInput>([]),[loaded,setLoaded]=useState(false),[config,setConfig]=useState<{ready:boolean;mode:string;termsVersion:string}>(),[step,setStep]=useState(1),[error,setError]=useState(''),[busy,setBusy]=useState(false),[quote,setQuote]=useState<Quote>(),[details,setDetails]=useState<Record<string,string>>({}),[method,setMethod]=useState('pickup'),[agreed,setAgreed]=useState(false),[requestKey,setRequestKey]=useState(''),[deliveryInquiry,setDeliveryInquiry]=useState(false);
@@ -25,6 +27,7 @@ export default function ShopCart(){
  let priced:ReturnType<typeof priceCart>|undefined;try{priced=priceCart(cart);}catch{}
  function change(next:CartInput){try{saveCart(next);setCart(next);setQuote(undefined);setStep(1);setError('');}catch(e){setError(String(e));}}
  async function api<T>(path:string,value:unknown):Promise<T>{const res=await fetch('/api/shop/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(value)});const data=await res.json() as T & {error?:string};if(!res.ok)throw new Error(data.error||'Požiadavku sa nepodarilo spracovať.');return data;}
+ if(!onlinePurchasesEnabled)return <div className="shop-panel"><h2>Online nákup je dočasne pozastavený.</h2><p>Výber bicykla, cenu a dodanie s vami radi prejdeme osobne. Odoslanie dopytu je nezáväzné a nič sa neplatí.</p><a className="button dark" href="/kontakt#dopyt">Požiadať o ponuku →</a><a className="text-link" href="/kontakt?tema=skusobna-jazda#dopyt">Dohodnúť skúšobnú jazdu →</a></div>;
  if(!loaded)return <p role="status">Načítavam košík…</p>;
  return <div className="shop-layout"><div><ol className="shop-steps" aria-label="Kroky objednávky">{['Košík','Údaje a doprava','Kontrola a platba'].map((s,i)=><li key={s} aria-current={step===i+1?'step':undefined}>{i+1}. {s}</li>)}</ol>
  {!cart.length?<div className="shop-panel"><h2>Váš košík čaká na prvú jazdu.</h2><a className="button dark" href="/bicykle">Vybrať bicykel →</a><a className="text-link" href="/doplnky">Pozrieť doplnky →</a></div>:<>

@@ -154,3 +154,18 @@ test('retention deletes old unpaid PII, preserves recent and retained paid recor
  assert.equal(store.db.prepare('SELECT id FROM shop_orders WHERE id=?').get(paid.orderId),undefined);
  assert.equal(store.db.prepare('SELECT COUNT(*) n FROM shop_mail WHERE order_id=?').get(paid.orderId).n,0);
 });
+
+
+test('paused live checkout rejects new purchases but preserves status and webhook handling',async()=>{
+ const {env,mock,counts}=setup();
+ const live={...env,SHOP_MODE:'live',STRIPE_SECRET_KEY:'sk_live_mock',SHOP_POLICIES_VERSION:'2026-11-09'};
+ const config=await (await handleShop(new Request('https://cargobajk.sk/api/shop/config'),live,mock)).json();
+ assert.equal(config.ready,false);assert.equal(config.paused,true);
+ for(const path of ['quote','checkout']){
+  const r=await handleShop(request(path,input()),live,mock);assert.equal(r.status,503);assert.match((await r.json()).error,/pozastavený/);
+ }
+ assert.equal(counts().stripeCalls,0);
+ const order=await (await handleShop(request('checkout',input()),env,mock)).json();
+ assert.equal((await handleShop(request('status',{orderId:order.orderId}),env,mock)).status,200);
+ assert.equal((await handleShop(await eventRequest(order.orderId),env,mock)).status,200);
+});

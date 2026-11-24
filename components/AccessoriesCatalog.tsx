@@ -5,7 +5,7 @@ import Link from '@/components/PageLink';
 import Arrow from '@/components/Arrow';
 import {bikes} from '@/lib/catalog';
 import {filterAccessories,accessoryCategories,type CatalogAccessory} from '@/lib/accessory-catalog';
-import {quoteMoney} from '@/lib/quote';
+import BikePrice from './BikePrice';
 
 export default function AccessoriesCatalog({english=false}:{english?:boolean}) {
   const [category,setCategory]=useState('all'),[model,setModel]=useState('');
@@ -24,7 +24,7 @@ export default function AccessoriesCatalog({english=false}:{english?:boolean}) {
         <img src={item.image} alt={name(item)} width="800" height="650" loading="lazy"/><span aria-hidden="true">＋</span>
       </button>
       <div className="accessory-card-copy"><span className="eyebrow">{english?accessoryCategories.find(group=>group.id===item.category)?.en:accessoryCategories.find(group=>group.id===item.category)?.sk}</span><h2>{name(item)}</h2><p>{english?item.descriptionEn:item.description}</p>
-      <strong className="accessory-catalog-price">{item.priceEur===null?t('Cena na dopyt','Price on request'):quoteMoney(item.priceEur,english)}</strong>
+      <BikePrice price={item.priceEur??undefined} english={english}/>
       {item.priceEur!==null&&<AddToCart id={'accessory:'+item.id} english={english}/>}<details className="accessory-fit"><summary>{t('Pre ktoré bicykle?','Which bikes does it fit?')}</summary><p>{item.models.length?item.models.map(slug=>bikes.find(bike=>bike.slug===slug)?.name).join(', '):t('Vhodné vyhotovenie vyberieme podľa konkrétneho bicykla.','We will select a suitable version for your specific bike.')}</p><p>{t('Kompatibilitu s ročníkom a verziou potvrdíme pred objednaním.','We confirm compatibility with the model year and version before ordering.')}</p></details>
       <Link className="text-link" href={(english?'/en':'')+'/kontakt?doplnok='+encodeURIComponent(item.id)+'#dopyt'}>{t('Mám záujem','Enquire about this')} <Arrow/></Link></div>
     </article>)}</div>

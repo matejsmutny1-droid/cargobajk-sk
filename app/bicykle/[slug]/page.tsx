@@ -30,7 +30,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div><ProductGallery name={b.name} image={b.slug} /><p className="gallery-caption">Oficiálne fotografie výrobcu. Zobrazené príslušenstvo nemusí byť súčasťou základnej konfigurácie.</p></div>
       <div className="product-info"><span className="eyebrow">CARGOBIKE OF SWEDEN · {b.use.toUpperCase()} · {b.sku}</span><h1>{b.name}</h1>
         {b.children && <span className="capacity-tag">{b.children === 2 ? 'Priestor až pre 2 deti' : `Priestor až pre ${b.children} detí`}</span>}
-        <p>{b.description}</p><BikePrice price={b.priceEur}/><ProductSupply/><AddToCart id={'bike:'+b.slug}/>
+        <p>{b.description}</p><BikePrice price={b.priceEur}/><ProductSupply modelSlug={b.slug}/><AddToCart id={'bike:'+b.slug}/>
         <div><Link className="button dark" href={'/nezavazna-ponuka?model=' + encodeURIComponent(b.slug)}>Vyžiadať nezáväznú ponuku <Arrow /></Link></div>
         <small>Nezáväzný dopyt. Konfiguráciu, cenu dopravy a celkovú sumu potvrdíme pred objednaním.</small>
         {variants.length > 1 && <div className="details"><h2 className="variant-heading">Vyberte si verziu radu {b.family}</h2><div className="variant-links">{variants.map(v => <Link href={'/bicykle/' + v.slug} key={v.slug} aria-current={v.slug === b.slug ? 'page' : undefined}>{v.name}</Link>)}</div></div>}
@@ -42,6 +42,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <Link className="text-link" href="/vyber-bicykla">Pomôžte mi s výberom <Arrow /></Link>
       </div>
     </section>
-    <section className="section related"><span className="eyebrow">OBJAVUJTE ĎALEJ</span><h2>Iný deň. Iné možnosti.</h2><Catalog exclude={b.slug} /><Link className="kindergarten-link" href="/bicykle">Pozrieť všetkých 14 modelov <Arrow /></Link></section>
+    <section className="section related"><span className="eyebrow">OBJAVUJTE ĎALEJ</span><h2>Iný deň. Iné možnosti.</h2><Catalog exclude={b.slug} /><Link className="kindergarten-link" href="/bicykle">Pozrieť všetkých 18 modelov <Arrow /></Link></section>
   </main>;
 }

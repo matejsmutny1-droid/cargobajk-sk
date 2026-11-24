@@ -16,7 +16,7 @@ test('crawler access and valid public sitemap', async () => {
  const sitemap = await get('/sitemap.xml'); assert.equal(sitemap.status,200); assert.match(sitemap.headers.get('content-type'),/xml/);
  const xml = await sitemap.text();
  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
- assert.equal(urls.length,52); assert.equal(new Set(urls).size,52);
+ assert.equal(urls.length,60); assert.equal(new Set(urls).size,60);
  assert.ok(urls.every(url=>url.startsWith(canonicalOrigin+'/')));
  assert.ok(urls.every(url=>!/(?:sprava-ponuky|potvrdenie-ponuky|nezavazna-ponuka|sukromie|api)/.test(url)));
  assert.match(xml,/hreflang="sk-SK"/); assert.match(xml,/hreflang="en"/);
@@ -25,7 +25,7 @@ test('crawler access and valid public sitemap', async () => {
 test('all sitemap pages render indexable, canonical server HTML and valid JSON-LD', async () => {
  const xml = await (await get('/sitemap.xml')).text();
  sitemapPaths = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1].slice(canonicalOrigin.length));
- assert.equal(sitemapPaths.length,52);
+ assert.equal(sitemapPaths.length,60);
  const titles = new Set();
  for (const path of sitemapPaths) {
   const response = await get(path); assert.equal(response.status,200,path);
@@ -103,7 +103,7 @@ test('image sitemap exposes real visible product photos and crawlable image resp
   images:[...m[1].matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map(m=>m[1]),
  }));
  const illustrated=entries.filter(e=>e.images.length);
- assert.equal(illustrated.length,34,'SK/EN home, bike and accessory catalogues, and 28 product pages');
+ assert.equal(illustrated.length,42,'SK/EN home, bike and accessory catalogues, and 36 product pages');
  const uniqueImages=new Set();
  for(const entry of illustrated){
   const html=renderedPages.get(entry.path)??await (await get(entry.path)).text();
@@ -116,7 +116,7 @@ test('image sitemap exposes real visible product photos and crawlable image resp
    assert.ok(page,entry.path+' list metadata');
    assert.ok(visible.has(page.primaryImageOfPage.url),entry.path+' preferred image');
    assert.match(head(html),/<meta[^>]*property="og:image"[^>]*content="https:\/\/cargobajk.sk\/media\/(?!hero)/,entry.path);
-   assert.equal(page.mainEntity.numberOfItems,entry.path.endsWith('/bicykle')?14:4);
+   assert.equal(page.mainEntity.numberOfItems,entry.path.endsWith('/bicykle')?18:4);
   }else if(entry.path.includes('/bicykle/')){
    const product=jsonLd(html).find(s=>s['@type']==='Product');
    assert.deepEqual(product.image,entry.images,entry.path+' gallery metadata matches sitemap');
@@ -157,19 +157,19 @@ test('buying guidance, comparison and business enquiries are reachable in both l
   assert.match(home,/href="\/(?:en)?\/?#vyskusat"/);
   assert.match(home,/id="vyskusat"/);
   assert.match(home,/id="ako-nakupit"/);
-  assert.match(home,/Stripe/);
+  assert.match(home,prefix?/temporarily paused/:/dočasne pozastavený/);
   assert.match(home,/href="(?:\/en)?\/pre-hotely-a-firmy"/);
   const business=await get(prefix+'/pre-hotely-a-firmy');assert.equal(business.status,200);
   const html=await business.text();assert.match(html,/id="dopyt"/);assert.match(html,/b2b@cargobajk.sk/);assert.match(html,/Firemná spolupráca/);
   const catalog=await (await get(prefix+'/bicykle')).text();assert.match(catalog,/id="porovnanie"/);
   assert.match(catalog,/19,6 Ah/);assert.match(catalog,/12,8 Ah/);assert.match(catalog,/110 Nm/);
-  const comparison=catalog.split('data-model-count="14"')[1]?.split('</table>')[0];
-  assert.ok(comparison, 'all 14 models must be in the initial comparison');
+  const comparison=catalog.split('data-model-count="18"')[1]?.split('</table>')[0];
+  assert.ok(comparison, 'all 18 models must be in the initial comparison');
   for(const model of ['flex','delight','flex-dog','longtail','flex-kindergarten','delight-kindergarten','classic-kindergarten','flex-box','delight-box','delight-dog','classic','classic-dog','classic-box','longlite'])assert.ok(comparison.includes('href="'+prefix+'/bicykle/'+model+'"'),model+' is missing from comparison');
   assert.match(comparison,prefix?/Up to 6 children/:/Až 6 detí/);
   assert.match(catalog,/Kindergarten ·/);
-  const faq=await (await get(prefix+'/faq')).text();assert.match(faq,/Stripe/);assert.match(faq,/Apple Pay/);assert.match(faq,/150/);assert.match(faq,/350/);
+  const faq=await (await get(prefix+'/faq')).text();assert.match(faq,prefix?/temporarily paused/:/dočasne pozastaven/);assert.match(faq,/150/);assert.match(faq,/350/);
   const service=await (await get(prefix+'/servis')).text();assert.match(service,/service@cargobajk.sk/);assert.ok(service.includes('href="'+prefix+'/obchodne-informacie"'));
-  const product=await (await get(prefix+'/bicykle/flex')).text();assert.match(product,prefix?/Add to cart/:/Do košíka/);
+  const product=await (await get(prefix+'/bicykle/flex')).text();assert.match(product,prefix?/Request a quote/:/Nezáväzne sa informovať/);assert.doesNotMatch(product,/>Do košíka<|>Add to cart</);assert.match(product,/2027/);
  }
 });

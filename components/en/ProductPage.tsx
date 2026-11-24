@@ -30,7 +30,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div><ProductGallery name={b.name} image={b.slug} /><p className="gallery-caption">Official manufacturer photos. Accessories shown may not be included in the standard specification.</p></div>
       <div className="product-info"><span className="eyebrow">CARGOBIKE OF SWEDEN · {b.use.toUpperCase()} · {b.sku}</span><h1>{b.name}</h1>
         {b.children && <span className="capacity-tag">{b.children === 2 ? 'Room for up to 2 children' : `Room for up to ${b.children} children`}</span>}
-        <p>{b.description}</p><BikePrice price={b.priceEur} english/><ProductSupply english/><AddToCart id={'bike:'+b.slug} english/>
+        <p>{b.description}</p><BikePrice price={b.priceEur} english/><ProductSupply modelSlug={b.slug} english/><AddToCart id={'bike:'+b.slug} english/>
         <div><Link className="button dark" href={'/nezavazna-ponuka?model=' + encodeURIComponent(b.slug)}>Request a non-binding quote <Arrow /></Link></div>
         <small>No-obligation enquiry. We will confirm the specification, shipping cost and total before you order.</small>
         {variants.length > 1 && <div className="details"><h2 className="variant-heading">Choose your version of the {b.family}</h2><div className="variant-links">{variants.map(v => <Link href={'/bicykle/' + v.slug} key={v.slug} aria-current={v.slug === b.slug ? 'page' : undefined}>{v.name}</Link>)}</div></div>}
@@ -42,6 +42,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <Link className="text-link" href="/vyber-bicykla">Help me choose <Arrow /></Link>
       </div>
     </section>
-    <section className="section related"><span className="eyebrow">KEEP EXPLORING</span><h2>Another day. More possibilities.</h2><Catalog exclude={b.slug} /><Link className="kindergarten-link" href="/bicykle">Explore all 14 models <Arrow /></Link></section>
+    <section className="section related"><span className="eyebrow">KEEP EXPLORING</span><h2>Another day. More possibilities.</h2><Catalog exclude={b.slug} /><Link className="kindergarten-link" href="/bicykle">Explore all 18 models <Arrow /></Link></section>
   </main>;
 }

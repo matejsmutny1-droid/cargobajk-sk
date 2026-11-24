@@ -4,6 +4,7 @@ import {priceCart} from './catalog.ts';
 import {shippingPrice,type ShippingMethod,type VerifiedRoute} from './shipping.ts';
 import {parseOrderCustomer} from '../checkout.ts';
 import {stripeSession,verifyStripeEvent} from './stripe.ts';
+import {onlinePurchasesEnabled} from '../shop-availability.ts';
 
 export type ShopEnv = {
  SHOP_DB?:D1Database; SHOP_MODE?:string; STRIPE_SECRET_KEY?:string; STRIPE_WEBHOOK_SECRET?:string;
@@ -36,7 +37,8 @@ function deliveryDaysFor(env:ShopEnv,items:ReturnType<typeof priceCart>['lines']
 }
 export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetch=fetch):Promise<Response> {
  const path=new URL(request.url).pathname;
- if(path==='/api/shop/config')return response({ready:shopReady(env),mode:env.SHOP_MODE==='test'?'test':'live',termsVersion:env.SHOP_POLICIES_VERSION||''});
+ const purchasesAllowed=env.SHOP_MODE==='test'||onlinePurchasesEnabled;
+ if(path==='/api/shop/config')return response({ready:purchasesAllowed&&shopReady(env),paused:!purchasesAllowed,mode:env.SHOP_MODE==='test'?'test':'live',termsVersion:env.SHOP_POLICIES_VERSION||''});
  if(path==='/api/shop/webhook')return webhook(request,env,fetcher);
  if(request.method!=='POST')return response({error:'Method not allowed'},405);
  const origin=request.headers.get('Origin');
@@ -44,6 +46,7 @@ export async function handleShop(request:Request,env:ShopEnv,fetcher:typeof fetc
  const staging=env.SHOP_MODE==='test'&&target.origin===env.SHOP_TEST_ORIGIN&&target.protocol==='https:'&&target.hostname.endsWith('.workers.dev');
  if(origin!==target.origin||(!['cargobajk.sk','localhost','127.0.0.1'].includes(target.hostname)&&!staging))return response({error:'Nepovolený pôvod požiadavky.'},403);
  if(!request.headers.get('Content-Type')?.startsWith('application/json'))return response({error:'Vyžaduje sa JSON.'},415);
+ if(!purchasesAllowed&&['/api/shop/quote','/api/shop/checkout'].includes(path))return response({error:'Online nákup je dočasne pozastavený. Pošlite nám nezáväzný dopyt cez kontakt.'},503);
  if(!shopReady(env))return response({error:'Online platby zatiaľ nie sú aktivované. Napíšte nám pre dokončenie objednávky.'},503);
  try{
   const ip=request.headers.get('CF-Connecting-IP');

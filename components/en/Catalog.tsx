@@ -1,4 +1,5 @@
 'use client';
+import {pricePreviewNote} from '@/lib/retail-display';
 import BikePrice from '@/components/BikePrice';
 
 import { useState } from 'react';
@@ -16,7 +17,7 @@ export default function Catalog({ full = false, exclude }: { full?: boolean; exc
     (family === 'All ranges' || b.family === family) &&
     `${b.name} ${b.sku}`.toLocaleLowerCase('sk').includes(query.trim().toLocaleLowerCase('sk')));
   const categories = full ? ['All', 'Family', 'With a dog', 'For nurseries', 'Cargo and business', 'City'] : ['All', 'Family', 'With a dog', 'City'];
-  return <>
+  return <><p className="source-note price-preview-note">{pricePreviewNote(true)}</p>
     <div className="filters" role="group" aria-label="Bike use">
       {categories.map(f => <button key={f} aria-pressed={filter === f} className={filter === f ? 'active' : ''} onClick={() => setFilter(f)}>{f === 'For nurseries' ? 'For nurseries · up to 6 children' : f}</button>)}
     </div>

@@ -4,6 +4,7 @@ import {bikes} from '@/lib/catalog';
 import {bikes as englishBikes} from '@/lib/en/catalog';
 import Link from '@/components/PageLink';
 import BikePrice from './BikePrice';
+import {pricePreviewNote} from '@/lib/retail-display';
 
 export default function BikeComparison({english = false}: {english?: boolean}) {
   const t = (sk: string, en: string) => english ? en : sk;
@@ -24,8 +25,8 @@ export default function BikeComparison({english = false}: {english?: boolean}) {
   const missing = <span aria-label={t('Údaj zatiaľ nemáme potvrdený', 'Specification not yet confirmed')}>—</span>;
   return <section className="section bike-comparison" id="porovnanie" aria-labelledby="comparison-title">
     <span className="eyebrow">{t('ROZDIELY NA JEDNOM MIESTE', 'THE DIFFERENCES AT A GLANCE')}</span><h2 id="comparison-title">{t('Ktorý cargobajk vám sadne?', 'Which cargo bike fits your life?')}</h2>
-    <p>{t('Porovnajte všetkých 14 modelov vrátane Kindergarten, Dog, Box, Long Lite a Longtail Varia. Zúžte tabuľku podľa využitia alebo si nechajte zobraziť celú ponuku.', 'Compare all 14 models, including Kindergarten, Dog, Box, Long Lite and Longtail Varia. Filter by use or keep the complete range side by side.')}</p>
-    <div className="filters comparison-filters" role="group" aria-label={t('Použitie porovnávaných bicyklov', 'Filter comparison by bike use')}>{categories.map(c => <button key={c.id} type="button" aria-pressed={category === c.id} className={category === c.id ? 'active' : ''} onClick={() => setCategory(c.id)}>{t(c.sk, c.en)}</button>)}</div>
+    <p>{t('Porovnajte všetkých 18 modelov vrátane Kindergarten, Dog, Box, Long Lite a Longtail Varia. Zúžte tabuľku podľa využitia alebo si nechajte zobraziť celú ponuku.', 'Compare all 18 models, including Kindergarten, Dog, Box, Long Lite and Longtail Varia. Filter by use or keep the complete range side by side.')}</p>
+    <p className="source-note">{pricePreviewNote(english)}</p><div className="filters comparison-filters" role="group" aria-label={t('Použitie porovnávaných bicyklov', 'Filter comparison by bike use')}>{categories.map(c => <button key={c.id} type="button" aria-pressed={category === c.id} className={category === c.id ? 'active' : ''} onClick={() => setCategory(c.id)}>{t(c.sk, c.en)}</button>)}</div>
     <p className="comparison-count" role="status">{t(`Porovnávate ${models.length} zo ${bikes.length} modelov.`, `Comparing ${models.length} of ${bikes.length} models.`)}</p>
     <p className="comparison-swipe">{t('Tabuľku posuňte do strany →', 'Scroll sideways to compare →')}</p><div className="comparison-scroll" role="region" aria-label={t('Porovnanie modelov; tabuľku môžete posúvať do strany', 'Model comparison; scroll the table horizontally')} tabIndex={0}>
       <table data-model-count={models.length} style={{minWidth:Math.max(720, 180 + models.length * 210)}}><caption>{t('Porovnanie cargo bicyklov', 'Cargo bike comparison')} · {t(selectedCategory.sk, selectedCategory.en)}</caption><thead><tr><th scope="col">{t('Model', 'Model')}</th>{models.map(b => <th scope="col" key={b.slug}><Link href={prefix + '/bicykle/' + b.slug}>{b.name} ↗</Link></th>)}</tr></thead><tbody>

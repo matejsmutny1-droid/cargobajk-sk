@@ -81,3 +81,5 @@ body{font-family:Sora,Arial,sans-serif;color:var(--charcoal)}h1,h2,h3{font-famil
 /* All catalogue models are comparable; use filters to narrow the wide table. */
 .comparison-filters{flex-wrap:wrap}.comparison-count{font-size:12px;color:var(--ink)}.comparison-scroll th:first-child{width:180px}.comparison-scroll tr>:first-child{position:sticky;left:0;z-index:1;background:var(--paper);box-shadow:1px 0 0 var(--line)}.comparison-scroll thead tr>:first-child{z-index:2;background:#eee4db}.comparison-scroll tbody tr:nth-child(even)>:first-child{background:#fff9f3}.comparison-swipe{display:block;margin-top:18px;font-size:11px;color:var(--ink)}
 @media(max-width:760px){.comparison-filters{gap:8px}.comparison-filters button{white-space:normal;text-align:left}.comparison-scroll th:first-child{width:135px}.comparison-scroll tr>:first-child{box-shadow:1px 0 0 var(--line),4px 0 9px #00000008}}
+
+.price-block{display:inline-flex;flex-direction:column;gap:.35rem}.price-net{display:block;font-size:.72rem;font-weight:500;line-height:1.45;color:#6d5557;letter-spacing:0}.shop-paused{font-size:.85rem;line-height:1.6}.price-preview-note{margin-bottom:2rem}

@@ -563,6 +563,166 @@ export const bikes: Bike[] = [
     "variants": [
       "longlite"
     ]
+  },
+  {
+    "slug": "flex-nova",
+    "name": "Flex Nova",
+    "family": "Flex",
+    "use": "Rodina",
+    "image": "flex-nova",
+    "description": "Odolný plastový box NOVA s vyberateľnými lavičkami pre až štyri deti. Ľahko sa čistí a prispôsobí rodine aj každodennému nákladu.",
+    "sku": "1170-1",
+    "children": 4,
+    "specs": [
+      [
+        "Box",
+        "NOVA · odolný LDPE plast"
+      ],
+      [
+        "Motor",
+        "Ananda v zadnom náboji · 250 W · 45 Nm"
+      ],
+      [
+        "Batéria",
+        "12,8 Ah · 36 V · Samsung/LG"
+      ],
+      [
+        "Nosnosť",
+        "100 kg v boxe + 100 kg jazdec"
+      ],
+      [
+        "Rozmery boxu",
+        "82 × 64,5 cm · výška vzadu 59 cm, vpredu 47 cm"
+      ],
+      [
+        "Prevody",
+        "Shimano Tourney · 7 stupňov"
+      ],
+      [
+        "Strieška",
+        "Strieška a konštrukcia sa kupujú osobitne · iba vyhotovenie NOVA"
+      ]
+    ],
+    "source": "https://cargobikeofsweden.com/en/articles/2.1.687/cargobike-flex-nova",
+    "variants": [
+      "flex-nova",
+      "delight-nova",
+      "flex-nova-dog",
+      "delight-nova-dog"
+    ],
+    "priceEur": 4199
+  },
+  {
+    "slug": "delight-nova",
+    "name": "Delight Nova",
+    "family": "Delight",
+    "use": "Rodina",
+    "image": "delight-nova",
+    "description": "Odolný plastový box NOVA s vyberateľnými lavičkami pre až štyri deti. Ľahko sa čistí a prispôsobí rodine aj každodennému nákladu.",
+    "sku": "1160-1",
+    "children": 4,
+    "specs": [
+      [
+        "Box",
+        "NOVA · odolný LDPE plast"
+      ],
+      [
+        "Motor",
+        "Ananda stredový motor 110 Nm"
+      ],
+      [
+        "Batéria",
+        "19,6 Ah · 36 V · Samsung/LG"
+      ],
+      [
+        "Nosnosť",
+        "100 kg v boxe + 100 kg jazdec"
+      ],
+      [
+        "Rozmery boxu",
+        "82 × 64,5 cm · výška vzadu 59 cm, vpredu 47 cm"
+      ],
+      [
+        "Prevody",
+        "Shimano Altus · 8 stupňov"
+      ],
+      [
+        "Strieška",
+        "Strieška a konštrukcia sa kupujú osobitne · iba vyhotovenie NOVA"
+      ]
+    ],
+    "source": "https://cargobikeofsweden.com/en/articles/2.1.685/cargobike-delight-nova",
+    "variants": [
+      "flex-nova",
+      "delight-nova",
+      "flex-nova-dog",
+      "delight-nova-dog"
+    ],
+    "priceEur": 4999
+  },
+  {
+    "slug": "flex-nova-dog",
+    "name": "Flex Nova Dog",
+    "family": "Flex",
+    "use": "So psom",
+    "image": "flex-nova-dog",
+    "description": "Plastový box NOVA s prednými dvierkami pre psa a vyberateľnými lavičkami. Priestor na každodenné cesty so psom, deťmi alebo nákladom.",
+    "sku": "1172-1",
+    "children": 2,
+    "specs": [
+      [
+        "Box",
+        "NOVA · odolný LDPE plast"
+      ],
+      [
+        "Motor",
+        "Ananda v zadnom náboji · 250 W · 45 Nm"
+      ],
+      [
+        "Strieška",
+        "Strieška a konštrukcia sa kupujú osobitne · iba vyhotovenie NOVA"
+      ]
+    ],
+    "source": "https://cargobikeofsweden.com/en/articles/2.1.688/cargobike-flex-nova-dog",
+    "variants": [
+      "flex-nova",
+      "delight-nova",
+      "flex-nova-dog",
+      "delight-nova-dog"
+    ],
+    "priceEur": 4399
+  },
+  {
+    "slug": "delight-nova-dog",
+    "name": "Delight Nova Dog",
+    "family": "Delight",
+    "use": "So psom",
+    "image": "delight-nova-dog",
+    "description": "Plastový box NOVA s prednými dvierkami pre psa a vyberateľnými lavičkami. Priestor na každodenné cesty so psom, deťmi alebo nákladom.",
+    "sku": "1162-1",
+    "children": 2,
+    "specs": [
+      [
+        "Box",
+        "NOVA · odolný LDPE plast"
+      ],
+      [
+        "Motor",
+        "Ananda stredový motor 110 Nm"
+      ],
+      [
+        "Strieška",
+        "Strieška a konštrukcia sa kupujú osobitne · iba vyhotovenie NOVA"
+      ]
+    ],
+    "source": "https://cargobikeofsweden.com/en/articles/2.1.686/cargobike-delight-nova-dog",
+    "variants": [
+      "flex-nova",
+      "delight-nova",
+      "flex-nova-dog",
+      "delight-nova-dog"
+    ],
+    "priceEur": 5199
   }
 ];
 export const featuredSlugs = ['flex', 'delight', 'flex-dog', 'longtail'];

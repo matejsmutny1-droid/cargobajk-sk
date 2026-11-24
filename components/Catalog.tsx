@@ -1,4 +1,5 @@
 'use client';
+import {pricePreviewNote} from '@/lib/retail-display';
 import BikePrice from '@/components/BikePrice';
 
 import { useState } from 'react';
@@ -16,7 +17,7 @@ export default function Catalog({ full = false, exclude }: { full?: boolean; exc
     (family === 'Všetky rady' || b.family === family) &&
     `${b.name} ${b.sku}`.toLocaleLowerCase('sk').includes(query.trim().toLocaleLowerCase('sk')));
   const categories = full ? ['Všetky', 'Rodina', 'So psom', 'Pre škôlky', 'Náklad a podnikanie', 'Mesto'] : ['Všetky', 'Rodina', 'So psom', 'Mesto'];
-  return <>
+  return <><p className="source-note price-preview-note">{pricePreviewNote(false)}</p>
     <div className="filters" role="group" aria-label="Použitie bicykla">
       {categories.map(f => <button key={f} aria-pressed={filter === f} className={filter === f ? 'active' : ''} onClick={() => setFilter(f)}>{f === 'Pre škôlky' ? 'Pre škôlky · až 6 detí' : f}</button>)}
     </div>
